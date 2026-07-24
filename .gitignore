@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller / Build outputs
+build/
+dist/
+release_v1.0/
+*.manifest
+*.spec.bak
+
+# Local Database, Backups, Logs & Exported PDFs
+database/school_fee.db
+database/school_fee.db-shm
+database/school_fee.db-wal
+backup/*.zip
+exports/*.pdf
+exports/*.csv
+logs/*.log
+
+# Distribution ZIP packages (keep repo clean)
+*.zip
+
+# Environments & IDEs
+.venv/
+venv/
+ENV/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store

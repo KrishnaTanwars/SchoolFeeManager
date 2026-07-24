@@ -1,0 +1,7 @@
+School Fee Management System v1.0.0 (Enterprise Edition)
+Build Date: July 24, 2026
+Target OS: Windows 10 / Windows 11 (64-bit)
+Architecture: x86_64
+Database Engine: SQLite 3 (WAL Mode Enabled)
+UI Engine: PySide6 (Qt 6.6)
+PDF Engine: ReportLab 4.x
