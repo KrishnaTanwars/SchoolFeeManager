@@ -40,6 +40,7 @@ def seed_initial_data():
                 phone="+91 98765 43210, 011-26123456",
                 email="accounts@dps school.edu.in",
                 website="www.dpsschool.edu.in",
+                logo_path="assets/school_logo.png",
                 receipt_prefix="REC/2024/",
                 receipt_footer="Fee once paid is non-refundable. Thank you!",
                 current_session="2024-2025"

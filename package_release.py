@@ -10,13 +10,13 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
-RELEASE_DIR = BASE_DIR / "release_v1.0"
-CLIENT_ZIP_PATH = BASE_DIR / "SchoolFeeManager_v1.0.zip"
-SOURCE_ZIP_PATH = BASE_DIR / "SchoolFeeManager_Source_v1.0.zip"
+RELEASE_DIR = BASE_DIR / "release_v2.0"
+CLIENT_ZIP_PATH = BASE_DIR / "SchoolFeeManager_v2.0.zip"
+SOURCE_ZIP_PATH = BASE_DIR / "SchoolFeeManager_Source_v2.0.zip"
 
 def create_client_package():
     print("============================================================")
-    print("Creating Clean Client Release Package...")
+    print("Creating Clean Client Release Package (v2.0)...")
     print("============================================================")
 
     if not DIST_DIR.exists():
@@ -31,8 +31,12 @@ def create_client_package():
     # Copy PyInstaller bundled executable & dependencies
     shutil.copytree(DIST_DIR, client_dist, dirs_exist_ok=True)
 
-    # Create empty database & backup directories inside package
+    # Copy database file if exists
     (client_dist / "database").mkdir(exist_ok=True)
+    active_db = BASE_DIR / "database" / "school_fee.db"
+    if active_db.exists():
+        shutil.copy2(active_db, client_dist / "database" / "school_fee.db")
+
     (client_dist / "backup").mkdir(exist_ok=True)
     (client_dist / "exports").mkdir(exist_ok=True)
     (client_dist / "logs").mkdir(exist_ok=True)

@@ -33,3 +33,20 @@ class ExportService:
         except Exception as e:
             logger.error(f"CSV Export error: {e}", exc_info=True)
             return False, f"Export error: {str(e)}"
+
+    @staticmethod
+    def generate_sample_student_csv(output_path: Optional[str] = None) -> tuple[bool, str]:
+        """Generates a sample CSV template pre-filled with correct columns and example rows."""
+        headers = [
+            "Admission Number", "Roll Number", "Student Name", "Class", "Section",
+            "Father Name", "Mother Name", "Mobile Number", "Address",
+            "Date Of Admission", "Session", "Status"
+        ]
+        sample_rows = [
+            ["ADM/2024/099", "199", "Aarav Sharma", "Class 10", "A", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2024-04-01", "2024-2025", "Active"],
+            ["ADM/2024/100", "200", "Ananya Verma", "Class 12", "B", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2024-04-01", "2024-2025", "Active"],
+        ]
+        if not output_path:
+            output_path = str(EXPORTS_DIR / "sample_students_import.csv")
+
+        return ExportService.export_to_csv(headers, sample_rows, filename_prefix="Sample_Students", output_path=output_path)

@@ -35,12 +35,18 @@ class PDFService:
         EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
         school_info = SettingsController.get_school_info()
-        school_name = school_info.school_name if school_info else "DPS International School"
-        school_addr = school_info.address if school_info else "123 Education Street, New Delhi, India"
-        school_phone = school_info.phone if school_info else "+91 11 2345 6789"
-        school_email = school_info.email if school_info else "info@school.edu.in"
-        receipt_footer = school_info.receipt_footer if school_info else "This is a computer generated receipt. Signature not required."
+        school_name = school_info.school_name if school_info else "DPS International Public School"
+        school_addr = school_info.address if school_info else "Plot 12, Sector 5, RK Puram, New Delhi - 110022"
+        school_phone = school_info.phone if school_info else "+91 98765 43210, 011-26123456"
+        school_email = school_info.email if school_info else "accounts@dpsschool.edu.in"
+        receipt_footer = school_info.receipt_footer if school_info else "Fee once paid is non-refundable. Thank you!"
+
+        # Determine Logo File Path
         logo_path = school_info.logo_path if (school_info and school_info.logo_path and Path(school_info.logo_path).exists()) else None
+        if not logo_path:
+            default_logo = Path(__file__).resolve().parent.parent / "assets" / "school_logo.png"
+            if default_logo.exists():
+                logo_path = str(default_logo)
 
         doc = SimpleDocTemplate(
             output_path,
@@ -110,14 +116,14 @@ class PDFService:
         header_data = []
         if logo_path:
             try:
-                img = Image(logo_path, width=50*mm, height=20*mm)
-                header_data.append([img, Paragraph(f"<b>{school_name}</b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+                img = Image(logo_path, width=24*mm, height=24*mm)
+                header_data.append([img, Paragraph(f"<b><font size='14' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
             except Exception:
-                header_data.append([Paragraph(f"<b>{school_name}</b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+                header_data.append([Paragraph(f"<b><font size='14' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
         else:
-            header_data.append([Paragraph(f"<b>{school_name}</b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+            header_data.append([Paragraph(f"<b><font size='14' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
 
-        hdr_table = Table(header_data, colWidths=[180*mm] if not logo_path else [30*mm, 150*mm])
+        hdr_table = Table(header_data, colWidths=[180*mm] if not logo_path else [28*mm, 152*mm])
         hdr_table.setStyle(TableStyle([
             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
@@ -182,19 +188,19 @@ class PDFService:
 
         # Summary Rows
         fee_table_data.append([
-            "", Paragraph("<b>Subtotal</b>", label_bold), Paragraph(f"<b>{receipt.subtotal:,.2f}</b>", label_bold)
+            "", Paragraph("<b>Total Calculated Fee</b>", label_bold), Paragraph(f"<b>Rs. {receipt.total_amount:,.2f}</b>", label_bold)
         ])
-        if receipt.discount_amount > 0:
-            fee_table_data.append([
-                "", Paragraph("Discount (-)", label_val), Paragraph(f"-{receipt.discount_amount:,.2f}", label_val)
-            ])
-        if receipt.fine_amount > 0:
-            fee_table_data.append([
-                "", Paragraph("Fine / Late Fee (+)", label_val), Paragraph(f"+{receipt.fine_amount:,.2f}", label_val)
-            ])
         fee_table_data.append([
-            "", Paragraph("<b>TOTAL PAID AMOUNT</b>", label_bold), Paragraph(f"<b>Rs. {receipt.total_amount:,.2f}</b>", label_bold)
+            "", Paragraph("<b>ACTUAL PAID AMOUNT</b>", label_bold), Paragraph(f"<b>Rs. {receipt.paid_amount:,.2f}</b>", label_bold)
         ])
+        if receipt.due_amount > 0:
+            fee_table_data.append([
+                "", Paragraph("<font color='#dc2626'><b>OUTSTANDING DUE AMOUNT</b></font>", label_bold), Paragraph(f"<font color='#dc2626'><b>Rs. {receipt.due_amount:,.2f}</b></font>", label_bold)
+            ])
+        else:
+            fee_table_data.append([
+                "", Paragraph("<font color='#16a34a'><b>Balance Due</b></font>", label_bold), Paragraph("<font color='#16a34a'><b>Rs. 0.00 (PAID IN FULL)</b></font>", label_bold)
+            ])
 
         fee_table = Table(fee_table_data, colWidths=[15*mm, 125*mm, 40*mm])
         fee_table.setStyle(TableStyle([
@@ -203,16 +209,16 @@ class PDFService:
             ('ALIGN', (2,0), (2,-1), 'RIGHT'),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
-            ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor("#eff6ff")),
+            ('BACKGROUND', (0,-3), (-1,-1), colors.HexColor("#eff6ff")),
             ('TOPPADDING', (0,0), (-1,-1), 5),
             ('BOTTOMPADDING', (0,0), (-1,-1), 5),
         ]))
         story.append(fee_table)
-        story.append(Spacer(1, 5 * mm))
+        story.append(Spacer(1, 4 * mm))
 
-        # Amount in Words & Footer Signatures
+        # Amount in Words Box
         words_box = [
-            [Paragraph(f"<b>Amount in Words:</b> {receipt.amount_in_words}", label_val)]
+            [Paragraph(f"<b>Amount Paid in Words:</b> {receipt.amount_in_words}", label_val)]
         ]
         words_table = Table(words_box, colWidths=[180*mm])
         words_table.setStyle(TableStyle([
@@ -222,7 +228,51 @@ class PDFService:
             ('BOTTOMPADDING', (0,0), (-1,-1), 6),
         ]))
         story.append(words_table)
-        story.append(Spacer(1, 10 * mm))
+        story.append(Spacer(1, 4 * mm))
+
+        # Payment Details Block (Dynamic Mode-Specific Fields)
+        pay_details_lines = [f"<b>Payment Mode:</b> {receipt.payment_mode}"]
+        pm_upper = receipt.payment_mode.upper()
+
+        if "UPI" in pm_upper or "QR" in pm_upper:
+            if receipt.utr_number:
+                pay_details_lines.append(f"<b>UTR Number:</b> {receipt.utr_number}")
+            if receipt.bank_name:
+                pay_details_lines.append(f"<b>Bank Name:</b> {receipt.bank_name}")
+            if receipt.payment_date:
+                pay_details_lines.append(f"<b>Payment Date:</b> {format_date(receipt.payment_date)}")
+        elif "CHEQUE" in pm_upper or "DD" in pm_upper or "DEMAND" in pm_upper:
+            if receipt.cheque_number:
+                pay_details_lines.append(f"<b>Cheque/DD No:</b> {receipt.cheque_number}")
+            if receipt.cheque_date:
+                pay_details_lines.append(f"<b>Cheque Date:</b> {format_date(receipt.cheque_date)}")
+            if receipt.bank_name:
+                pay_details_lines.append(f"<b>Bank Name:</b> {receipt.bank_name}")
+        elif "NET" in pm_upper or "NEFT" in pm_upper or "ONLINE" in pm_upper:
+            if receipt.utr_number or receipt.reference_no:
+                pay_details_lines.append(f"<b>Ref/UTR No:</b> {receipt.utr_number or receipt.reference_no}")
+            if receipt.bank_name:
+                pay_details_lines.append(f"<b>Bank Name:</b> {receipt.bank_name}")
+            if receipt.payment_date:
+                pay_details_lines.append(f"<b>Payment Date:</b> {format_date(receipt.payment_date)}")
+        else: # Cash or default
+            if receipt.reference_no:
+                pay_details_lines.append(f"<b>Reference:</b> {receipt.reference_no}")
+
+        pay_details_str = " &nbsp;&nbsp;|&nbsp;&nbsp; ".join(pay_details_lines)
+
+        pay_details_box = [
+            [Paragraph(f"<b>PAYMENT DETAILS</b><br/>{pay_details_str}", label_val)]
+        ]
+        pay_details_table = Table(pay_details_box, colWidths=[180*mm])
+        pay_details_table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f8fafc")),
+            ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#94a3b8")),
+            ('TOPPADDING', (0,0), (-1,-1), 6),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ]))
+        story.append(pay_details_table)
+        story.append(Spacer(1, 8 * mm))
 
         # Remarks & Signatures
         sig_data = [
@@ -237,14 +287,30 @@ class PDFService:
             ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
         ]))
         story.append(sig_table)
-        story.append(Spacer(1, 8 * mm))
+        story.append(Spacer(1, 6 * mm))
 
-        # Footer Notice
-        story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#cbd5e1"), spaceAfter=3*mm))
-        story.append(Paragraph(receipt_footer, subtitle_style))
+        # Watermark Callback Function
+        watermark_path = logo_path
+        def draw_watermark(canvas, doc_obj):
+            canvas.saveState()
+            try:
+                if watermark_path and Path(watermark_path).exists():
+                    canvas.setFillAlpha(0.09)
+                    w, h = 120 * mm, 120 * mm
+                    x = (210 * mm - w) / 2
+                    y = (297 * mm - h) / 2
+                    canvas.drawImage(watermark_path, x, y, width=w, height=h, mask='auto', preserveAspectRatio=True)
+                else:
+                    canvas.setFont("Helvetica-Bold", 36)
+                    canvas.setFillColor(colors.HexColor("#cbd5e1"))
+                    canvas.setFillAlpha(0.09)
+                    canvas.drawCentredString(105 * mm, 148.5 * mm, "DPS INTERNATIONAL")
+            except Exception as e:
+                logger.warning(f"Watermark draw error: {e}")
+            canvas.restoreState()
 
-        doc.build(story)
-        logger.info(f"Generated PDF receipt: {output_path}")
+        doc.build(story, onFirstPage=draw_watermark, onLaterPages=draw_watermark)
+        logger.info(f"Generated PDF receipt with watermark: {output_path}")
         return output_path
 
     @staticmethod

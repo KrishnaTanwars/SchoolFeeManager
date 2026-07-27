@@ -33,6 +33,9 @@ class ReceiptPreviewDialog(QDialog):
 
         # Receipt Summary Card
         if self.receipt:
+            paid_amt = getattr(self.receipt, 'paid_amount', self.receipt.total_amount) or self.receipt.total_amount
+            due_amt = getattr(self.receipt, 'due_amount', 0.0) or 0.0
+
             summary_txt = f"""
 =====================================================
                  FEE RECEIPT DETAILS
@@ -45,21 +48,46 @@ Class & Sec    : {self.receipt.student.class_name} ({self.receipt.student.sectio
 Father's Name  : {self.receipt.student.father_name}
 Academic Session: {self.receipt.academic_session}
 -----------------------------------------------------
-ITEMS PAID:
+ITEMS INCLUDED:
 """
             for item in self.receipt.items:
                 summary_txt += f" - {item.category_name:<30}: ₹ {item.amount:,.2f}\n"
 
             summary_txt += f"""-----------------------------------------------------
-Subtotal       : ₹ {self.receipt.subtotal:,.2f}
-Discount (-)   : ₹ {self.receipt.discount_amount:,.2f}
-Fine (+)       : ₹ {self.receipt.fine_amount:,.2f}
-TOTAL PAID     : ₹ {self.receipt.total_amount:,.2f}
+Total Fee      : ₹ {self.receipt.total_amount:,.2f}
+PAID AMOUNT    : ₹ {paid_amt:,.2f}
+OUTSTANDING DUE: ₹ {due_amt:,.2f}
 -----------------------------------------------------
 Amount in Words: {self.receipt.amount_in_words}
+-----------------------------------------------------
+PAYMENT DETAILS:
 Payment Mode   : {self.receipt.payment_mode}
-=====================================================
 """
+            pm_upper = self.receipt.payment_mode.upper()
+            if "UPI" in pm_upper or "QR" in pm_upper:
+                if getattr(self.receipt, 'utr_number', None):
+                    summary_txt += f"UTR Number     : {self.receipt.utr_number}\n"
+                if getattr(self.receipt, 'bank_name', None):
+                    summary_txt += f"Bank Name      : {self.receipt.bank_name}\n"
+                if getattr(self.receipt, 'payment_date', None):
+                    summary_txt += f"Payment Date   : {self.receipt.payment_date.strftime('%d-%m-%Y')}\n"
+            elif "CHEQUE" in pm_upper or "DD" in pm_upper or "DEMAND" in pm_upper:
+                if getattr(self.receipt, 'cheque_number', None):
+                    summary_txt += f"Cheque/DD No   : {self.receipt.cheque_number}\n"
+                if getattr(self.receipt, 'cheque_date', None) and self.receipt.cheque_date:
+                    summary_txt += f"Cheque Date    : {self.receipt.cheque_date.strftime('%d-%m-%Y')}\n"
+                if getattr(self.receipt, 'bank_name', None):
+                    summary_txt += f"Bank Name      : {self.receipt.bank_name}\n"
+            elif "NET" in pm_upper or "NEFT" in pm_upper:
+                if getattr(self.receipt, 'utr_number', None) or self.receipt.reference_no:
+                    summary_txt += f"Ref / UTR No   : {getattr(self.receipt, 'utr_number', None) or self.receipt.reference_no}\n"
+                if getattr(self.receipt, 'bank_name', None):
+                    summary_txt += f"Bank Name      : {self.receipt.bank_name}\n"
+            else:
+                if self.receipt.reference_no:
+                    summary_txt += f"Reference No   : {self.receipt.reference_no}\n"
+
+            summary_txt += "=====================================================\n"
             txt_view = QTextEdit()
             txt_view.setReadOnly(True)
             txt_view.setFontFamily("Courier New")
