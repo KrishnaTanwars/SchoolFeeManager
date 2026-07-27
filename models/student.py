@@ -18,6 +18,7 @@ class Student(Base):
     mother_name = Column(String(100), nullable=True)
     class_name = Column(String(50), nullable=False, index=True)
     section = Column(String(20), nullable=True)
+    course = Column(String(100), nullable=True, index=True)
     mobile = Column(String(15), nullable=False, index=True)
     address = Column(Text, nullable=True)
     admission_date = Column(Date, default=date.today, nullable=False)

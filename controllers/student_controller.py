@@ -3,7 +3,7 @@ Student CRUD and Filter Controller with Session Expunge Safety.
 """
 
 from typing import List, Optional, Dict, Any
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from config.database import get_db
 from models.student import Student
 from models.audit import AuditLog
@@ -210,5 +210,159 @@ class StudentController:
             results = db.query(Student.academic_session).distinct().all()
             sessions = sorted(list({r[0] for r in results if r[0]}))
             return sessions
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_student_counts_by_class() -> List[Dict[str, Any]]:
+        """Returns student count breakdown by Class."""
+        db = get_db()
+        try:
+            results = db.query(
+                Student.class_name,
+                func.count(Student.id)
+            ).filter(Student.status == "Active")\
+             .group_by(Student.class_name).all()
+
+            return [
+                {"class_name": r[0] or "Unassigned", "student_count": r[1] or 0}
+                for r in results
+            ]
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_student_counts_by_course() -> List[Dict[str, Any]]:
+        """Returns student count breakdown by Course (future compatible)."""
+        db = get_db()
+        try:
+            # Uses course if populated, falls back to class_name
+            course_col = func.coalesce(Student.course, Student.class_name)
+            results = db.query(
+                course_col,
+                func.count(Student.id)
+            ).filter(Student.status == "Active")\
+             .group_by(course_col).all()
+
+            return [
+                {"course_name": r[0] or "General", "student_count": r[1] or 0}
+                for r in results
+            ]
+        finally:
+            db.close()
+
+    @staticmethod
+    def import_students_from_csv(file_path: str) -> Dict[str, Any]:
+        """
+        Imports students from CSV file.
+        Validates columns, skips duplicates (by admission_no), and returns import summary.
+        """
+        import csv
+        from datetime import datetime, date
+
+        summary = {
+            "success_count": 0,
+            "skipped_count": 0,
+            "failed_count": 0,
+            "failed_rows": [],
+            "total_processed": 0
+        }
+
+        db = get_db()
+        try:
+            with open(file_path, mode='r', encoding='utf-8-sig') as f:
+                reader = csv.reader(f)
+                headers = next(reader, None)
+                if not headers:
+                    return {"error": "CSV file is empty."}
+
+                # Normalize headers
+                hdr_map = {}
+                for idx, h in enumerate(headers):
+                    clean_h = h.strip().lower().replace(" ", "_").replace("'", "")
+                    hdr_map[clean_h] = idx
+
+                # Map variations
+                adm_idx = hdr_map.get("admission_number", hdr_map.get("admission_no", hdr_map.get("adm_no", 0)))
+                roll_idx = hdr_map.get("roll_number", hdr_map.get("roll_no", 1))
+                name_idx = hdr_map.get("student_name", hdr_map.get("name", 2))
+                cls_idx = hdr_map.get("class", hdr_map.get("class_name", 3))
+                sec_idx = hdr_map.get("section", 4)
+                father_idx = hdr_map.get("father_name", hdr_map.get("father", 5))
+                mother_idx = hdr_map.get("mother_name", hdr_map.get("mother", 6))
+                mob_idx = hdr_map.get("mobile_number", hdr_map.get("mobile", 7))
+                addr_idx = hdr_map.get("address", 8)
+                date_idx = hdr_map.get("date_of_admission", hdr_map.get("admission_date", 9))
+                sess_idx = hdr_map.get("session", hdr_map.get("academic_session", 10))
+                status_idx = hdr_map.get("status", 11)
+
+                for row_num, row in enumerate(reader, start=2):
+                    if not row or not any(field.strip() for field in row):
+                        continue
+
+                    summary["total_processed"] += 1
+
+                    try:
+                        adm_no = row[adm_idx].strip() if adm_idx < len(row) else ""
+                        name = row[name_idx].strip() if name_idx < len(row) else ""
+
+                        if not adm_no or not name:
+                            summary["failed_count"] += 1
+                            summary["failed_rows"].append(f"Row {row_num}: Missing Admission Number or Student Name.")
+                            continue
+
+                        # Duplicate check
+                        existing = db.query(Student).filter(Student.admission_no == adm_no).first()
+                        if existing:
+                            summary["skipped_count"] += 1
+                            continue
+
+                        roll = row[roll_idx].strip() if roll_idx < len(row) else ""
+                        cls_name = row[cls_idx].strip() if cls_idx < len(row) else "Class 1"
+                        section = row[sec_idx].strip() if sec_idx < len(row) else "A"
+                        father = row[father_idx].strip() if father_idx < len(row) else ""
+                        mother = row[mother_idx].strip() if mother_idx < len(row) else ""
+                        mobile = row[mob_idx].strip() if mob_idx < len(row) else ""
+                        address = row[addr_idx].strip() if addr_idx < len(row) else ""
+                        date_str = row[date_idx].strip() if date_idx < len(row) else ""
+                        session_val = row[sess_idx].strip() if sess_idx < len(row) else "2024-2025"
+                        status_val = row[status_idx].strip() if status_idx < len(row) else "Active"
+
+                        adm_date = date.today()
+                        if date_str:
+                            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%Y/%m/%d"):
+                                try:
+                                    adm_date = datetime.strptime(date_str, fmt).date()
+                                    break
+                                except ValueError:
+                                    pass
+
+                        st = Student(
+                            admission_no=adm_no,
+                            roll_no=roll,
+                            name=name,
+                            father_name=father,
+                            mother_name=mother,
+                            class_name=cls_name or "Class 1",
+                            section=section or "A",
+                            mobile=mobile or "0000000000",
+                            address=address,
+                            admission_date=adm_date,
+                            academic_session=session_val or "2024-2025",
+                            status=status_val if status_val in ("Active", "Inactive") else "Active"
+                        )
+                        db.add(st)
+                        summary["success_count"] += 1
+                    except Exception as row_err:
+                        summary["failed_count"] += 1
+                        summary["failed_rows"].append(f"Row {row_num}: {str(row_err)}")
+
+                db.commit()
+                logger.info(f"Imported CSV: {summary['success_count']} added, {summary['skipped_count']} skipped, {summary['failed_count']} failed.")
+                return summary
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error reading CSV import file: {e}", exc_info=True)
+            return {"error": f"Failed to parse CSV file: {str(e)}"}
         finally:
             db.close()

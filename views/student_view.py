@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from controllers.student_controller import StudentController
 from dialogs.student_dialog import StudentDialog
+from dialogs.student_ledger_dialog import StudentFeeLedgerDialog
 from services.export_service import ExportService
 from utils.helpers import format_date
 
@@ -30,6 +31,16 @@ class StudentView(QWidget):
         hdr_layout.addWidget(title_lbl)
         hdr_layout.addStretch()
 
+        self.btn_sample = QPushButton("📄  Download Sample CSV")
+        self.btn_sample.setProperty("class", "SecondaryBtn")
+        self.btn_sample.setCursor(Qt.PointingHandCursor)
+        self.btn_sample.clicked.connect(self.download_sample_csv)
+
+        self.btn_import = QPushButton("📤  Import Students")
+        self.btn_import.setProperty("class", "SecondaryBtn")
+        self.btn_import.setCursor(Qt.PointingHandCursor)
+        self.btn_import.clicked.connect(self.import_csv)
+
         self.btn_export = QPushButton("📥  Export CSV")
         self.btn_export.setProperty("class", "SecondaryBtn")
         self.btn_export.setCursor(Qt.PointingHandCursor)
@@ -40,9 +51,27 @@ class StudentView(QWidget):
         self.btn_add_student.setCursor(Qt.PointingHandCursor)
         self.btn_add_student.clicked.connect(self.add_student)
 
+        hdr_layout.addWidget(self.btn_sample)
+        hdr_layout.addWidget(self.btn_import)
         hdr_layout.addWidget(self.btn_export)
         hdr_layout.addWidget(self.btn_add_student)
         layout.addLayout(hdr_layout)
+
+        # KPI Active Students Banner
+        from PySide6.QtWidgets import QFrame
+        card_kpi = QFrame()
+        card_kpi.setProperty("class", "KPICard")
+        card_kpi.setFixedHeight(75)
+        v_kpi = QVBoxLayout(card_kpi)
+        v_kpi.setContentsMargins(16, 10, 16, 10)
+        lbl_k_title = QLabel("ACTIVE REGISTERED STUDENTS")
+        lbl_k_title.setProperty("class", "KPITitle")
+        self.lbl_active_cnt = QLabel("0")
+        self.lbl_active_cnt.setStyleSheet("color: #7c3aed; font-size: 22px; font-weight: 800;")
+        v_kpi.addWidget(lbl_k_title)
+        v_kpi.addWidget(self.lbl_active_cnt)
+
+        layout.addWidget(card_kpi)
 
         # Filter & Search Controls Bar
         filter_layout = QHBoxLayout()
@@ -88,7 +117,7 @@ class StudentView(QWidget):
         for col in range(8):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
         header.setSectionResizeMode(8, QHeaderView.Fixed)
-        self.table.setColumnWidth(8, 180)
+        self.table.setColumnWidth(8, 240)
 
         self.table.verticalHeader().setDefaultSectionSize(40)
         self.table.setAlternatingRowColors(True)
@@ -116,6 +145,10 @@ class StudentView(QWidget):
         self.cmb_session_filter.blockSignals(False)
 
     def load_students(self):
+        from controllers.report_controller import ReportController
+        active_total = ReportController.get_total_students_count()
+        self.lbl_active_cnt.setText(str(active_total))
+
         search = self.txt_search.text().strip()
         class_val = self.cmb_class_filter.currentData() or "All"
         session_val = self.cmb_session_filter.currentData() or "All"
@@ -146,25 +179,37 @@ class StudentView(QWidget):
             action_widget = QWidget()
             act_layout = QHBoxLayout(action_widget)
             act_layout.setContentsMargins(4, 2, 4, 2)
-            act_layout.setSpacing(6)
+            act_layout.setSpacing(4)
+
+            btn_ledger = QPushButton("📜 Fee History")
+            btn_ledger.setFixedHeight(28)
+            btn_ledger.setMinimumWidth(85)
+            btn_ledger.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
+            btn_ledger.setCursor(Qt.PointingHandCursor)
+            btn_ledger.clicked.connect(lambda _, st=s: self.view_student_fee_summary(st))
 
             btn_edit = QPushButton("✏️ Edit")
             btn_edit.setFixedHeight(28)
-            btn_edit.setMinimumWidth(75)
+            btn_edit.setMinimumWidth(65)
             btn_edit.setStyleSheet("background-color: #0284c7; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, st=s: self.edit_student(st))
 
             btn_del = QPushButton("🗑️ Delete")
             btn_del.setFixedHeight(28)
-            btn_del.setMinimumWidth(75)
+            btn_del.setMinimumWidth(65)
             btn_del.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
             btn_del.setCursor(Qt.PointingHandCursor)
             btn_del.clicked.connect(lambda _, st=s: self.delete_student(st))
 
+            act_layout.addWidget(btn_ledger)
             act_layout.addWidget(btn_edit)
             act_layout.addWidget(btn_del)
             self.table.setCellWidget(row_idx, 8, action_widget)
+
+    def view_student_fee_summary(self, student):
+        dlg = StudentFeeLedgerDialog(self, student)
+        dlg.exec()
 
     def add_student(self):
         dlg = StudentDialog(self)
@@ -191,6 +236,43 @@ class StudentView(QWidget):
                 self.load_students()
             else:
                 QMessageBox.critical(self, "Error", msg)
+
+    def download_sample_csv(self):
+        path, _ = QFileDialog.getSaveFileName(self, "Save Sample CSV Template", "sample_students_import.csv", "CSV Files (*.csv)")
+        if path:
+            success, msg = ExportService.generate_sample_student_csv(output_path=path)
+            if success:
+                QMessageBox.information(self, "Sample Template Saved", f"Sample CSV template saved successfully to:\n{path}\n\nYou can open this file in Excel to fill in student data for import.")
+            else:
+                QMessageBox.critical(self, "Error", f"Failed to save sample CSV: {msg}")
+
+    def import_csv(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Select Students CSV File to Import", "", "CSV Files (*.csv)")
+        if path:
+            result = StudentController.import_students_from_csv(path)
+            if "error" in result:
+                QMessageBox.critical(self, "Import Error", result["error"])
+                return
+
+            succ = result["success_count"]
+            skip = result["skipped_count"]
+            fail = result["failed_count"]
+            tot = result["total_processed"]
+
+            msg = f"=== CSV STUDENT IMPORT SUMMARY ===\n\n"
+            msg += f"• Total Processed : {tot}\n"
+            msg += f"• Successfully Added : {succ}\n"
+            msg += f"• Skipped (Duplicates): {skip}\n"
+            msg += f"• Failed Rows        : {fail}\n"
+
+            if result["failed_rows"]:
+                msg += f"\nFailure Details:\n" + "\n".join(result["failed_rows"][:10])
+                if len(result["failed_rows"]) > 10:
+                    msg += f"\n...and {len(result['failed_rows']) - 10} more."
+
+            QMessageBox.information(self, "Import Completed", msg)
+            self.populate_filters()
+            self.load_students()
 
     def export_csv(self):
         headers = ["Admission No", "Roll No", "Student Name", "Class", "Section", "Father Name", "Mother Name", "Mobile", "Address", "Date of Admission", "Session", "Status"]

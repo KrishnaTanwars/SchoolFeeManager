@@ -1,15 +1,15 @@
 """
-Fee Collection & Receipt Generation Form View.
+Fee Collection & Receipt Generation Form View with Dynamic Payment Mode Fields & Flexible Partial Payments.
 """
 
 from typing import Dict, List, Optional
-from datetime import date
+from datetime import date, datetime
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
     QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox,
-    QGroupBox, QFormLayout, QMessageBox, QCheckBox, QTextEdit, QCompleter
+    QGroupBox, QFormLayout, QMessageBox, QCheckBox, QTextEdit, QCompleter, QDateEdit
 )
-from PySide6.QtCore import Qt, QStringListModel
+from PySide6.QtCore import Qt, QStringListModel, QDate
 from controllers.student_controller import StudentController
 from controllers.fee_controller import FeeController
 from controllers.receipt_controller import ReceiptController
@@ -18,10 +18,26 @@ from dialogs.receipt_preview_dialog import ReceiptPreviewDialog
 from utils.helpers import format_currency, format_date
 from utils.number_to_words import number_to_words_indian
 
+COMMON_INDIAN_BANKS = [
+    "State Bank of India (SBI)",
+    "HDFC Bank",
+    "ICICI Bank",
+    "Axis Bank",
+    "Punjab National Bank (PNB)",
+    "Bank of Baroda",
+    "Kotak Mahindra Bank",
+    "Canara Bank",
+    "Union Bank of India",
+    "IDFC FIRST Bank",
+    "IndusInd Bank",
+    "Other Bank"
+]
+
 class ReceiptView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.selected_student = None
+        self._user_edited_paid = False
         self.setup_ui()
 
     def setup_ui(self):
@@ -73,6 +89,10 @@ class ReceiptView(QWidget):
         self.lbl_father = QLabel("-")
         self.lbl_mobile = QLabel("-")
         self.lbl_session = QLabel("-")
+        self.lbl_total_paid = QLabel("₹ 0.00")
+        self.lbl_total_paid.setStyleSheet("font-weight: bold; color: #059669;")
+        self.lbl_prev_due = QLabel("₹ 0.00")
+        self.lbl_prev_due.setStyleSheet("font-weight: bold; color: #dc2626;")
 
         for lbl in [self.lbl_adm_no, self.lbl_name, self.lbl_class, self.lbl_father, self.lbl_mobile, self.lbl_session]:
             lbl.setStyleSheet("font-weight: bold; color: #0f172a;")
@@ -83,6 +103,8 @@ class ReceiptView(QWidget):
         card_form.addRow("Father's Name:", self.lbl_father)
         card_form.addRow("Mobile No:", self.lbl_mobile)
         card_form.addRow("Session:", self.lbl_session)
+        card_form.addRow("Total Paid Till Date:", self.lbl_total_paid)
+        card_form.addRow("Previous Due:", self.lbl_prev_due)
 
         left_layout.addWidget(self.card_student)
         left_layout.addStretch()
@@ -90,82 +112,192 @@ class ReceiptView(QWidget):
         split_layout.addWidget(left_box, stretch=1)
 
         # ---------------- RIGHT COLUMN: Fee Particulars & Totals ----------------
-        right_box = QGroupBox("2. Fee Heads Particulars & Payment")
+        right_box = QGroupBox("2. Fee Heads Particulars & Flexible Payment")
         right_layout = QVBoxLayout(right_box)
+        right_layout.setContentsMargins(12, 10, 12, 10)
+        right_layout.setSpacing(8)
 
-        # Fee Heads Table
+        # Fee Heads Table (Guaranteed 240px height so all Fee Heads are fully visible!)
         self.table_fees = QTableWidget()
         self.table_fees.setColumnCount(4)
         self.table_fees.setHorizontalHeaderLabels(["Select", "Fee Head Name", "Code", "Amount (₹)"])
         self.table_fees.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_fees.verticalHeader().setDefaultSectionSize(32)
+        self.table_fees.setMinimumHeight(240)
 
-        right_layout.addWidget(self.table_fees)
+        right_layout.addWidget(self.table_fees, stretch=2)
 
-        # Payment & Summary Form
-        summary_form = QFormLayout()
+        # Bottom 2-Column Layout: Totals (Left) & Payment Mode / Action (Right)
+        bottom_h_layout = QHBoxLayout()
+        bottom_h_layout.setSpacing(15)
 
-        # Subtotal
+        # Left Column: Fee Totals Form
+        totals_form = QFormLayout()
+        totals_form.setContentsMargins(0, 0, 0, 0)
+        totals_form.setSpacing(6)
+
         self.lbl_subtotal = QLabel("₹ 0.00")
-        self.lbl_subtotal.setStyleSheet("font-size: 14px; font-weight: bold; color: #1e293b;")
-        summary_form.addRow("Subtotal:", self.lbl_subtotal)
+        self.lbl_subtotal.setStyleSheet("font-size: 13px; font-weight: bold; color: #1e293b;")
+        totals_form.addRow("Subtotal:", self.lbl_subtotal)
 
-        # Discount
         self.spn_discount = QDoubleSpinBox()
         self.spn_discount.setRange(0.0, 100000.0)
         self.spn_discount.setPrefix("₹ ")
         self.spn_discount.setDecimals(2)
         self.spn_discount.valueChanged.connect(self.recalculate_totals)
-        summary_form.addRow("Discount (-):", self.spn_discount)
+        totals_form.addRow("Discount (-):", self.spn_discount)
 
-        # Fine
         self.spn_fine = QDoubleSpinBox()
         self.spn_fine.setRange(0.0, 50000.0)
         self.spn_fine.setPrefix("₹ ")
         self.spn_fine.setDecimals(2)
         self.spn_fine.valueChanged.connect(self.recalculate_totals)
-        summary_form.addRow("Fine / Penalty (+):", self.spn_fine)
+        totals_form.addRow("Fine / Penalty (+):", self.spn_fine)
 
-        # Grand Total
         self.lbl_total = QLabel("₹ 0.00")
-        self.lbl_total.setStyleSheet("font-size: 18px; font-weight: bold; color: #10b981;")
-        summary_form.addRow("<b>TOTAL AMOUNT:</b>", self.lbl_total)
+        self.lbl_total.setStyleSheet("font-size: 15px; font-weight: bold; color: #1e3a8a;")
+        totals_form.addRow("Total Calculated Fee:", self.lbl_total)
 
-        # Amount in Words
+        self.spn_paid_amount = QDoubleSpinBox()
+        self.spn_paid_amount.setRange(0.0, 500000.0)
+        self.spn_paid_amount.setPrefix("₹ ")
+        self.spn_paid_amount.setDecimals(2)
+        self.spn_paid_amount.setStyleSheet("font-size: 14px; font-weight: bold; color: #059669;")
+        self.spn_paid_amount.valueChanged.connect(self.on_paid_amount_edited)
+        totals_form.addRow("<b>ACTUAL PAID AMOUNT:</b>", self.spn_paid_amount)
+
+        self.lbl_due_amount = QLabel("₹ 0.00")
+        self.lbl_due_amount.setStyleSheet("font-size: 14px; font-weight: bold; color: #dc2626;")
+        totals_form.addRow("<b>Remaining Due:</b>", self.lbl_due_amount)
+
         self.lbl_words = QLabel("Zero Rupees Only")
         self.lbl_words.setStyleSheet("font-size: 11px; font-weight: bold; color: #475569; font-style: italic;")
         self.lbl_words.setWordWrap(True)
-        summary_form.addRow("Amount in Words:", self.lbl_words)
+        totals_form.addRow("Amount in Words:", self.lbl_words)
 
-        # Payment Mode & Ref
-        pay_layout = QHBoxLayout()
+        bottom_h_layout.addLayout(totals_form, stretch=1)
+
+        # Right Column: Payment Mode & Dynamic Fields
+        pay_box = QVBoxLayout()
+        pay_box.setContentsMargins(0, 0, 0, 0)
+        pay_box.setSpacing(6)
+
+        pay_form = QFormLayout()
+        pay_form.setContentsMargins(0, 0, 0, 0)
+        pay_form.setSpacing(6)
+
         self.cmb_pay_mode = QComboBox()
         self.cmb_pay_mode.addItems(["Cash", "UPI / QR", "Cheque", "Demand Draft (DD)", "Net Banking / NEFT"])
-        self.txt_ref_no = QLineEdit()
-        self.txt_ref_no.setPlaceholderText("Ref/Cheque/Transaction No.")
-        pay_layout.addWidget(self.cmb_pay_mode, stretch=1)
-        pay_layout.addWidget(self.txt_ref_no, stretch=2)
-        summary_form.addRow("Payment Mode & Ref:", pay_layout)
+        self.cmb_pay_mode.currentIndexChanged.connect(self.update_payment_mode_fields)
+        pay_form.addRow("Payment Mode:", self.cmb_pay_mode)
 
-        # Remarks
+        self.txt_utr_no = QLineEdit()
+        self.txt_utr_no.setPlaceholderText("Enter 12-digit UPI UTR / Transaction No")
+        self.lbl_utr_no = QLabel("UTR Number:")
+
+        self.txt_cheque_no = QLineEdit()
+        self.txt_cheque_no.setPlaceholderText("Enter 6-digit Cheque / DD Number")
+        self.lbl_cheque_no = QLabel("Cheque / DD Number:")
+
+        self.dt_cheque_date = QDateEdit()
+        self.dt_cheque_date.setCalendarPopup(True)
+        self.dt_cheque_date.setDate(QDate.currentDate())
+        self.lbl_cheque_date = QLabel("Cheque Date:")
+
+        self.cmb_bank_name = QComboBox()
+        self.cmb_bank_name.setEditable(True)
+        self.cmb_bank_name.addItems(COMMON_INDIAN_BANKS)
+        self.lbl_bank_name = QLabel("Bank Name:")
+
+        self.dt_payment_date = QDateEdit()
+        self.dt_payment_date.setCalendarPopup(True)
+        self.dt_payment_date.setDate(QDate.currentDate())
+        self.lbl_payment_date = QLabel("Payment Date:")
+
+        self.txt_ref_no = QLineEdit()
+        self.txt_ref_no.setPlaceholderText("Optional reference no.")
+        self.lbl_ref_no = QLabel("Reference No:")
+
+        pay_form.addRow(self.lbl_utr_no, self.txt_utr_no)
+        pay_form.addRow(self.lbl_cheque_no, self.txt_cheque_no)
+        pay_form.addRow(self.lbl_cheque_date, self.dt_cheque_date)
+        pay_form.addRow(self.lbl_bank_name, self.cmb_bank_name)
+        pay_form.addRow(self.lbl_payment_date, self.dt_payment_date)
+        pay_form.addRow(self.lbl_ref_no, self.txt_ref_no)
+
         self.txt_remarks = QLineEdit()
         self.txt_remarks.setPlaceholderText("Optional fee remarks")
-        summary_form.addRow("Remarks:", self.txt_remarks)
+        pay_form.addRow("Remarks:", self.txt_remarks)
 
-        right_layout.addLayout(summary_form)
+        pay_box.addLayout(pay_form)
 
-        # Action Button
         self.btn_generate = QPushButton("GENERATE & PRINT RECEIPT")
-        self.btn_generate.setFixedHeight(45)
+        self.btn_generate.setFixedHeight(42)
         self.btn_generate.setStyleSheet("font-size: 14px; font-weight: bold;")
         self.btn_generate.setProperty("class", "SuccessBtn")
         self.btn_generate.clicked.connect(self.generate_receipt)
 
-        right_layout.addWidget(self.btn_generate)
+        pay_box.addWidget(self.btn_generate)
+
+        bottom_h_layout.addLayout(pay_box, stretch=1)
+
+        right_layout.addLayout(bottom_h_layout, stretch=1)
 
         split_layout.addWidget(right_box, stretch=2)
         layout.addLayout(split_layout)
 
+        self.update_payment_mode_fields()
         self.refresh_view()
+
+    def update_payment_mode_fields(self):
+        mode = self.cmb_pay_mode.currentText().upper()
+
+        # Hide all by default
+        self.lbl_utr_no.hide()
+        self.txt_utr_no.hide()
+        self.lbl_cheque_no.hide()
+        self.txt_cheque_no.hide()
+        self.lbl_cheque_date.hide()
+        self.dt_cheque_date.hide()
+        self.lbl_bank_name.hide()
+        self.cmb_bank_name.hide()
+        self.lbl_payment_date.hide()
+        self.dt_payment_date.hide()
+        self.lbl_ref_no.hide()
+        self.txt_ref_no.hide()
+
+        if "CASH" in mode:
+            # Cash: Keep all dynamic fields hidden
+            pass
+        elif "UPI" in mode or "QR" in mode:
+            self.lbl_utr_no.setText("UTR Number:")
+            self.txt_utr_no.setPlaceholderText("Enter 12-digit UPI UTR / Transaction No")
+            self.lbl_utr_no.show()
+            self.txt_utr_no.show()
+            self.lbl_bank_name.show()
+            self.cmb_bank_name.show()
+            self.lbl_payment_date.show()
+            self.dt_payment_date.show()
+        elif "CHEQUE" in mode or "DD" in mode or "DEMAND" in mode:
+            self.lbl_cheque_no.setText("Cheque / DD Number:")
+            self.lbl_cheque_no.show()
+            self.txt_cheque_no.show()
+            self.lbl_cheque_date.show()
+            self.dt_cheque_date.show()
+            self.lbl_bank_name.show()
+            self.cmb_bank_name.show()
+        elif "NET" in mode or "NEFT" in mode:
+            self.lbl_utr_no.setText("Transaction / Ref No:")
+            self.txt_utr_no.setPlaceholderText("Enter NEFT / IMPS / Ref Number")
+            self.lbl_utr_no.show()
+            self.txt_utr_no.show()
+            self.lbl_bank_name.show()
+            self.cmb_bank_name.show()
+            self.lbl_payment_date.show()
+            self.dt_payment_date.show()
+        else:
+            self.lbl_ref_no.show()
+            self.txt_ref_no.show()
 
     def refresh_view(self):
         self.lbl_next_rec.setText(f"Next Receipt No: <b>{ReceiptController.generate_next_receipt_number()}</b>")
@@ -199,6 +331,11 @@ class ReceiptView(QWidget):
             self.lbl_father.setText(s.father_name)
             self.lbl_mobile.setText(s.mobile)
             self.lbl_session.setText(s.academic_session)
+
+            # Query student fee summary (Total Paid Till Date & Outstanding Due)
+            summary = ReceiptController.get_student_fee_summary(s.id)
+            self.lbl_total_paid.setText(format_currency(summary['total_paid']))
+            self.lbl_prev_due.setText(format_currency(summary['latest_due']))
         else:
             self.clear_student_card()
 
@@ -210,6 +347,8 @@ class ReceiptView(QWidget):
         self.lbl_father.setText("-")
         self.lbl_mobile.setText("-")
         self.lbl_session.setText("-")
+        self.lbl_total_paid.setText("₹ 0.00")
+        self.lbl_prev_due.setText("₹ 0.00")
 
     def load_fee_heads(self):
         categories = FeeController.get_all_categories(active_only=True)
@@ -232,7 +371,30 @@ class ReceiptView(QWidget):
 
             self.table_fees.setCellWidget(row_idx, 3, spn_amt)
 
+        self._user_edited_paid = False
         self.recalculate_totals()
+
+    def on_paid_amount_edited(self):
+        self._user_edited_paid = True
+        self.calculate_due()
+
+    def calculate_due(self):
+        subtotal = 0.0
+        for r in range(self.table_fees.rowCount()):
+            chk = self.table_fees.cellWidget(r, 0)
+            spn_amt = self.table_fees.cellWidget(r, 3)
+            if chk and chk.isChecked() and spn_amt:
+                subtotal += spn_amt.value()
+
+        discount = self.spn_discount.value()
+        fine = self.spn_fine.value()
+        grand_total = max(0.0, subtotal - discount + fine)
+
+        paid_val = self.spn_paid_amount.value()
+        due_val = max(0.0, grand_total - paid_val)
+
+        self.lbl_due_amount.setText(format_currency(due_val))
+        self.lbl_words.setText(number_to_words_indian(paid_val))
 
     def recalculate_totals(self):
         subtotal = 0.0
@@ -248,7 +410,13 @@ class ReceiptView(QWidget):
 
         self.lbl_subtotal.setText(format_currency(subtotal))
         self.lbl_total.setText(format_currency(grand_total))
-        self.lbl_words.setText(number_to_words_indian(grand_total))
+
+        if not self._user_edited_paid:
+            self.spn_paid_amount.blockSignals(True)
+            self.spn_paid_amount.setValue(grand_total)
+            self.spn_paid_amount.blockSignals(False)
+
+        self.calculate_due()
 
     def generate_receipt(self):
         if not self.selected_student:
@@ -274,6 +442,13 @@ class ReceiptView(QWidget):
         session_info = SettingsController.get_school_info()
         current_session = session_info.current_session if session_info else "2024-2025"
 
+        # Date values
+        q_cq_date = self.dt_cheque_date.date()
+        cq_date = date(q_cq_date.year(), q_cq_date.month(), q_cq_date.day())
+
+        q_pay_date = self.dt_payment_date.date()
+        pay_date = date(q_pay_date.year(), q_pay_date.month(), q_pay_date.day())
+
         success, msg, receipt = ReceiptController.create_receipt(
             student_id=self.selected_student.id,
             academic_session=current_session,
@@ -282,7 +457,13 @@ class ReceiptView(QWidget):
             fine_amount=self.spn_fine.value(),
             payment_mode=self.cmb_pay_mode.currentText(),
             reference_no=self.txt_ref_no.text().strip(),
-            remarks=self.txt_remarks.text().strip()
+            remarks=self.txt_remarks.text().strip(),
+            paid_amount=self.spn_paid_amount.value(),
+            utr_number=self.txt_utr_no.text().strip(),
+            cheque_number=self.txt_cheque_no.text().strip(),
+            cheque_date=cq_date,
+            bank_name=self.cmb_bank_name.currentText().strip(),
+            payment_date=pay_date
         )
 
         if success and receipt:
@@ -291,8 +472,11 @@ class ReceiptView(QWidget):
             # Reset fields
             self.spn_discount.setValue(0.0)
             self.spn_fine.setValue(0.0)
+            self.txt_utr_no.clear()
+            self.txt_cheque_no.clear()
             self.txt_ref_no.clear()
             self.txt_remarks.clear()
+            self._user_edited_paid = False
             self.refresh_view()
 
             # Open Print Preview Dialog

@@ -39,6 +39,23 @@ class ReceiptHistoryView(QWidget):
         hdr_layout.addWidget(self.btn_export)
         layout.addLayout(hdr_layout)
 
+        # KPI Summary Cards Banner
+        from PySide6.QtWidgets import QFrame, QGridLayout
+        from controllers.report_controller import ReportController
+
+        kpi_grid = QGridLayout()
+        kpi_grid.setSpacing(12)
+
+        self.card_today = self._create_kpi_card("TODAY'S COLLECTION", "₹ 0.00", "#059669")
+        self.card_month = self._create_kpi_card("MONTHLY COLLECTION", "₹ 0.00", "#2563eb")
+        self.card_receipts = self._create_kpi_card("RECEIPTS ISSUED TODAY", "0", "#d97706")
+
+        kpi_grid.addWidget(self.card_today, 0, 0)
+        kpi_grid.addWidget(self.card_month, 0, 1)
+        kpi_grid.addWidget(self.card_receipts, 0, 2)
+
+        layout.addLayout(kpi_grid)
+
         # Filter & Search Bar
         filter_layout = QHBoxLayout()
         filter_layout.setSpacing(10)
@@ -80,20 +97,45 @@ class ReceiptHistoryView(QWidget):
             "Payment Mode", "Total Amount", "Status", "Actions"
         ])
         
-        # Explicit section resize modes: data columns stretch, Actions column fixed to 140px
+        # Explicit section resize modes: data columns stretch, Actions column fixed to 160px
         header = self.table.horizontalHeader()
         for col in range(8):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
         header.setSectionResizeMode(8, QHeaderView.Fixed)
-        self.table.setColumnWidth(8, 140)
+        self.table.setColumnWidth(8, 160)
 
-        self.table.verticalHeader().setDefaultSectionSize(40)
+        self.table.verticalHeader().setDefaultSectionSize(42)
         self.table.setAlternatingRowColors(True)
 
         layout.addWidget(self.table)
         self.load_receipts()
 
+    def _create_kpi_card(self, title: str, initial_value: str, color: str) -> QWidget:
+        from PySide6.QtWidgets import QFrame
+        card = QFrame()
+        card.setProperty("class", "KPICard")
+        vbox = QVBoxLayout(card)
+        vbox.setContentsMargins(16, 12, 16, 12)
+        lbl_t = QLabel(title)
+        lbl_t.setProperty("class", "KPITitle")
+        lbl_v = QLabel(initial_value)
+        lbl_v.setProperty("class", "KPIValue")
+        lbl_v.setStyleSheet(f"color: {color}; font-size: 20px; font-weight: 800;")
+        vbox.addWidget(lbl_t)
+        vbox.addWidget(lbl_v)
+        card.lbl_val = lbl_v
+        return card
+
     def load_receipts(self):
+        from controllers.report_controller import ReportController
+        today_col = ReportController.get_today_collection()
+        month_col = ReportController.get_monthly_collection()
+        receipt_cnt = ReportController.get_receipts_today_count()
+
+        self.card_today.lbl_val.setText(format_currency(today_col))
+        self.card_month.lbl_val.setText(format_currency(month_col))
+        self.card_receipts.lbl_val.setText(str(receipt_cnt))
+
         search = self.txt_search.text().strip()
         qfrom = self.dt_from.date()
         qto = self.dt_to.date()
@@ -122,12 +164,26 @@ class ReceiptHistoryView(QWidget):
             # Actions container with zero-clipping inline padding
             action_widget = QWidget()
             act_layout = QHBoxLayout(action_widget)
-            act_layout.setContentsMargins(4, 2, 4, 2)
+            act_layout.setContentsMargins(6, 4, 6, 4)
+            act_layout.setAlignment(Qt.AlignCenter)
 
-            btn_view = QPushButton("👁️ View / Print")
-            btn_view.setFixedHeight(28)
-            btn_view.setMinimumWidth(110)
-            btn_view.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
+            btn_view = QPushButton("👁  View / Print")
+            btn_view.setFixedHeight(30)
+            btn_view.setMinimumWidth(130)
+            btn_view.setStyleSheet("""
+                QPushButton {
+                    background-color: #1e3a8a;
+                    color: #ffffff;
+                    font-size: 12px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    border: none;
+                    padding: 4px 10px;
+                }
+                QPushButton:hover {
+                    background-color: #2563eb;
+                }
+            """)
             btn_view.setCursor(Qt.PointingHandCursor)
             btn_view.clicked.connect(lambda _, rec=r: self.view_receipt(rec))
 

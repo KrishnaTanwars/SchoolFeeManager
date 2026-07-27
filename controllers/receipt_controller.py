@@ -45,7 +45,13 @@ class ReceiptController:
         payment_mode: str = "Cash",
         reference_no: str = "",
         remarks: str = "",
-        receipt_date: Optional[date] = None
+        receipt_date: Optional[date] = None,
+        paid_amount: Optional[float] = None,
+        utr_number: str = "",
+        cheque_number: str = "",
+        cheque_date: Optional[date] = None,
+        bank_name: str = "",
+        payment_date: Optional[date] = None
     ) -> Tuple[bool, str, Optional[Receipt]]:
         db = get_db()
         try:
@@ -64,7 +70,14 @@ class ReceiptController:
             fine_amount = max(0.0, fine_amount)
             total_amount = max(0.0, subtotal - discount_amount + fine_amount)
 
-            amount_words = number_to_words_indian(total_amount)
+            if paid_amount is None:
+                calc_paid = total_amount
+            else:
+                calc_paid = max(0.0, min(total_amount, paid_amount))
+
+            calc_due = max(0.0, total_amount - calc_paid)
+
+            amount_words = number_to_words_indian(calc_paid)
             receipt_no = ReceiptController.generate_next_receipt_number()
 
             user = AuthController.get_current_user()
@@ -79,9 +92,16 @@ class ReceiptController:
                 discount_amount=discount_amount,
                 fine_amount=fine_amount,
                 total_amount=total_amount,
+                paid_amount=calc_paid,
+                due_amount=calc_due,
                 amount_in_words=amount_words,
                 payment_mode=payment_mode,
                 reference_no=reference_no.strip(),
+                utr_number=utr_number.strip(),
+                cheque_number=cheque_number.strip(),
+                cheque_date=cheque_date,
+                bank_name=bank_name.strip(),
+                payment_date=payment_date or date.today(),
                 remarks=remarks.strip(),
                 created_by_user_id=user_id,
                 status="Paid"
@@ -101,7 +121,7 @@ class ReceiptController:
             audit = AuditLog(
                 user_id=user_id,
                 action="CREATE_RECEIPT",
-                details=f"Generated Receipt {receipt_no} for {student.name} - Total: ₹{total_amount:.2f}"
+                details=f"Generated Receipt {receipt_no} for {student.name} - Total: Rs. {total_amount:.2f}, Paid: Rs. {calc_paid:.2f}, Due: Rs. {calc_due:.2f}"
             )
             db.add(audit)
 
@@ -113,12 +133,23 @@ class ReceiptController:
 
             db.commit()
 
-            logger.info(f"Generated Receipt {receipt_no} (ID: {receipt.id})")
+            logger.info(f"Generated Receipt {receipt_no} (ID: {receipt.id}) - Paid: Rs. {calc_paid}, Due: Rs. {calc_due}")
             return True, f"Receipt {receipt_no} generated successfully.", receipt
         except Exception as e:
             db.rollback()
             logger.error(f"Error creating receipt: {e}", exc_info=True)
             return False, f"Database error: {str(e)}", None
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_student_outstanding_due(student_id: int) -> float:
+        """Calculates total outstanding due amount across all active receipts for a student."""
+        db = get_db()
+        try:
+            res = db.query(func.sum(Receipt.due_amount))\
+                .filter(Receipt.student_id == student_id, Receipt.status == "Paid").scalar()
+            return float(res or 0.0)
         finally:
             db.close()
 
@@ -174,5 +205,34 @@ class ReceiptController:
                 for item in r.items:
                     _ = item.category_name
             return receipts
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_student_fee_summary(student_id: int) -> Dict[str, Any]:
+        """Calculates total fee paid till date, latest due balance, and history for a student."""
+        db = get_db()
+        try:
+            receipts = db.query(Receipt).filter(
+                Receipt.student_id == student_id,
+                Receipt.status == "Paid"
+            ).order_by(Receipt.receipt_date.desc(), Receipt.id.desc()).all()
+
+            total_paid = sum(r.paid_amount if r.paid_amount is not None else (r.total_amount or 0.0) for r in receipts)
+
+            for r in receipts:
+                if r.student:
+                    _ = r.student.name
+                for item in r.items:
+                    _ = item.category_name
+
+            latest_due = receipts[0].due_amount if (receipts and receipts[0].due_amount is not None) else 0.0
+
+            return {
+                "total_paid": total_paid,
+                "latest_due": latest_due,
+                "receipts_count": len(receipts),
+                "receipts": receipts
+            }
         finally:
             db.close()
