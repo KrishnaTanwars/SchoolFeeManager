@@ -15,19 +15,42 @@ else:
     APP_DIR = BASE_DIR
 
 # Storage & Output Directories
-DATA_DIR = APP_DIR / "database"
-LOG_DIR = APP_DIR / "logs"
-BACKUP_DIR = APP_DIR / "backup"
-EXPORTS_DIR = APP_DIR / "exports"
+IS_VERCEL = bool(os.environ.get("VERCEL"))
+if IS_VERCEL:
+    TMP_BASE = Path("/tmp")
+    DATA_DIR = TMP_BASE / "database"
+    LOG_DIR = TMP_BASE / "logs"
+    BACKUP_DIR = TMP_BASE / "backup"
+    EXPORTS_DIR = TMP_BASE / "exports"
+else:
+    DATA_DIR = APP_DIR / "database"
+    LOG_DIR = APP_DIR / "logs"
+    BACKUP_DIR = APP_DIR / "backup"
+    EXPORTS_DIR = APP_DIR / "exports"
+
 ASSETS_DIR = BASE_DIR / "assets"
 ICONS_DIR = ASSETS_DIR / "icons"
 STYLES_DIR = ASSETS_DIR / "styles"
 
 for d in [DATA_DIR, LOG_DIR, BACKUP_DIR, EXPORTS_DIR]:
-    d.mkdir(parents=True, exist_ok=True)
+    try:
+        d.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
 
 # Database Config
 DB_PATH = DATA_DIR / "school_fee.db"
+
+# Copy initial seed database to /tmp if on Vercel and DB doesn't exist yet
+if IS_VERCEL and not DB_PATH.exists():
+    import shutil
+    seed_db = BASE_DIR / "database" / "school_fee.db"
+    if seed_db.exists():
+        try:
+            shutil.copy2(seed_db, DB_PATH)
+        except Exception:
+            pass
+
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 # Application Metadata
