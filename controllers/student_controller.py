@@ -15,6 +15,7 @@ class StudentController:
     def get_all_students(
         search_query: str = "",
         class_filter: str = "All",
+        section_filter: str = "All",
         session_filter: str = "All",
         status_filter: str = "Active"
     ) -> List[Student]:
@@ -28,6 +29,9 @@ class StudentController:
             if class_filter and class_filter != "All":
                 query = query.filter(Student.class_name == class_filter)
 
+            if section_filter and section_filter != "All":
+                query = query.filter(Student.section == section_filter)
+
             if session_filter and session_filter != "All":
                 query = query.filter(Student.academic_session == session_filter)
 
@@ -39,8 +43,11 @@ class StudentController:
                         Student.admission_no.ilike(pattern),
                         Student.roll_no.ilike(pattern),
                         Student.father_name.ilike(pattern),
+                        Student.mother_name.ilike(pattern),
                         Student.mobile.ilike(pattern),
-                        Student.class_name.ilike(pattern)
+                        Student.class_name.ilike(pattern),
+                        Student.course.ilike(pattern),
+                        Student.section.ilike(pattern)
                     )
                 )
 
@@ -370,7 +377,37 @@ class StudentController:
                 return summary
         except Exception as e:
             db.rollback()
-            logger.error(f"Error reading CSV import file: {e}", exc_info=True)
-            return {"error": f"Failed to parse CSV file: {str(e)}"}
+            logger.error(f"Failed to import students CSV: {e}", exc_info=True)
+            return {"error": f"Failed to import CSV: {str(e)}"}
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_distinct_classes() -> List[str]:
+        """Returns sorted list of distinct class names."""
+        db = get_db()
+        try:
+            results = db.query(Student.class_name).distinct().all()
+            return sorted([r[0] for r in results if r[0]])
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_distinct_sections() -> List[str]:
+        """Returns sorted list of distinct section names."""
+        db = get_db()
+        try:
+            results = db.query(Student.section).distinct().all()
+            return sorted([r[0] for r in results if r[0]])
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_distinct_sessions() -> List[str]:
+        """Returns sorted list of distinct academic sessions."""
+        db = get_db()
+        try:
+            results = db.query(Student.academic_session).distinct().all()
+            return sorted([r[0] for r in results if r[0]])
         finally:
             db.close()

@@ -23,6 +23,17 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.3.0 — Student Master Professionalization (Phase 3 Release)
+- **Release Date**: August 2026
+- **Features**:
+  - Full-Width Responsive Student Table with 100% space utilization across all desktop screen resolutions.
+  - 12 Responsive Columns: Admission No, Roll No, Student Name, Course/Session, Class, Section, Father Name, Mother Name, Mobile, Status, Admission Date, Actions.
+  - Side Balance Panel Removal for uncluttered data display.
+  - Multi-Field Instant Filter (Name, Adm No, Roll No, Father/Mother Name, Mobile, Course, Class, Section).
+  - Dedicated Section filter dropdown.
+  - Enhanced Form Validation & Error Banners.
+  - 37 / 37 Unit Tests Passing.
+
 ---
 
 ## Planned Semantic Releases

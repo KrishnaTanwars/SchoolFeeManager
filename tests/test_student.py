@@ -45,5 +45,44 @@ class TestStudentController(unittest.TestCase):
         del_success, del_msg = StudentController.delete_student(st.id)
         self.assertTrue(del_success)
 
+    def test_student_search_and_filter(self):
+        adm_no = "TEST/ADM/SECNET/888"
+        data = {
+            "admission_no": adm_no,
+            "roll_no": "88",
+            "name": "Phase3 Filter Student",
+            "father_name": "Father P3",
+            "mother_name": "Mother P3",
+            "class_name": "Class 12",
+            "section": "C",
+            "course": "Science Stream",
+            "mobile": "9123456789",
+            "academic_session": "2024-2025",
+            "status": "Active"
+        }
+        succ, _ = StudentController.create_student(data)
+        self.assertTrue(succ)
+
+        # Search by Mother Name
+        results = StudentController.get_all_students(search_query="Mother P3")
+        self.assertTrue(any(s.admission_no == adm_no for s in results))
+
+        # Search by Course
+        results_course = StudentController.get_all_students(search_query="Science Stream")
+        self.assertTrue(any(s.admission_no == adm_no for s in results_course))
+
+        # Section Filter
+        sec_results = StudentController.get_all_students(section_filter="C")
+        self.assertTrue(any(s.admission_no == adm_no for s in sec_results))
+
+        # Distinct Sections test
+        sections = StudentController.get_distinct_sections()
+        self.assertIn("C", sections)
+
+        # Clean up
+        st = StudentController.get_student_by_admission_no(adm_no)
+        if st:
+            StudentController.delete_student(st.id)
+
 if __name__ == "__main__":
     unittest.main()

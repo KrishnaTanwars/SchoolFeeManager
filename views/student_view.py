@@ -21,8 +21,8 @@ class StudentView(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(15)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(12)
 
         # Header Title Banner
         hdr_layout = QHBoxLayout()
@@ -57,35 +57,24 @@ class StudentView(QWidget):
         hdr_layout.addWidget(self.btn_add_student)
         layout.addLayout(hdr_layout)
 
-        # KPI Active Students Banner
-        from PySide6.QtWidgets import QFrame
-        card_kpi = QFrame()
-        card_kpi.setProperty("class", "KPICard")
-        card_kpi.setFixedHeight(75)
-        v_kpi = QVBoxLayout(card_kpi)
-        v_kpi.setContentsMargins(16, 10, 16, 10)
-        lbl_k_title = QLabel("ACTIVE REGISTERED STUDENTS")
-        lbl_k_title.setProperty("class", "KPITitle")
-        self.lbl_active_cnt = QLabel("0")
-        self.lbl_active_cnt.setStyleSheet("color: #7c3aed; font-size: 22px; font-weight: 800;")
-        v_kpi.addWidget(lbl_k_title)
-        v_kpi.addWidget(self.lbl_active_cnt)
-
-        layout.addWidget(card_kpi)
-
-        # Filter & Search Controls Bar
+        # Filter & Search Controls Bar (Full Responsive Width)
         filter_layout = QHBoxLayout()
-        filter_layout.setSpacing(10)
+        filter_layout.setSpacing(8)
 
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(36)
-        self.txt_search.setPlaceholderText("🔍 Search by Name, Adm No, Roll, Father Name, Mobile...")
+        self.txt_search.setPlaceholderText("🔍 Search by Name, Adm No, Roll No, Father/Mother Name, Mobile, Course...")
         self.txt_search.textChanged.connect(self.load_students)
 
         self.cmb_class_filter = QComboBox()
         self.cmb_class_filter.setFixedHeight(36)
         self.cmb_class_filter.addItem("All Classes", "All")
         self.cmb_class_filter.currentIndexChanged.connect(self.load_students)
+
+        self.cmb_section_filter = QComboBox()
+        self.cmb_section_filter.setFixedHeight(36)
+        self.cmb_section_filter.addItem("All Sections", "All")
+        self.cmb_section_filter.currentIndexChanged.connect(self.load_students)
 
         self.cmb_session_filter = QComboBox()
         self.cmb_session_filter.setFixedHeight(36)
@@ -97,27 +86,39 @@ class StudentView(QWidget):
         self.cmb_status_filter.addItems(["Active Students Only", "All Students", "Inactive Only"])
         self.cmb_status_filter.currentIndexChanged.connect(self.load_students)
 
-        filter_layout.addWidget(self.txt_search, stretch=3)
+        filter_layout.addWidget(self.txt_search, stretch=4)
         filter_layout.addWidget(self.cmb_class_filter, stretch=1)
+        filter_layout.addWidget(self.cmb_section_filter, stretch=1)
         filter_layout.addWidget(self.cmb_session_filter, stretch=1)
         filter_layout.addWidget(self.cmb_status_filter, stretch=1)
 
         layout.addLayout(filter_layout)
 
-        # Table Widget
+        # Full Width Professional Student Table
         self.table = QTableWidget()
-        self.table.setColumnCount(9)
+        self.table.setColumnCount(12)
         self.table.setHorizontalHeaderLabels([
-            "Admission No", "Roll No", "Student Name", "Class & Sec",
-            "Father's Name", "Mobile No", "Date of Admission", "Status", "Actions"
+            "Adm. No.", "Roll No.", "Student Name", "Course / Session",
+            "Class", "Sec", "Father's Name", "Mother's Name", "Mobile No.",
+            "Status", "Adm. Date", "Actions"
         ])
         
-        # Explicit section resize modes: data columns stretch, Actions column fixed to 180px
+        # Responsive Section Resize Modes:
+        # Text/String data columns stretch to fill space; fixed codes/numbers stay optimal
         header = self.table.horizontalHeader()
-        for col in range(8):
-            header.setSectionResizeMode(col, QHeaderView.Stretch)
-        header.setSectionResizeMode(8, QHeaderView.Fixed)
-        self.table.setColumnWidth(8, 240)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Adm No
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents) # Roll No
+        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Student Name
+        header.setSectionResizeMode(3, QHeaderView.Stretch)          # Course/Session
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Class
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Section
+        header.setSectionResizeMode(6, QHeaderView.Stretch)          # Father Name
+        header.setSectionResizeMode(7, QHeaderView.Stretch)          # Mother Name
+        header.setSectionResizeMode(8, QHeaderView.ResizeToContents) # Mobile No
+        header.setSectionResizeMode(9, QHeaderView.ResizeToContents) # Status
+        header.setSectionResizeMode(10, QHeaderView.ResizeToContents)# Admission Date
+        header.setSectionResizeMode(11, QHeaderView.Fixed)           # Actions
+        self.table.setColumnWidth(11, 230)
 
         self.table.verticalHeader().setDefaultSectionSize(40)
         self.table.setAlternatingRowColors(True)
@@ -136,6 +137,14 @@ class StudentView(QWidget):
             self.cmb_class_filter.addItem(c, c)
         self.cmb_class_filter.blockSignals(False)
 
+        self.cmb_section_filter.blockSignals(True)
+        self.cmb_section_filter.clear()
+        self.cmb_section_filter.addItem("All Sections", "All")
+        sections = StudentController.get_distinct_sections()
+        for sec in sections:
+            self.cmb_section_filter.addItem(f"Sec {sec}", sec)
+        self.cmb_section_filter.blockSignals(False)
+
         self.cmb_session_filter.blockSignals(True)
         self.cmb_session_filter.clear()
         self.cmb_session_filter.addItem("All Sessions", "All")
@@ -145,12 +154,9 @@ class StudentView(QWidget):
         self.cmb_session_filter.blockSignals(False)
 
     def load_students(self):
-        from controllers.report_controller import ReportController
-        active_total = ReportController.get_total_students_count()
-        self.lbl_active_cnt.setText(str(active_total))
-
         search = self.txt_search.text().strip()
         class_val = self.cmb_class_filter.currentData() or "All"
+        section_val = self.cmb_section_filter.currentData() or "All"
         session_val = self.cmb_session_filter.currentData() or "All"
         status_idx = self.cmb_status_filter.currentIndex()
 
@@ -159,6 +165,7 @@ class StudentView(QWidget):
         students = StudentController.get_all_students(
             search_query=search if search else "",
             class_filter=class_val,
+            section_filter=section_val,
             session_filter=session_val,
             status_filter=status
         )
@@ -169,11 +176,15 @@ class StudentView(QWidget):
             self.table.setItem(row_idx, 0, QTableWidgetItem(s.admission_no))
             self.table.setItem(row_idx, 1, QTableWidgetItem(s.roll_no or ""))
             self.table.setItem(row_idx, 2, QTableWidgetItem(s.name))
-            self.table.setItem(row_idx, 3, QTableWidgetItem(f"{s.class_name} ({s.section or 'A'})"))
-            self.table.setItem(row_idx, 4, QTableWidgetItem(s.father_name))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(s.mobile))
-            self.table.setItem(row_idx, 6, QTableWidgetItem(format_date(s.admission_date)))
-            self.table.setItem(row_idx, 7, QTableWidgetItem(s.status))
+            course_sess = f"{s.course} ({s.academic_session})" if getattr(s, "course", None) else s.academic_session
+            self.table.setItem(row_idx, 3, QTableWidgetItem(course_sess))
+            self.table.setItem(row_idx, 4, QTableWidgetItem(s.class_name))
+            self.table.setItem(row_idx, 5, QTableWidgetItem(s.section or "A"))
+            self.table.setItem(row_idx, 6, QTableWidgetItem(s.father_name))
+            self.table.setItem(row_idx, 7, QTableWidgetItem(s.mother_name or ""))
+            self.table.setItem(row_idx, 8, QTableWidgetItem(s.mobile))
+            self.table.setItem(row_idx, 9, QTableWidgetItem(s.status))
+            self.table.setItem(row_idx, 10, QTableWidgetItem(format_date(s.admission_date)))
 
             # Action Buttons Container with zero-clipping inline padding
             action_widget = QWidget()
@@ -181,23 +192,23 @@ class StudentView(QWidget):
             act_layout.setContentsMargins(4, 2, 4, 2)
             act_layout.setSpacing(4)
 
-            btn_ledger = QPushButton("📜 Fee History")
+            btn_ledger = QPushButton("📜 Fee")
             btn_ledger.setFixedHeight(28)
-            btn_ledger.setMinimumWidth(85)
+            btn_ledger.setMinimumWidth(60)
             btn_ledger.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
             btn_ledger.setCursor(Qt.PointingHandCursor)
             btn_ledger.clicked.connect(lambda _, st=s: self.view_student_fee_summary(st))
 
             btn_edit = QPushButton("✏️ Edit")
             btn_edit.setFixedHeight(28)
-            btn_edit.setMinimumWidth(65)
+            btn_edit.setMinimumWidth(60)
             btn_edit.setStyleSheet("background-color: #0284c7; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, st=s: self.edit_student(st))
 
-            btn_del = QPushButton("🗑️ Delete")
+            btn_del = QPushButton("🗑️ Del")
             btn_del.setFixedHeight(28)
-            btn_del.setMinimumWidth(65)
+            btn_del.setMinimumWidth(60)
             btn_del.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
             btn_del.setCursor(Qt.PointingHandCursor)
             btn_del.clicked.connect(lambda _, st=s: self.delete_student(st))
@@ -205,7 +216,7 @@ class StudentView(QWidget):
             act_layout.addWidget(btn_ledger)
             act_layout.addWidget(btn_edit)
             act_layout.addWidget(btn_del)
-            self.table.setCellWidget(row_idx, 8, action_widget)
+            self.table.setCellWidget(row_idx, 11, action_widget)
 
     def view_student_fee_summary(self, student):
         dlg = StudentFeeLedgerDialog(self, student)

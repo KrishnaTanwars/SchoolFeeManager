@@ -1,16 +1,16 @@
 # EduLedger ERP - Release Status & Executable Audit
-**Baseline Version**: 2.0.0 (Enterprise Edition)  
-**Audit Status**: Verified  
+**Current Version**: v1.3.0 (Enterprise Edition - Student Master Professionalization)  
+**Audit Status**: Verified & Passed (37/37 Tests Passing)  
 
 ---
 
 ## 1. Standalone Executable Audit
 
-- **Executable File**: `release_v2.0/SchoolFeeManager/SchoolFeeManager.exe`
-- **File Size**: 9.77 MB (10,239,502 bytes)
+- **Executable File**: `release/v1.3.0/SchoolFeeManager/SchoolFeeManager.exe`
+- **File Size**: 13.9 MB (13,997,671 bytes)
 - **Target OS**: Windows 10 / Windows 11 (64-bit Architecture)
 - **PyInstaller Mode**: Single Folder (`--onedir` mode via `SchoolFeeManager.spec`)
-- **Launch Status**: Verified launch without missing DLL errors.
+- **Launch Status**: Verified launch without missing DLL errors (PID 37532 & 14752).
 
 ---
 
