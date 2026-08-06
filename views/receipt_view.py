@@ -120,7 +120,7 @@ class ReceiptView(QWidget):
         # Fee Heads Table (Guaranteed 240px height so all Fee Heads are fully visible!)
         self.table_fees = QTableWidget()
         self.table_fees.setColumnCount(4)
-        self.table_fees.setHorizontalHeaderLabels(["Select", "Fee Head Name", "Code", "Amount (₹)"])
+        self.table_fees.setHorizontalHeaderLabels(["Select", "Fee Head Name", "Course", "Amount (₹)"])
         self.table_fees.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_fees.verticalHeader().setDefaultSectionSize(32)
         self.table_fees.setMinimumHeight(240)
@@ -339,6 +339,9 @@ class ReceiptView(QWidget):
         else:
             self.clear_student_card()
 
+        # Reload Fee Heads filtered by Student's Course
+        self.load_fee_heads()
+
     def clear_student_card(self):
         self.selected_student = None
         self.lbl_adm_no.setText("-")
@@ -349,9 +352,18 @@ class ReceiptView(QWidget):
         self.lbl_session.setText("-")
         self.lbl_total_paid.setText("₹ 0.00")
         self.lbl_prev_due.setText("₹ 0.00")
+        self.load_fee_heads()
 
     def load_fee_heads(self):
-        categories = FeeController.get_all_categories(active_only=True)
+        course_filter = "All"
+        if self.selected_student and getattr(self.selected_student, "course", None):
+            st_course = str(self.selected_student.course).strip().upper()
+            if "PG" in st_course or "POST" in st_course or "M.SC" in st_course or "M.A" in st_course or "M.COM" in st_course:
+                course_filter = "PG"
+            elif "UG" in st_course or "UNDER" in st_course or "B.SC" in st_course or "B.A" in st_course or "B.COM" in st_course or "B.CA" in st_course:
+                course_filter = "UG"
+
+        categories = FeeController.get_all_categories(active_only=True, course_filter=course_filter)
         self.table_fees.setRowCount(len(categories))
 
         for row_idx, cat in enumerate(categories):
@@ -361,7 +373,7 @@ class ReceiptView(QWidget):
 
             self.table_fees.setCellWidget(row_idx, 0, chk)
             self.table_fees.setItem(row_idx, 1, QTableWidgetItem(cat.name))
-            self.table_fees.setItem(row_idx, 2, QTableWidgetItem(cat.code or ""))
+            self.table_fees.setItem(row_idx, 2, QTableWidgetItem(getattr(cat, "course", "UG")))
 
             spn_amt = QDoubleSpinBox()
             spn_amt.setRange(0.0, 500000.0)

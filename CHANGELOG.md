@@ -2,6 +2,19 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.4.0] - Phase 04 Fee Heads Master Professionalization Release
+
+### 🏷️ Fee Heads Master ERP Enhancements
+- **Short Code Complete Removal**: Removed `code` column from database schema (`fee_categories`), forms, table displays, controllers, and exports.
+- **Course Level Categorization (`UG` & `PG`)**: Added `course` classification dropdown (`UG` / `PG`) to separate Undergraduate and Postgraduate fee heads.
+- **Default Seed Fee Heads**: Auto-seeds 14 UG Fee Heads (Admission Form Fee, UG Tuition Fee, UG Development Fee, Social Gathering Fee, Sports Fee, Eligibility Fee, Identity Card Fee, SRTMU Exam Fee, SRTMU GRM / Photocopy Fee, UG Laboratory Deposit, UG Club Fee, UG Laboratory Charges, Caution Money, Other Fine) and 3 PG Fee Heads (PG Tuition Fee, PG Development Fee, PG Laboratory Usage Fee).
+- **Duplicate Validation Within Course**: Prevents duplicate fee head descriptions under the same course level (`UG` vs `PG`).
+- **Fee Collection Course Filtering**: Integrated automatic course filtering in Receipt Collection View so selecting a student filters available Fee Heads to match the student's course level (`UG` vs `PG`).
+- **6 Clean Table Columns & Instant Search**: Rendered 6 clean columns (`Description / Fee Head`, `Course`, `Default Amount`, `Status`, `Created Date`, `Actions`) with instant search and course/status dropdown filters.
+- **Automated Unit Testing**: Created `tests/test_phase4_fee_heads.py` bringing test suite count to 42 / 42 passed (100% pass rate).
+
+---
+
 ## [1.3.0] - Phase 03 Student Master Professionalization Release
 
 ### 👨‍🎓 Student Master ERP Enhancements

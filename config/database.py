@@ -86,11 +86,26 @@ def run_migrations():
             if "machine_name" not in audit_cols:
                 cursor.execute("ALTER TABLE audit_logs ADD COLUMN machine_name VARCHAR(100);")
 
+            # Check fee_categories columns
+            cursor.execute("PRAGMA table_info(fee_categories);")
+            fee_cat_cols = {row[1] for row in cursor.fetchall()}
+            if "course" not in fee_cat_cols:
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN course VARCHAR(20) DEFAULT 'UG';")
+            if "created_at" not in fee_cat_cols:
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN created_at DATETIME;")
+
             # Data backfill for legacy V1.0 records
             cursor.execute("UPDATE receipts SET paid_amount = total_amount WHERE paid_amount IS NULL OR paid_amount = 0.0;")
             cursor.execute("UPDATE receipts SET due_amount = 0.0 WHERE due_amount IS NULL;")
             conn.commit()
             logger.info("Executed database schema migrations successfully.")
+
+            # Seed Default UG and PG Fee Heads
+            try:
+                from controllers.fee_controller import FeeController
+                FeeController.seed_default_fee_heads()
+            except Exception as seed_err:
+                logger.warning(f"Default fee head seeding notice: {seed_err}")
     except Exception as e:
         logger.error(f"Migration error: {e}", exc_info=True)
 

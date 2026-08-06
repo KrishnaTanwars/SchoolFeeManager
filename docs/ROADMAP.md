@@ -33,8 +33,8 @@ Enhance student lifecycle management by introducing student profile picture uplo
 ### Phase 3 — Comprehensive Fee Structure & Discount Rule Engine (`v1.3.0`)
 Expand fee management capabilities with recurring fee scheduling (Monthly, Quarterly, Annual), class-wise fee structure templates, sibling discount rules, late fee penalty calculation rules, and fee waiver approval workflows.
 
-### Phase 4 — Multi-Payment Gateway Integration & Digital Invoicing (`v1.4.0`)
-Introduce digital payment workflows, including dynamic QR code generation (UPI Intent URLs) directly on receipt screens, SMS/WhatsApp receipt delivery integration, and optional payment gateway webhook reconciliation.
+### Phase 4 — Fee Heads Master Professionalization (`v1.4.0`) ✅
+Removed short code across schema, forms, tables, and exports. Introduced UG and PG course level classification, default seeding of 14 UG and 3 PG fee heads, duplicate validation within course, and course-based fee head filtering in receipt collection.
 
 ### Phase 5 — Advanced Financial Reporting & Executive Dashboards (`v1.5.0`)
 Deliver deep financial business intelligence with interactive charts, class-wise revenue comparisons, fee collection forecasting, outstanding due age analysis reports, and automated daily email financial summaries for management.

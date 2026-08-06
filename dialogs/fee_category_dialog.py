@@ -5,7 +5,7 @@ Add / Edit Fee Category Dialog.
 from typing import Optional
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QDoubleSpinBox,
-    QCheckBox, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout
+    QCheckBox, QComboBox, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout
 )
 from controllers.fee_controller import FeeController
 
@@ -13,8 +13,8 @@ class FeeCategoryDialog(QDialog):
     def __init__(self, parent=None, category=None):
         super().__init__(parent)
         self.category = category
-        self.setWindowTitle("Edit Fee Category" if category else "Add New Fee Category / Head")
-        self.resize(450, 350)
+        self.setWindowTitle("Edit Fee Head" if category else "Add New Fee Head")
+        self.resize(480, 380)
 
         self.setup_ui()
         if self.category:
@@ -23,19 +23,19 @@ class FeeCategoryDialog(QDialog):
     def setup_ui(self):
         layout = QVBoxLayout(self)
 
-        group = QGroupBox("Fee Category Configuration")
+        group = QGroupBox("Fee Head Details")
         form = QFormLayout(group)
-        form.setSpacing(10)
+        form.setSpacing(12)
 
-        # Name
+        # Description / Name
         self.txt_name = QLineEdit()
-        self.txt_name.setPlaceholderText("e.g. Tuition Fee, Hostel Fee")
-        form.addRow("Category Name *:", self.txt_name)
+        self.txt_name.setPlaceholderText("e.g. UG Tuition Fee, Admission Form Fee")
+        form.addRow("Description / Name *:", self.txt_name)
 
-        # Code
-        self.txt_code = QLineEdit()
-        self.txt_code.setPlaceholderText("e.g. TF, HF")
-        form.addRow("Short Code:", self.txt_code)
+        # Course Dropdown (UG / PG)
+        self.cmb_course = QComboBox()
+        self.cmb_course.addItems(["UG", "PG"])
+        form.addRow("Course Level *:", self.cmb_course)
 
         # Default Amount
         self.spn_amount = QDoubleSpinBox()
@@ -45,15 +45,16 @@ class FeeCategoryDialog(QDialog):
         self.spn_amount.setPrefix("₹ ")
         form.addRow("Default Amount:", self.spn_amount)
 
-        # Active Checkbox
+        # Status Checkbox
         self.chk_active = QCheckBox("Active for Fee Collection")
         self.chk_active.setChecked(True)
         form.addRow("Status:", self.chk_active)
 
-        # Description
+        # Description / Remarks
         self.txt_desc = QTextEdit()
         self.txt_desc.setMaximumHeight(60)
-        form.addRow("Description:", self.txt_desc)
+        self.txt_desc.setPlaceholderText("Optional notes or fee breakdown details")
+        form.addRow("Remarks:", self.txt_desc)
 
         layout.addWidget(group)
 
@@ -65,7 +66,7 @@ class FeeCategoryDialog(QDialog):
         self.btn_cancel.setProperty("class", "SecondaryBtn")
         self.btn_cancel.clicked.connect(self.reject)
 
-        self.btn_save = QPushButton("Save Category")
+        self.btn_save = QPushButton("Save Fee Head")
         self.btn_save.clicked.connect(self.save_category)
 
         btn_layout.addWidget(self.btn_cancel)
@@ -75,27 +76,35 @@ class FeeCategoryDialog(QDialog):
     def load_data(self):
         c = self.category
         self.txt_name.setText(c.name)
-        self.txt_code.setText(c.code or "")
+        self.cmb_course.setCurrentText(c.course if getattr(c, "course", None) in ("UG", "PG") else "UG")
         self.spn_amount.setValue(c.default_amount)
         self.chk_active.setChecked(c.is_active)
         self.txt_desc.setPlainText(c.description or "")
 
     def save_category(self):
         name = self.txt_name.text().strip()
-        code = self.txt_code.text().strip()
+        course = self.cmb_course.currentText().strip()
         amount = self.spn_amount.value()
         is_active = self.chk_active.isChecked()
         desc = self.txt_desc.toPlainText().strip()
 
         if not name:
-            QMessageBox.warning(self, "Validation Error", "Category Name is required.")
+            QMessageBox.warning(self, "Validation Error", "Description / Fee Head Name is required.")
             self.txt_name.setFocus()
             return
 
+        data = {
+            "name": name,
+            "course": course,
+            "default_amount": amount,
+            "is_active": is_active,
+            "description": desc
+        }
+
         if self.category:
-            success, msg = FeeController.update_category(self.category.id, name, code, amount, is_active, desc)
+            success, msg = FeeController.update_category(self.category.id, data)
         else:
-            success, msg = FeeController.create_category(name, code, amount, desc)
+            success, msg = FeeController.create_category(data)
 
         if success:
             QMessageBox.information(self, "Success", msg)

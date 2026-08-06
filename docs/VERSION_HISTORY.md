@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.4.0 — Fee Heads Master Professionalization (Phase 4 Release)
+- **Release Date**: August 2026
+- **Features**:
+  - Short Code Complete Removal across database schema, forms, table headers, and CSV exports.
+  - Course Classification (`UG` & `PG`) separating Undergraduate and Postgraduate fee heads.
+  - Default Seeding of 14 UG Fee Heads and 3 PG Fee Heads.
+  - Duplicate Validation within course level (`UG` vs `PG`).
+  - Fee Collection Course Filtering automatically matching student's course level (`UG` vs `PG`).
+  - 6 Clean Table Columns (`Description`, `Course`, `Default Amount`, `Status`, `Created Date`, `Actions`) with instant multi-field search and filters.
+
 ### v1.3.0 — Student Master Professionalization (Phase 3 Release)
 - **Release Date**: August 2026
 - **Features**:

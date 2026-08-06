@@ -1,8 +1,5 @@
-School Fee Management System v1.3.0 (Enterprise Edition - Student Master Professionalization)
-Build Date: August 2026
-Target OS: Windows 10 / Windows 11 (64-bit)
-Architecture: x86_64
-Database Engine: SQLite 3 (WAL Mode & Safe Writable Storage Fallback Enabled)
-UI Engine: PySide6 (Qt 6.11 with Shiboken6 & PySide6 Complete Dynamic Binary Hooks)
-PDF Engine: ReportLab 5.0 (A4 Watermark & Mode-Specific Payment Details Enabled)
-Features: Full-Width Professional Student Master Table (12 Responsive Columns: Adm No, Roll No, Student Name, Course/Session, Class, Section, Father Name, Mother Name, Mobile, Status, Admission Date, Actions), Side Balance Panel Removal for Maximum Screen Usage, Multi-Field Instant Filter (Name, Adm No, Roll No, Father/Mother Name, Mobile, Course, Class, Section, Status), Section Filter Dropdown, Reusable Admin Security Facade, Universal Administrator Authorization & Delete Protection, 37 / 37 Automated Tests Passing.
+School Fee Management System v1.4.0 (Enterprise Edition - Fee Heads Master Professionalization)
+Build Date: 2026-08-07
+Target OS: Windows 10/11 (x64)
+Python Runtime: 3.12 (Embedded)
+UI Framework: PySide6 (Qt for Python)

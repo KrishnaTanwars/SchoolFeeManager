@@ -55,25 +55,9 @@ def seed_initial_data():
             db.add_all([s1, s2])
             logger.info("Seeded default academic sessions.")
 
-        # Seed Fee Categories
-        if db.query(FeeCategory).count() == 0:
-            default_categories = [
-                FeeCategory(name="Tuition Fee", code="TF", default_amount=2500.0, is_active=True, description="Monthly Tuition Fee"),
-                FeeCategory(name="Admission Fee", code="AF", default_amount=5000.0, is_active=True, description="One-time Admission Fee"),
-                FeeCategory(name="Development Fee", code="DF", default_amount=1500.0, is_active=True, description="Annual School Development Fee"),
-                FeeCategory(name="Computer & IT Fee", code="CF", default_amount=600.0, is_active=True, description="Computer Lab & Digital Class Fee"),
-                FeeCategory(name="Sports & Activity Fee", code="SF", default_amount=400.0, is_active=True, description="Sports, Games & Cultural Activities"),
-                FeeCategory(name="Library Fee", code="LF", default_amount=300.0, is_active=True, description="Library Books & Reading Room"),
-                FeeCategory(name="Laboratory Fee", code="LAB", default_amount=800.0, is_active=True, description="Physics, Chemistry, Biology Labs"),
-                FeeCategory(name="Transport Fee", code="TR", default_amount=1200.0, is_active=True, description="Monthly Bus / Van Conveyance"),
-                FeeCategory(name="Hostel Fee", code="HF", default_amount=4500.0, is_active=True, description="Boarding & Lodging Fee"),
-                FeeCategory(name="Examination Fee", code="EX", default_amount=500.0, is_active=True, description="Term / Semester Exam Fee"),
-                FeeCategory(name="Identity Card & Diary", code="ID", default_amount=150.0, is_active=True, description="Student ID Card & School Diary"),
-                FeeCategory(name="Fine / Late Payment", code="FN", default_amount=100.0, is_active=True, description="Late Payment Penalty"),
-                FeeCategory(name="Miscellaneous", code="MISC", default_amount=200.0, is_active=True, description="Other General Charges"),
-            ]
-            db.add_all(default_categories)
-            logger.info("Seeded 13 default fee categories.")
+        # Seed Fee Categories (Delegates to FeeController seed helper)
+        from controllers.fee_controller import FeeController
+        FeeController.seed_default_fee_heads()
 
         db.commit()
     except Exception as e:
