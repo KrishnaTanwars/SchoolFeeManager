@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 from controllers.auth_controller import AuthController
+from config.app_config import APP_VERSION
 
 class LoginView(QWidget):
     login_success = Signal()
@@ -35,12 +36,14 @@ class LoginView(QWidget):
         card_layout.setContentsMargins(35, 30, 35, 30)
         card_layout.setSpacing(12)
 
+from config.app_config import APP_VERSION
+
         # App Logo / Icon Header
         title = QLabel("School Fee Manager")
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("font-size: 22px; font-weight: 800; color: #1e3a8a; border: none;")
 
-        subtitle = QLabel("Enterprise ERP System v1.0")
+        subtitle = QLabel(f"Enterprise ERP System v{APP_VERSION}")
         subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setStyleSheet("font-size: 12px; font-weight: 600; color: #64748b; border: none;")
 

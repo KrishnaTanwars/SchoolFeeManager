@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         lbl_title = QLabel("SCHOOL FEE ERP")
         lbl_title.setObjectName("SidebarTitle")
 
-        lbl_subtitle = QLabel("Enterprise ERP System v1.0")
+        lbl_subtitle = QLabel(f"Enterprise ERP System v{APP_VERSION}")
         lbl_subtitle.setObjectName("SidebarSubtitle")
 
         sidebar_layout.addWidget(lbl_title)

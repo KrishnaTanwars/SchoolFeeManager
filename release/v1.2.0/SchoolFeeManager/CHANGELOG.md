@@ -2,6 +2,18 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.3.0] - Phase 03 Student Master Professionalization Release
+
+### 👨‍🎓 Student Master ERP Enhancements
+- **Full-Width Responsive Student Table**: Rebuilt `StudentView` table layout to occupy 100% available horizontal content space with intelligent column stretch allocation and zero text clipping across resolutions (1366x768, 1600x900, 1920x1080).
+- **Side Balance Panel Removal**: Eliminated cramped side balance cards to maximize visible table columns and data rows.
+- **12 Comprehensive Columns Layout**: Configured 12 structured columns in logical order: `Adm. No.`, `Roll No.`, `Student Name`, `Course / Session`, `Class`, `Sec`, `Father's Name`, `Mother's Name`, `Mobile No.`, `Status`, `Adm. Date`, and `Actions`.
+- **Multi-Field Instant Filter Toolbar**: Expanded search input to perform instant case-insensitive filtering across Name, Admission No, Roll No, Father Name, Mother Name, Mobile, Course, Class, and Section. Added dedicated `Section` filter dropdown alongside `Class`, `Session`, and `Status` filters.
+- **Enhanced Data Validation**: Verified unique admission number checks, 10-digit Indian mobile number format validation, required fields, and clear error banners.
+- **Automated Unit Testing**: Updated `tests/test_student.py` to test multi-field search and section filtering (37 total tests passing).
+
+---
+
 ## [1.2.0] - Phase 02 Administrator Security & Permission System Release
 
 ### 🔒 Administrator Security & Audit System
