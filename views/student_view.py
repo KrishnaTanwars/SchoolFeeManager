@@ -224,22 +224,22 @@ class StudentView(QWidget):
             self.load_students()
 
     def delete_student(self, student):
+        from dialogs.admin_auth_dialog import AdminAuthDialog
+        auth_dlg = AdminAuthDialog(
+            self,
+            action_title="Student Delete Protection",
+            action_context=f"Delete Student: '{student.name}' ({student.admission_no})",
+            module="Student Master"
+        )
+        if not auth_dlg.exec():
+            return
+
         reply = QMessageBox.question(
-            self, "Confirm Delete",
+            self, "Confirm Delete Student",
             f"Are you sure you want to delete student '{student.name}' ({student.admission_no})?\nThis action cannot be undone.",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply == QMessageBox.Yes:
-            from dialogs.admin_auth_dialog import AdminAuthDialog
-            auth_dlg = AdminAuthDialog(
-                self,
-                action_title="Student Delete Protection",
-                action_context=f"Delete Student: '{student.name}' ({student.admission_no})"
-            )
-            if not auth_dlg.exec():
-                # Auth cancelled or failed
-                return
-
             success, msg = StudentController.delete_student(student.id)
             if success:
                 QMessageBox.information(self, "Success", msg)

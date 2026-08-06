@@ -1,8 +1,8 @@
-School Fee Management System v1.1.0 (Enterprise Edition - Security & Administration Hardening)
+School Fee Management System v1.2.0 (Enterprise Edition - Administrator Security & Permission System)
 Build Date: August 2026
 Target OS: Windows 10 / Windows 11 (64-bit)
 Architecture: x86_64
 Database Engine: SQLite 3 (WAL Mode & Safe Writable Storage Fallback Enabled)
 UI Engine: PySide6 (Qt 6.11 with Shiboken6 & PySide6 Complete Dynamic Binary Hooks)
 PDF Engine: ReportLab 5.0 (A4 Watermark & Mode-Specific Payment Details Enabled)
-Features: Universal Administrator Authorization Dialog, Delete Protection (Student/Fee Head/Receipt/Bulk), Settings Protection, Central Security Service & Extended Audit Logging (Module, Status, Hostname), Verified Release Packaging.
+Features: Reusable Admin Security Facade Service (services/admin_auth.py), Mandatory Administrator Password Dialog prior to Deletion, Two-Factor Delete Confirmation Dialogs (Student Master, Receipt History, Fee Heads, Fee Categories), Settings Protection Guard, Persisted Audit Trails for Deletes and Failed Authentication Attempts, Signal Debouncing against Double-Clicks/Shortcut Bypass.

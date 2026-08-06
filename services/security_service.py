@@ -14,12 +14,19 @@ from utils.logger import logger
 
 class SecurityService:
     @classmethod
-    def verify_admin_password(cls, password: str) -> bool:
+    def verify_admin_password(cls, password: str, module: Optional[str] = None) -> bool:
         """
         Verifies if the provided plain-text password matches ANY active Administrator account.
         UI views MUST call this function rather than comparing raw password hashes directly.
+        Logs a Failed Attempt audit trail entry if verification fails.
         """
         if not password or not password.strip():
+            cls.log_audit(
+                action="Failed Attempt",
+                module=module or "Security",
+                details="Empty administrator password provided",
+                status="Failed"
+            )
             return False
             
         db = get_db()
@@ -36,6 +43,12 @@ class SecurityService:
                     return True
 
             logger.warning("Administrator password verification failed: Incorrect password")
+            cls.log_audit(
+                action="Failed Attempt",
+                module=module or "Security",
+                details="Incorrect administrator password entered",
+                status="Failed"
+            )
             return False
         except Exception as e:
             logger.error(f"Error verifying admin password: {e}", exc_info=True)

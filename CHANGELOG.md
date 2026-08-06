@@ -2,6 +2,17 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.2.0] - Phase 02 Administrator Security & Permission System Release
+
+### 🔒 Administrator Security & Audit System
+- **Central Auth Service Facade**: Created `services/admin_auth.py` providing clean facade functions (`verify_admin_password`, `show_admin_dialog`, `authenticate`) for all modules.
+- **Mandatory Admin Authorization for Deletions**: Enforced `AdminAuthDialog` modal prior to deletion across Student Master, Receipt History, Fee Heads, and Fee Categories. No bypass allowed even for logged-in Admin accounts.
+- **Two-Factor Delete Confirmation**: Integrated secondary explicit confirmation dialogs ("Delete [Record]? This action cannot be undone. Yes/No") immediately following password authentication.
+- **Settings Access Guard**: Intercepted Settings tab navigation in `MainWindow.navigate_to()` requiring administrator password verification before rendering settings content.
+- **Failed Attempt & Action Audit Persistence**: Automatically records `Failed Attempt` audit entries on wrong/empty password attempts and detailed deletion audit entries (`Student Deleted`, `Receipt Cancelled`, `Fee Category Deleted`) in the `audit_logs` SQLite table.
+- **Security Debouncing & Signal Protection**: Disabled authorization action buttons during authentication processing to prevent double-clicks, rapid clicks, or signal bypasses.
+- **Automated Unit Testing**: Added `tests/test_phase2_security.py` with 5 new security unit tests (36 total tests passing).
+
 ---
 
 ## [1.0.1] - Executable Repair & Critical Hotfix Release

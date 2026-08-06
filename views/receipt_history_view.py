@@ -196,21 +196,22 @@ class ReceiptHistoryView(QWidget):
         dlg.exec()
 
     def cancel_receipt(self, receipt):
+        from dialogs.admin_auth_dialog import AdminAuthDialog
+        auth_dlg = AdminAuthDialog(
+            self,
+            action_title="Receipt Delete Protection",
+            action_context=f"Cancel/Delete Receipt: '{receipt.receipt_no}'",
+            module="Receipt History"
+        )
+        if not auth_dlg.exec():
+            return
+
         reply = QMessageBox.question(
-            self, "Confirm Receipt Cancellation",
-            f"Are you sure you want to cancel/delete receipt '{receipt.receipt_no}'?\nThis action requires administrator authorization.",
+            self, "Confirm Delete Receipt",
+            f"Are you sure you want to cancel/delete receipt '{receipt.receipt_no}'?\nThis action cannot be undone.",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply == QMessageBox.Yes:
-            from dialogs.admin_auth_dialog import AdminAuthDialog
-            auth_dlg = AdminAuthDialog(
-                self,
-                action_title="Receipt Delete Protection",
-                action_context=f"Cancel Receipt: '{receipt.receipt_no}'"
-            )
-            if not auth_dlg.exec():
-                return
-
             success, msg = ReceiptController.cancel_receipt(receipt.id)
             if success:
                 QMessageBox.information(self, "Success", msg)
@@ -219,21 +220,22 @@ class ReceiptHistoryView(QWidget):
                 QMessageBox.critical(self, "Error", msg)
 
     def bulk_delete_receipts(self):
+        from dialogs.admin_auth_dialog import AdminAuthDialog
+        auth_dlg = AdminAuthDialog(
+            self,
+            action_title="Bulk Delete Protection",
+            action_context="Purge All Cancelled Receipts",
+            module="Receipt History"
+        )
+        if not auth_dlg.exec():
+            return
+
         reply = QMessageBox.question(
             self, "Confirm Bulk Delete Receipts",
-            "Are you sure you want to bulk purge all cancelled receipts?\nThis action requires administrator authorization.",
+            "Are you sure you want to bulk purge all cancelled receipts?\nThis action cannot be undone.",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply == QMessageBox.Yes:
-            from dialogs.admin_auth_dialog import AdminAuthDialog
-            auth_dlg = AdminAuthDialog(
-                self,
-                action_title="Bulk Delete Protection",
-                action_context="Purge All Cancelled Receipts"
-            )
-            if not auth_dlg.exec():
-                return
-
             success, msg, cnt = ReceiptController.bulk_delete_receipts()
             if success:
                 QMessageBox.information(self, "Bulk Delete Result", msg)

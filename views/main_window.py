@@ -194,7 +194,8 @@ class MainWindow(QMainWindow):
             auth_dlg = AdminAuthDialog(
                 self,
                 action_title="Settings Authorization Required",
-                action_context="Access System Settings & Administration"
+                action_context="Access System Settings & Administration",
+                module="Settings"
             )
             if not auth_dlg.exec():
                 SecurityService.log_audit(

@@ -11,10 +11,11 @@ from PySide6.QtCore import Qt
 from services.security_service import SecurityService
 
 class AdminAuthDialog(QDialog):
-    def __init__(self, parent=None, action_title: str = "Administrator Authorization Required", action_context: str = ""):
+    def __init__(self, parent=None, action_title: str = "Administrator Authorization Required", action_context: str = "", module: str = "General"):
         super().__init__(parent)
         self.action_title = action_title
         self.action_context = action_context
+        self.module = module
         
         self.setWindowTitle("Administrator Authorization Required")
         self.setModal(True)
@@ -117,14 +118,18 @@ class AdminAuthDialog(QDialog):
             self.txt_password.setFocus()
             return
 
-        if SecurityService.verify_admin_password(password):
-            self.lbl_error.hide()
-            self.accept()
-        else:
-            self.lbl_error.setText("❌ Incorrect administrator password. Access denied.")
-            self.lbl_error.show()
-            self.txt_password.clear()
-            self.txt_password.setFocus()
+        self.btn_authorize.setEnabled(False)
+        try:
+            if SecurityService.verify_admin_password(password, module=self.module):
+                self.lbl_error.hide()
+                self.accept()
+            else:
+                self.lbl_error.setText("❌ Incorrect administrator password. Access denied.")
+                self.lbl_error.show()
+                self.txt_password.clear()
+                self.txt_password.setFocus()
+        finally:
+            self.btn_authorize.setEnabled(True)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:

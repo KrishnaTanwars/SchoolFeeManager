@@ -102,21 +102,22 @@ class FeeCategoryView(QWidget):
             self.load_categories()
 
     def delete_category(self, category):
+        from dialogs.admin_auth_dialog import AdminAuthDialog
+        auth_dlg = AdminAuthDialog(
+            self,
+            action_title="Fee Head Delete Protection",
+            action_context=f"Delete Fee Head: '{category.name}'",
+            module="Fee Heads"
+        )
+        if not auth_dlg.exec():
+            return
+
         reply = QMessageBox.question(
             self, "Confirm Delete Fee Head",
-            f"Are you sure you want to delete fee head '{category.name}'?\nThis action requires administrator authorization.",
+            f"Are you sure you want to delete fee head '{category.name}'?\nThis action cannot be undone.",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply == QMessageBox.Yes:
-            from dialogs.admin_auth_dialog import AdminAuthDialog
-            auth_dlg = AdminAuthDialog(
-                self,
-                action_title="Fee Head Delete Protection",
-                action_context=f"Delete Fee Head: '{category.name}'"
-            )
-            if not auth_dlg.exec():
-                return
-
             success, msg = FeeController.delete_category(category.id)
             if success:
                 QMessageBox.information(self, "Success", msg)
