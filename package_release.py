@@ -10,28 +10,29 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
-RELEASE_DIR = BASE_DIR / "release" / "v1.0.1"
-CLIENT_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_v1.0.1.zip"
-SOURCE_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_Source_v1.0.1.zip"
+RELEASE_DIR = BASE_DIR / "release" / "v1.1.0"
+CLIENT_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_v1.1.0.zip"
+SOURCE_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_Source_v1.1.0.zip"
 
 def create_client_package():
     print("============================================================")
-    print("Creating Clean Client Release Package (v1.0.1 Hotfix)...")
+    print("Creating Clean Client Release Package (v1.1.0)...")
     print("============================================================")
 
     if not DIST_DIR.exists():
         raise FileNotFoundError(f"Executable dist folder not found at: {DIST_DIR}. Run build.py first!")
 
+    # Wipe existing release/v1.1.0 completely to prevent stale artifact leftover
     if RELEASE_DIR.exists():
         shutil.rmtree(RELEASE_DIR)
 
     client_dist = RELEASE_DIR / "SchoolFeeManager"
     client_dist.mkdir(parents=True, exist_ok=True)
 
-    # Copy PyInstaller bundled executable & dependencies
+    # Copy PyInstaller bundled executable & dependencies (exact copy of dist/)
     shutil.copytree(DIST_DIR, client_dist, dirs_exist_ok=True)
 
-    # Copy database file if exists
+    # Copy initial database file if present
     (client_dist / "database").mkdir(exist_ok=True)
     active_db = BASE_DIR / "database" / "school_fee.db"
     if active_db.exists():
@@ -41,9 +42,10 @@ def create_client_package():
     (client_dist / "exports").mkdir(exist_ok=True)
     (client_dist / "logs").mkdir(exist_ok=True)
 
-    # Copy Release Documentation (both Markdown and PDF formats)
+    # Copy Release Documentation
     docs_to_copy = [
-        "Version.txt", "License.txt",
+        "Version.txt", "License.txt", "README.md", "CHANGELOG.md",
+        "PHASE_01_REPORT.md", "PHASE_01_RUNTIME_VALIDATION.md",
         "INSTALLATION_GUIDE.md", "INSTALLATION_GUIDE.pdf",
         "USER_MANUAL.md", "USER_MANUAL.pdf"
     ]
@@ -52,7 +54,7 @@ def create_client_package():
         if doc_src.exists():
             shutil.copy(doc_src, client_dist)
 
-    # Create ZIP archive
+    # Create ZIP archive containing the exact release directory
     if CLIENT_ZIP_PATH.exists():
         os.remove(CLIENT_ZIP_PATH)
 

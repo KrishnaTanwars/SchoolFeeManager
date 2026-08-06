@@ -1,8 +1,0 @@
-School Fee Management System v1.1.0 (Enterprise Edition - Security & Administration Hardening)
-Build Date: August 2026
-Target OS: Windows 10 / Windows 11 (64-bit)
-Architecture: x86_64
-Database Engine: SQLite 3 (WAL Mode & Safe Schema Migration Enabled)
-UI Engine: PySide6 (Qt 6.11)
-PDF Engine: ReportLab 5.0 (A4 Watermark & Mode-Specific Payment Details Enabled)
-Features: Universal Administrator Authorization Dialog, Delete Protection (Student/Fee Head/Receipt/Bulk), Settings Protection, Central Security Service & Extended Audit Logging (Module, Status, Hostname).
