@@ -42,41 +42,60 @@ class MainWindow(QMainWindow):
         self.main_layout.setSpacing(0)
 
         # ---------------- SIDEBAR FRAME ----------------
+        self.sidebar_expanded = True
         self.sidebar_frame = QFrame()
         self.sidebar_frame.setObjectName("SidebarFrame")
-        self.sidebar_frame.setFixedWidth(240)
+        self.sidebar_frame.setFixedWidth(220)
 
         sidebar_layout = QVBoxLayout(self.sidebar_frame)
-        sidebar_layout.setContentsMargins(12, 18, 12, 18)
+        sidebar_layout.setContentsMargins(8, 12, 8, 12)
         sidebar_layout.setSpacing(6)
 
-        # App Brand Header
-        lbl_title = QLabel("SCHOOL FEE ERP")
-        lbl_title.setObjectName("SidebarTitle")
+        # App Brand & Toggle Header
+        brand_layout = QHBoxLayout()
+        self.btn_toggle = QPushButton("☰")
+        self.btn_toggle.setFixedSize(36, 36)
+        self.btn_toggle.setToolTip("Expand / Collapse Sidebar")
+        self.btn_toggle.setStyleSheet("font-size: 16px; font-weight: bold; background-color: #1e293b; color: #ffffff; border: none; border-radius: 4px;")
+        self.btn_toggle.setCursor(Qt.PointingHandCursor)
+        self.btn_toggle.clicked.connect(self.toggle_sidebar)
 
-        lbl_subtitle = QLabel(f"Enterprise ERP System v{APP_VERSION}")
-        lbl_subtitle.setObjectName("SidebarSubtitle")
+        title_v = QVBoxLayout()
+        self.lbl_title = QLabel("SCHOOL FEE ERP")
+        self.lbl_title.setObjectName("SidebarTitle")
 
-        sidebar_layout.addWidget(lbl_title)
-        sidebar_layout.addWidget(lbl_subtitle)
+        self.lbl_subtitle = QLabel(f"ERP v{APP_VERSION}")
+        self.lbl_subtitle.setObjectName("SidebarSubtitle")
+
+        title_v.addWidget(self.lbl_title)
+        title_v.addWidget(self.lbl_subtitle)
+
+        brand_layout.addWidget(self.btn_toggle)
+        brand_layout.addLayout(title_v)
+        brand_layout.addStretch()
+
+        sidebar_layout.addLayout(brand_layout)
+        sidebar_layout.addSpacing(10)
+
+        # Navigation Items Data: (key, full_text, compact_text, tooltip)
+        self.nav_items_data = [
+            ("dashboard", "📊  Dashboard", "📊", "Dashboard"),
+            ("receipt", "💳  Collect Fee", "💳", "Collect Fee"),
+            ("history", "📜  Receipt History", "📜", "Receipt History"),
+            ("students", "👨‍🎓  Student Master", "👨‍🎓", "Student Master"),
+            ("fees", "🏷️  Fee Heads Master", "🏷️", "Fee Heads Master"),
+            ("reports", "📈  Financial Reports", "📈", "Financial Reports"),
+            ("settings", "⚙️  Settings & Backup", "⚙️", "Settings & Backup"),
+        ]
 
         # Navigation Buttons
         self.nav_buttons = {}
-        nav_items = [
-            ("dashboard", "📊  Dashboard"),
-            ("receipt", "💳  Collect Fee"),
-            ("history", "📜  Receipt History"),
-            ("students", "👨‍🎓  Student Master"),
-            ("fees", "🏷️  Fee Heads Master"),
-            ("reports", "📈  Financial Reports"),
-            ("settings", "⚙️  Settings & Backup"),
-        ]
-
-        for key, text in nav_items:
-            btn = QPushButton(text)
+        for key, full_text, compact_text, tooltip in self.nav_items_data:
+            btn = QPushButton(full_text)
             btn.setCheckable(True)
             btn.setProperty("class", "NavBtn")
             btn.setFixedHeight(38)
+            btn.setToolTip(tooltip)
             btn.setCursor(Qt.PointingHandCursor)
             btn.clicked.connect(lambda _, k=key: self.navigate_to(k))
             sidebar_layout.addWidget(btn)
@@ -88,6 +107,7 @@ class MainWindow(QMainWindow):
         self.btn_logout = QPushButton("🔒  Log Out System")
         self.btn_logout.setProperty("class", "NavBtn")
         self.btn_logout.setFixedHeight(38)
+        self.btn_logout.setToolTip("Log Out System")
         self.btn_logout.setCursor(Qt.PointingHandCursor)
         self.btn_logout.clicked.connect(self.logout)
         sidebar_layout.addWidget(self.btn_logout)
@@ -175,6 +195,24 @@ class MainWindow(QMainWindow):
         self.lbl_school_header.show()
         self.lbl_user_info.show()
         self.navigate_to("dashboard")
+
+    def toggle_sidebar(self):
+        self.sidebar_expanded = not self.sidebar_expanded
+
+        if self.sidebar_expanded:
+            self.sidebar_frame.setFixedWidth(220)
+            self.lbl_title.show()
+            self.lbl_subtitle.show()
+            for key, full_text, compact_text, tooltip in self.nav_items_data:
+                self.nav_buttons[key].setText(full_text)
+            self.btn_logout.setText("🔒  Log Out System")
+        else:
+            self.sidebar_frame.setFixedWidth(65)
+            self.lbl_title.hide()
+            self.lbl_subtitle.hide()
+            for key, full_text, compact_text, tooltip in self.nav_items_data:
+                self.nav_buttons[key].setText(compact_text)
+            self.btn_logout.setText("🔒")
 
     def navigate_to(self, key: str):
         auto_add_student = False

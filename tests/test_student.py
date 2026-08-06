@@ -47,6 +47,10 @@ class TestStudentController(unittest.TestCase):
 
     def test_student_search_and_filter(self):
         adm_no = "TEST/ADM/SECNET/888"
+        existing = StudentController.get_student_by_admission_no(adm_no)
+        if existing:
+            StudentController.delete_student(existing.id)
+
         data = {
             "admission_no": adm_no,
             "roll_no": "88",

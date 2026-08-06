@@ -9,7 +9,7 @@ from models.user import User
 from models.audit import AuditLog
 from models.student import Student
 from models.fee_category import FeeCategory
-from models.receipt import FeeReceipt, ReceiptItem
+from models.receipt import Receipt, ReceiptItem
 from controllers.auth_controller import AuthController
 from controllers.student_controller import StudentController
 from controllers.fee_controller import FeeController
@@ -56,11 +56,15 @@ class TestPhase2SecuritySystem(unittest.TestCase):
     def test_03_student_delete_security_and_audit(self):
         """Verifies student deletion security audit logging."""
         # Create student
-        st, msg = StudentController.create_student(
-            name="SecTest Student",
-            admission_no="ADM/SEC/001",
-            class_name="Class 10"
-        )
+        succ, msg = StudentController.create_student({
+            "name": "SecTest Student",
+            "admission_no": "ADM/SEC/001",
+            "class_name": "Class 10",
+            "father_name": "Father Test",
+            "mobile": "9876543210"
+        })
+        self.assertTrue(succ)
+        st = StudentController.get_student_by_admission_no("ADM/SEC/001")
         self.assertIsNotNone(st)
 
         # Delete student
@@ -78,11 +82,14 @@ class TestPhase2SecuritySystem(unittest.TestCase):
     def test_04_fee_category_delete_security_and_audit(self):
         """Verifies fee head/category deletion security audit logging."""
         # Create fee category
-        cat, msg = FeeController.create_category(
-            name="SecTest Fee Head",
-            default_amount=1500.0,
-            code="STFH"
-        )
+        succ, msg = FeeController.create_category({
+            "name": "SecTest Fee Head",
+            "default_amount": 1500.0,
+            "code": "STFH"
+        })
+        self.assertTrue(succ)
+        cats = FeeController.get_all_categories()
+        cat = next((c for c in cats if c.name == "SecTest Fee Head"), None)
         self.assertIsNotNone(cat)
 
         # Delete category
@@ -100,8 +107,24 @@ class TestPhase2SecuritySystem(unittest.TestCase):
     def test_05_receipt_cancel_security_and_audit(self):
         """Verifies receipt cancellation security audit logging."""
         # Create student & category
-        st, _ = StudentController.create_student("ReceiptSec Student", "ADM/REC/SEC01", "Class 5")
-        cat, _ = FeeController.create_category("Tuition Fee Sec", 2500.0, "TFS")
+        StudentController.create_student({
+            "name": "ReceiptSec Student",
+            "admission_no": "ADM/REC/SEC01",
+            "class_name": "Class 5",
+            "father_name": "Father Sec",
+            "mobile": "9876543210"
+        })
+        st = StudentController.get_student_by_admission_no("ADM/REC/SEC01")
+        self.assertIsNotNone(st)
+
+        FeeController.create_category({
+            "name": "Tuition Fee Sec",
+            "default_amount": 2500.0,
+            "code": "TFS"
+        })
+        cats = FeeController.get_all_categories()
+        cat = next((c for c in cats if c.name == "Tuition Fee Sec"), None)
+        self.assertIsNotNone(cat)
 
         # Collect fee
         items = [{"fee_category_id": cat.id, "amount": 2500.0}]

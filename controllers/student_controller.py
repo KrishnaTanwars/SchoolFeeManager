@@ -102,6 +102,7 @@ class StudentController:
                 mother_name=data.get("mother_name", "").strip(),
                 class_name=data.get("class_name", "").strip(),
                 section=data.get("section", "").strip(),
+                course=data.get("course", "").strip(),
                 mobile=data.get("mobile", "").strip(),
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),

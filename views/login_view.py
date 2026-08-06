@@ -36,8 +36,6 @@ class LoginView(QWidget):
         card_layout.setContentsMargins(35, 30, 35, 30)
         card_layout.setSpacing(12)
 
-from config.app_config import APP_VERSION
-
         # App Logo / Icon Header
         title = QLabel("School Fee Manager")
         title.setAlignment(Qt.AlignCenter)
