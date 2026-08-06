@@ -24,7 +24,10 @@ def create_client_package():
 
     # Wipe existing release/v1.1.0 completely to prevent stale artifact leftover
     if RELEASE_DIR.exists():
-        shutil.rmtree(RELEASE_DIR)
+        try:
+            shutil.rmtree(RELEASE_DIR)
+        except Exception:
+            pass
 
     client_dist = RELEASE_DIR / "SchoolFeeManager"
     client_dist.mkdir(parents=True, exist_ok=True)
