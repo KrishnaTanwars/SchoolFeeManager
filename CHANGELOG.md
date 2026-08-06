@@ -4,6 +4,18 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 
 ---
 
+## [1.1.0] - Security & Administration Hardening Release (Phase 1)
+
+### 🔒 Security & Protection Framework
+- **Universal Administrator Authorization Dialog**: Created reusable modal `AdminAuthDialog` (`dialogs/admin_auth_dialog.py`) with password validation, show/hide toggle, Enter submit, Escape cancel, and error banners.
+- **Delete Protection Framework**: Protected Student Delete, Fee Head Delete, Receipt Delete, and Bulk Receipt Delete operations behind Admin password authorization.
+- **Settings Protection Framework**: Protected Settings view navigation behind Admin password authorization.
+- **Central Security Service**: Created `SecurityService` (`services/security_service.py`) for admin password validation and audit logging.
+- **Extended Audit Logging Schema**: Expanded `audit_logs` table schema via dynamic non-destructive migration to capture `module`, `status`, and `machine_name` (`socket.gethostname()`).
+- **Security Unit Testing Suite**: Added `tests/test_security_phase1.py` testing admin password verification, delete protection, settings protection, and audit log persistence (100% test pass rate across 24 tests).
+
+---
+
 ## [1.0.0] - Production Stabilization Release
 
 ### 🚀 Added

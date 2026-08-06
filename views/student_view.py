@@ -230,6 +230,16 @@ class StudentView(QWidget):
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply == QMessageBox.Yes:
+            from dialogs.admin_auth_dialog import AdminAuthDialog
+            auth_dlg = AdminAuthDialog(
+                self,
+                action_title="Student Delete Protection",
+                action_context=f"Delete Student: '{student.name}' ({student.admission_no})"
+            )
+            if not auth_dlg.exec():
+                # Auth cancelled or failed
+                return
+
             success, msg = StudentController.delete_student(student.id)
             if success:
                 QMessageBox.information(self, "Success", msg)

@@ -31,11 +31,17 @@ class ReceiptHistoryView(QWidget):
         hdr_layout.addWidget(title_lbl)
         hdr_layout.addStretch()
 
+        self.btn_bulk_del = QPushButton("🗑️  Bulk Clear Cancelled")
+        self.btn_bulk_del.setProperty("class", "SecondaryBtn")
+        self.btn_bulk_del.setCursor(Qt.PointingHandCursor)
+        self.btn_bulk_del.clicked.connect(self.bulk_delete_receipts)
+
         self.btn_export = QPushButton("📥  Export CSV")
         self.btn_export.setProperty("class", "SecondaryBtn")
         self.btn_export.setCursor(Qt.PointingHandCursor)
         self.btn_export.clicked.connect(self.export_csv)
 
+        hdr_layout.addWidget(self.btn_bulk_del)
         hdr_layout.addWidget(self.btn_export)
         layout.addLayout(hdr_layout)
 
@@ -97,12 +103,12 @@ class ReceiptHistoryView(QWidget):
             "Payment Mode", "Total Amount", "Status", "Actions"
         ])
         
-        # Explicit section resize modes: data columns stretch, Actions column fixed to 160px
+        # Explicit section resize modes: data columns stretch, Actions column fixed to 220px
         header = self.table.horizontalHeader()
         for col in range(8):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
         header.setSectionResizeMode(8, QHeaderView.Fixed)
-        self.table.setColumnWidth(8, 160)
+        self.table.setColumnWidth(8, 220)
 
         self.table.verticalHeader().setDefaultSectionSize(42)
         self.table.setAlternatingRowColors(True)
@@ -164,35 +170,76 @@ class ReceiptHistoryView(QWidget):
             # Actions container with zero-clipping inline padding
             action_widget = QWidget()
             act_layout = QHBoxLayout(action_widget)
-            act_layout.setContentsMargins(6, 4, 6, 4)
-            act_layout.setAlignment(Qt.AlignCenter)
+            act_layout.setContentsMargins(4, 2, 4, 2)
+            act_layout.setSpacing(6)
 
-            btn_view = QPushButton("👁  View / Print")
-            btn_view.setFixedHeight(30)
-            btn_view.setMinimumWidth(130)
-            btn_view.setStyleSheet("""
-                QPushButton {
-                    background-color: #1e3a8a;
-                    color: #ffffff;
-                    font-size: 12px;
-                    font-weight: bold;
-                    border-radius: 5px;
-                    border: none;
-                    padding: 4px 10px;
-                }
-                QPushButton:hover {
-                    background-color: #2563eb;
-                }
-            """)
+            btn_view = QPushButton("👁 View")
+            btn_view.setFixedHeight(28)
+            btn_view.setMinimumWidth(80)
+            btn_view.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px;")
             btn_view.setCursor(Qt.PointingHandCursor)
             btn_view.clicked.connect(lambda _, rec=r: self.view_receipt(rec))
 
+            btn_del = QPushButton("🚫 Cancel")
+            btn_del.setFixedHeight(28)
+            btn_del.setMinimumWidth(80)
+            btn_del.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px;")
+            btn_del.setCursor(Qt.PointingHandCursor)
+            btn_del.clicked.connect(lambda _, rec=r: self.cancel_receipt(rec))
+
             act_layout.addWidget(btn_view)
+            act_layout.addWidget(btn_del)
             self.table.setCellWidget(row_idx, 8, action_widget)
 
     def view_receipt(self, receipt):
         dlg = ReceiptPreviewDialog(self, receipt)
         dlg.exec()
+
+    def cancel_receipt(self, receipt):
+        reply = QMessageBox.question(
+            self, "Confirm Receipt Cancellation",
+            f"Are you sure you want to cancel/delete receipt '{receipt.receipt_no}'?\nThis action requires administrator authorization.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            from dialogs.admin_auth_dialog import AdminAuthDialog
+            auth_dlg = AdminAuthDialog(
+                self,
+                action_title="Receipt Delete Protection",
+                action_context=f"Cancel Receipt: '{receipt.receipt_no}'"
+            )
+            if not auth_dlg.exec():
+                return
+
+            success, msg = ReceiptController.cancel_receipt(receipt.id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.load_receipts()
+            else:
+                QMessageBox.critical(self, "Error", msg)
+
+    def bulk_delete_receipts(self):
+        reply = QMessageBox.question(
+            self, "Confirm Bulk Delete Receipts",
+            "Are you sure you want to bulk purge all cancelled receipts?\nThis action requires administrator authorization.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            from dialogs.admin_auth_dialog import AdminAuthDialog
+            auth_dlg = AdminAuthDialog(
+                self,
+                action_title="Bulk Delete Protection",
+                action_context="Purge All Cancelled Receipts"
+            )
+            if not auth_dlg.exec():
+                return
+
+            success, msg, cnt = ReceiptController.bulk_delete_receipts()
+            if success:
+                QMessageBox.information(self, "Bulk Delete Result", msg)
+                self.load_receipts()
+            else:
+                QMessageBox.critical(self, "Error", msg)
 
     def export_csv(self):
         headers = ["Receipt No", "Date", "Student Name", "Admission No", "Class", "Subtotal", "Discount", "Fine", "Total Amount", "Payment Mode", "Status"]

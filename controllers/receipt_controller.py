@@ -236,3 +236,83 @@ class ReceiptController:
             }
         finally:
             db.close()
+
+    @staticmethod
+    def cancel_receipt(receipt_id: int) -> Tuple[bool, str]:
+        """Cancels or deletes a receipt with Audit Logging."""
+        db = get_db()
+        try:
+            r = db.query(Receipt).filter(Receipt.id == receipt_id).first()
+            if not r:
+                return False, "Receipt record not found."
+
+            r_no = r.receipt_no
+            r.status = "Cancelled"
+            db.commit()
+
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Receipt Deleted",
+                module="Receipt History",
+                details=f"Cancelled receipt '{r_no}' (ID {receipt_id})",
+                status="Success"
+            )
+            logger.info(f"Cancelled receipt ID {receipt_id} ({r_no})")
+            return True, f"Receipt '{r_no}' cancelled successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error cancelling receipt {receipt_id}: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Receipt Delete Failed",
+                module="Receipt History",
+                details=f"Failed to cancel receipt ID {receipt_id}: {str(e)}",
+                status="Failed"
+            )
+            return False, f"Database error: {str(e)}"
+        finally:
+            db.close()
+
+    @staticmethod
+    def bulk_delete_receipts(receipt_ids: Optional[List[int]] = None) -> Tuple[bool, str, int]:
+        """Bulk deletes or purges cancelled receipts with Audit Logging."""
+        db = get_db()
+        try:
+            query = db.query(Receipt)
+            if receipt_ids:
+                query = query.filter(Receipt.id.in_(receipt_ids))
+            else:
+                query = query.filter(Receipt.status == "Cancelled")
+
+            targets = query.all()
+            deleted_count = len(targets)
+            if deleted_count == 0:
+                return True, "No target receipts found to delete.", 0
+
+            for r in targets:
+                db.delete(r)
+
+            db.commit()
+
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Receipt Deleted",
+                module="Receipt History",
+                details=f"Bulk deleted {deleted_count} receipts",
+                status="Success"
+            )
+            logger.info(f"Bulk deleted {deleted_count} receipts")
+            return True, f"Successfully deleted {deleted_count} receipts.", deleted_count
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error in bulk receipt delete: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Receipt Delete Failed",
+                module="Receipt History",
+                details=f"Bulk receipt delete failed: {str(e)}",
+                status="Failed"
+            )
+            return False, f"Database error during bulk delete: {str(e)}", 0
+        finally:
+            db.close()

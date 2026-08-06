@@ -76,6 +76,16 @@ def run_migrations():
             if "course" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN course VARCHAR(100);")
 
+            # Check audit_logs columns
+            cursor.execute("PRAGMA table_info(audit_logs);")
+            audit_cols = {row[1] for row in cursor.fetchall()}
+            if "module" not in audit_cols:
+                cursor.execute("ALTER TABLE audit_logs ADD COLUMN module VARCHAR(50);")
+            if "status" not in audit_cols:
+                cursor.execute("ALTER TABLE audit_logs ADD COLUMN status VARCHAR(20) DEFAULT 'Success';")
+            if "machine_name" not in audit_cols:
+                cursor.execute("ALTER TABLE audit_logs ADD COLUMN machine_name VARCHAR(100);")
+
             # Data backfill for legacy V1.0 records
             cursor.execute("UPDATE receipts SET paid_amount = total_amount WHERE paid_amount IS NULL OR paid_amount = 0.0;")
             cursor.execute("UPDATE receipts SET due_amount = 0.0 WHERE due_amount IS NULL;")

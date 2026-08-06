@@ -172,23 +172,31 @@ class StudentController:
                 return False, "Student record not found."
 
             student_name = student.name
+            adm_no = student.admission_no
             db.delete(student)
-
-            # Audit Log
-            user = AuthController.get_current_user()
-            audit = AuditLog(
-                user_id=user.id if user else None,
-                action="DELETE",
-                details=f"Deleted student ID {student_id} ({student_name})"
-            )
-            db.add(audit)
-
             db.commit()
+
+            # Central Audit Log
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Student Deleted",
+                module="Student Master",
+                details=f"Deleted student: '{student_name}' ({adm_no}, ID {student_id})",
+                status="Success"
+            )
+
             logger.info(f"Deleted student ID {student_id}")
             return True, f"Student '{student_name}' deleted successfully."
         except Exception as e:
             db.rollback()
             logger.error(f"Error deleting student {student_id}: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Student Delete Failed",
+                module="Student Master",
+                details=f"Failed to delete student ID {student_id}: {str(e)}",
+                status="Failed"
+            )
             return False, f"Cannot delete student with associated receipt history. {str(e)}"
         finally:
             db.close()

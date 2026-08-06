@@ -4,7 +4,7 @@ Fee Categories & Fee Heads Master Management View with Zero-Clipping Action Butt
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTableWidget,
-    QTableWidgetItem, QHeaderView
+    QTableWidgetItem, QHeaderView, QMessageBox
 )
 from PySide6.QtCore import Qt
 from controllers.fee_controller import FeeController
@@ -43,12 +43,12 @@ class FeeCategoryView(QWidget):
             "Category Name", "Short Code", "Default Amount (₹)", "Status", "Description", "Actions"
         ])
         
-        # Explicit section resize modes: data columns stretch, Actions column fixed to 140px
+        # Explicit section resize modes: data columns stretch, Actions column fixed to 180px
         header = self.table.horizontalHeader()
         for col in range(5):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
         header.setSectionResizeMode(5, QHeaderView.Fixed)
-        self.table.setColumnWidth(5, 140)
+        self.table.setColumnWidth(5, 180)
 
         self.table.verticalHeader().setDefaultSectionSize(40)
         self.table.setAlternatingRowColors(True)
@@ -73,14 +73,22 @@ class FeeCategoryView(QWidget):
             act_layout.setContentsMargins(4, 2, 4, 2)
             act_layout.setSpacing(6)
 
-            btn_edit = QPushButton("✏️ Edit Head")
+            btn_edit = QPushButton("✏️ Edit")
             btn_edit.setFixedHeight(28)
-            btn_edit.setMinimumWidth(110)
+            btn_edit.setMinimumWidth(75)
             btn_edit.setStyleSheet("background-color: #0284c7; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, c=cat: self.edit_category(c))
 
+            btn_del = QPushButton("🗑️ Delete")
+            btn_del.setFixedHeight(28)
+            btn_del.setMinimumWidth(75)
+            btn_del.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; font-size: 11px; padding: 0px 6px; margin: 0px; min-height: 24px;")
+            btn_del.setCursor(Qt.PointingHandCursor)
+            btn_del.clicked.connect(lambda _, c=cat: self.delete_category(c))
+
             act_layout.addWidget(btn_edit)
+            act_layout.addWidget(btn_del)
             self.table.setCellWidget(row_idx, 5, action_widget)
 
     def add_category(self):
@@ -92,3 +100,26 @@ class FeeCategoryView(QWidget):
         dlg = FeeCategoryDialog(self, category)
         if dlg.exec():
             self.load_categories()
+
+    def delete_category(self, category):
+        reply = QMessageBox.question(
+            self, "Confirm Delete Fee Head",
+            f"Are you sure you want to delete fee head '{category.name}'?\nThis action requires administrator authorization.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            from dialogs.admin_auth_dialog import AdminAuthDialog
+            auth_dlg = AdminAuthDialog(
+                self,
+                action_title="Fee Head Delete Protection",
+                action_context=f"Delete Fee Head: '{category.name}'"
+            )
+            if not auth_dlg.exec():
+                return
+
+            success, msg = FeeController.delete_category(category.id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.load_categories()
+            else:
+                QMessageBox.critical(self, "Error", msg)

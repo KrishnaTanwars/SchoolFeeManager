@@ -91,3 +91,38 @@ class FeeController:
             return False, f"Database error: {str(e)}"
         finally:
             db.close()
+
+    @staticmethod
+    def delete_category(cat_id: int) -> Tuple[bool, str]:
+        db = get_db()
+        try:
+            cat = db.query(FeeCategory).filter(FeeCategory.id == cat_id).first()
+            if not cat:
+                return False, "Fee Category not found."
+
+            cat_name = cat.name
+            db.delete(cat)
+            db.commit()
+
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Fee Head Deleted",
+                module="Fee Heads",
+                details=f"Deleted Fee Head: '{cat_name}' (ID {cat_id})",
+                status="Success"
+            )
+            logger.info(f"Deleted fee category ID {cat_id}: {cat_name}")
+            return True, f"Fee Category '{cat_name}' deleted successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error deleting fee category {cat_id}: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Fee Head Delete Failed",
+                module="Fee Heads",
+                details=f"Failed to delete Fee Head ID {cat_id}: {str(e)}",
+                status="Failed"
+            )
+            return False, f"Cannot delete Fee Category in use by active receipts. {str(e)}"
+        finally:
+            db.close()

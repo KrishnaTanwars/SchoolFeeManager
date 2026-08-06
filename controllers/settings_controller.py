@@ -40,10 +40,13 @@ class SettingsController:
             info.receipt_footer = data.get("receipt_footer", info.receipt_footer).strip()
             info.current_session = data.get("current_session", info.current_session).strip()
 
-            user = AuthController.get_current_user()
-            user_id = user.id if user else None
-            audit = AuditLog(user_id=user_id, action="UPDATE_SCHOOL_SETTINGS", details="Updated school profile & receipt settings.")
-            db.add(audit)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Settings Updated",
+                module="Settings",
+                details=f"Updated school profile settings for {info.school_name}",
+                status="Success"
+            )
 
             db.commit()
             logger.info("Updated school information settings.")

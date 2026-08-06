@@ -186,6 +186,37 @@ class MainWindow(QMainWindow):
         if key not in self.views:
             return
 
+        # Settings Protection Hook
+        if key == "settings":
+            from dialogs.admin_auth_dialog import AdminAuthDialog
+            from services.security_service import SecurityService
+
+            auth_dlg = AdminAuthDialog(
+                self,
+                action_title="Settings Authorization Required",
+                action_context="Access System Settings & Administration"
+            )
+            if not auth_dlg.exec():
+                SecurityService.log_audit(
+                    action="Settings Access Denied",
+                    module="Settings",
+                    details="Attempted to access Settings without valid administrator authorization",
+                    status="Denied"
+                )
+                # Keep navigation button state synchronized with currently visible view
+                curr_view = self.stacked_widget.currentWidget()
+                for k, v in self.views.items():
+                    if v == curr_view and k in self.nav_buttons:
+                        self.nav_buttons[k].setChecked(True)
+                return
+
+            SecurityService.log_audit(
+                action="Settings Opened",
+                module="Settings",
+                details="Administrator authorized access to Settings",
+                status="Success"
+            )
+
         for k, btn in self.nav_buttons.items():
             btn.setChecked(k == key)
 

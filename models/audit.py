@@ -13,13 +13,16 @@ class AuditLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     action = Column(String(100), nullable=False)
+    module = Column(String(50), nullable=True)
     details = Column(Text, nullable=True)
+    status = Column(String(20), default="Success", nullable=True)
+    machine_name = Column(String(100), nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     user = relationship("User", back_populates="audit_logs")
 
     def __repr__(self):
-        return f"<AuditLog(action='{self.action}', timestamp={self.timestamp})>"
+        return f"<AuditLog(action='{self.action}', module='{self.module}', timestamp={self.timestamp})>"
 
 class BackupHistory(Base):
     __tablename__ = "backup_history"
