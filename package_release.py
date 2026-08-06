@@ -22,12 +22,8 @@ def create_client_package():
     if not DIST_DIR.exists():
         raise FileNotFoundError(f"Executable dist folder not found at: {DIST_DIR}. Run build.py first!")
 
-    # Wipe existing release/v1.1.0 completely to prevent stale artifact leftover
-    if RELEASE_DIR.exists():
-        try:
-            shutil.rmtree(RELEASE_DIR)
-        except Exception:
-            pass
+    # Ensure RELEASE_DIR exists without deleting existing release contents
+    RELEASE_DIR.mkdir(parents=True, exist_ok=True)
 
     client_dist = RELEASE_DIR / "SchoolFeeManager"
     client_dist.mkdir(parents=True, exist_ok=True)
