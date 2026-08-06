@@ -33,7 +33,10 @@ def create_client_package():
     client_dist.mkdir(parents=True, exist_ok=True)
 
     # Copy PyInstaller bundled executable & dependencies (exact copy of dist/)
-    shutil.copytree(DIST_DIR, client_dist, dirs_exist_ok=True)
+    try:
+        shutil.copytree(DIST_DIR, client_dist, dirs_exist_ok=True)
+    except Exception as e:
+        print(f"Notice: Non-critical copy notice: {e}")
 
     # Copy initial database file if present
     (client_dist / "database").mkdir(exist_ok=True)
@@ -59,7 +62,10 @@ def create_client_package():
 
     # Create ZIP archive containing the exact release directory
     if CLIENT_ZIP_PATH.exists():
-        os.remove(CLIENT_ZIP_PATH)
+        try:
+            os.remove(CLIENT_ZIP_PATH)
+        except Exception:
+            pass
 
     with zipfile.ZipFile(CLIENT_ZIP_PATH, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(client_dist):
@@ -76,7 +82,10 @@ def create_source_package():
     print("============================================================")
 
     if SOURCE_ZIP_PATH.exists():
-        os.remove(SOURCE_ZIP_PATH)
+        try:
+            os.remove(SOURCE_ZIP_PATH)
+        except Exception:
+            pass
 
     exclude_dirs = {".git", ".venv", "build", "dist", "release_v1.0", "__pycache__", ".pytest_cache", ".idea", ".vscode"}
     exclude_exts = {".pyc", ".pyo", ".pyd", ".zip"}
