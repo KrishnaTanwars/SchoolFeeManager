@@ -10,21 +10,21 @@ assets_path = Path('assets').resolve()
 
 datas = [
     (str(assets_path), 'assets'),
-]
+] + collect_data_files('reportlab') + collect_data_files('PySide6')
 
 hiddenimports = [
     'PySide6.QtCore',
     'PySide6.QtGui',
     'PySide6.QtWidgets',
     'PySide6.QtPrintSupport',
-    'PySide6.QtGui',
+    'shiboken6',
     'sqlalchemy.ext.baked',
     'sqlalchemy.engine.interfaces',
     'sqlalchemy.dialects.sqlite',
     'reportlab.lib.pagesizes',
     'reportlab.platypus',
     'reportlab.lib.colors',
-]
+] + collect_submodules('PySide6') + collect_submodules('shiboken6') + collect_submodules('reportlab') + collect_submodules('sqlalchemy')
 
 a = Analysis(
     ['main.py'],

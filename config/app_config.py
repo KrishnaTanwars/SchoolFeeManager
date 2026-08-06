@@ -14,6 +14,22 @@ else:
     BASE_DIR = Path(__file__).resolve().parent.parent
     APP_DIR = BASE_DIR
 
+# Base Storage Directory Selection with Writable Fallback
+def _get_writable_base(app_dir: Path) -> Path:
+    """Returns app_dir if writable, otherwise falls back to %LOCALAPPDATA%/SchoolFeeManager."""
+    try:
+        app_dir.mkdir(parents=True, exist_ok=True)
+        test_file = app_dir / ".write_test"
+        test_file.touch()
+        test_file.unlink()
+        return app_dir
+    except Exception:
+        fallback = Path(os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))) / "SchoolFeeManager"
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
+
+WRITABLE_BASE = _get_writable_base(APP_DIR)
+
 # Storage & Output Directories
 IS_VERCEL = bool(os.environ.get("VERCEL"))
 if IS_VERCEL:
@@ -23,10 +39,10 @@ if IS_VERCEL:
     BACKUP_DIR = TMP_BASE / "backup"
     EXPORTS_DIR = TMP_BASE / "exports"
 else:
-    DATA_DIR = APP_DIR / "database"
-    LOG_DIR = APP_DIR / "logs"
-    BACKUP_DIR = APP_DIR / "backup"
-    EXPORTS_DIR = APP_DIR / "exports"
+    DATA_DIR = WRITABLE_BASE / "database"
+    LOG_DIR = WRITABLE_BASE / "logs"
+    BACKUP_DIR = WRITABLE_BASE / "backup"
+    EXPORTS_DIR = WRITABLE_BASE / "exports"
 
 ASSETS_DIR = BASE_DIR / "assets"
 ICONS_DIR = ASSETS_DIR / "icons"
@@ -55,7 +71,7 @@ DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 # Application Metadata
 APP_NAME = "School Fee Management System"
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.0.1"
 COMPANY_NAME = "SmartSchool Software Solutions"
 
 # Default Themes & Colors

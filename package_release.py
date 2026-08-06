@@ -10,13 +10,13 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
-RELEASE_DIR = BASE_DIR / "release_v2.0"
-CLIENT_ZIP_PATH = BASE_DIR / "SchoolFeeManager_v2.0.zip"
-SOURCE_ZIP_PATH = BASE_DIR / "SchoolFeeManager_Source_v2.0.zip"
+RELEASE_DIR = BASE_DIR / "release" / "v1.0.1"
+CLIENT_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_v1.0.1.zip"
+SOURCE_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_Source_v1.0.1.zip"
 
 def create_client_package():
     print("============================================================")
-    print("Creating Clean Client Release Package (v2.0)...")
+    print("Creating Clean Client Release Package (v1.0.1 Hotfix)...")
     print("============================================================")
 
     if not DIST_DIR.exists():

@@ -4,6 +4,16 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 
 ---
 
+## [1.0.1] - Executable Repair & Critical Hotfix Release
+
+### 🛠️ Executable & Runtime Hotfixes
+- **PySide6 & Shiboken6 Dependency Bundling**: Updated `SchoolFeeManager.spec` to dynamically collect all submodules and data files for `PySide6`, `shiboken6`, `reportlab`, and `sqlalchemy` resolving PySide6 `_util` DLL loading failures.
+- **Writable Directory Fallback**: Enhanced `config/app_config.py` with `_get_writable_base()` fallback logic so database, logs, exports, and backup directories fall back to `%LOCALAPPDATA%\SchoolFeeManager` if the executable installation directory is read-only.
+- **Startup Crash Logging**: Added early crash logging and exception handling to prevent silent application exits during executable startup.
+- **Fresh PyInstaller Compilation**: Rebuilt clean executable `dist/SchoolFeeManager/SchoolFeeManager.exe` with zero build warnings affecting runtime.
+
+---
+
 ## [1.1.0] - Security & Administration Hardening Release (Phase 1)
 
 ### 🔒 Security & Protection Framework
