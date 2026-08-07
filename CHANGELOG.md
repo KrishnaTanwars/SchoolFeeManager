@@ -2,6 +2,21 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.5.2] - Phase 05.2 Fee Collection Layout Refinement Release
+
+### 📐 Layout Restructuring & Sidebar Alignment
+- **Screen Layout Swap**: Reorganized Fee Collection screen to place Fee Particulars Table, Real-Time Calculations, and Payment Details on the **LEFT column** (stretch=6.5) and Student Search & Summary Sidebar on the **RIGHT column** (stretch=3.5) extending full vertical height without empty white space.
+- **Single Result Autocomplete Popup Fix**: Enforced minimum popup height of **72px** for single matching results to prevent text truncation, clipping, or partial line visibility.
+- **Popup Width Alignment**: Dynamic popup width aligned to search input width (`max(width, 450)`) with disabled horizontal scrollbar (`ScrollBarAlwaysOff`).
+
+### 🏦 Bank Name & Payment Form Standardization
+- **Bank Name Dropdown Expansion**: Configured `cmb_bank_name` with expanding size policy and popup minimum width (260px), preventing text truncation for long bank names (e.g. `State Bank of India (SBI)`, `Punjab National Bank (PNB)`, `Bank of Maharashtra`, `Central Bank of India`).
+- **Payment Mode Field Toggling**: Standardized field visibility for Cash, UPI/QR, Cheque, DD, Card, and Net Banking with fixed panel stability and consistent label alignments.
+- **Fixed Generate Receipt Button**: Fixed full-width high-contrast green button (`setFixedHeight(40)`) at bottom of payment panel.
+- **Responsive 1366x768 Display**: Verified zero horizontal scrolling and zero vertical clipping across 1366x768, 1600x900, and 1920x1080 resolutions.
+
+---
+
 ## [1.5.1] - Phase 05 UI/UX Fixes & Live Search Release
 
 ### ⚡ Student Search Autocomplete & Focus Fixes

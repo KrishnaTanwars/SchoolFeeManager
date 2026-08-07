@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.5.2 — Fee Collection Layout & Usability Refinement (Phase 5.2 Release)
+- **Release Date**: August 2026
+- **Refinements**:
+  - Layout swap: Fee Particulars & Payment Details on LEFT (stretch=6.5), Student Search & Summary Sidebar on RIGHT (stretch=3.5) consuming full vertical height without empty space.
+  - Enforced minimum popup height of **72px** for single matching search results, eliminating text clipping.
+  - Prevented Bank Name dropdown text truncation for long names (e.g. `State Bank of India (SBI)`) with expanding size policy and 260px popup width.
+  - Standardized payment form input controls (30px height, 110px label alignment) and mode-specific field toggling.
+  - Full-width fixed `Generate & Print Receipt` button at bottom of payment panel.
+  - 100% responsive display at 1366x768 with zero horizontal scrollbar or vertical clipping.
+
 ### v1.5.1 — Fee Collection UI & Live Search Maintenance (Phase 5.1 Bug Fix Release)
 - **Release Date**: August 2026
 - **Fixes**:
