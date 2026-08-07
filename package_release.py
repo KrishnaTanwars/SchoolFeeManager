@@ -9,14 +9,22 @@ import zipfile
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+
+# Read version string from Version.txt
+version_file = BASE_DIR / "Version.txt"
+if version_file.exists():
+    VERSION_STR = version_file.read_text(encoding="utf-8").strip()
+else:
+    VERSION_STR = "v2.1.0"
+
 DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
-RELEASE_DIR = BASE_DIR / "release" / "v2.0.0"
-CLIENT_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_v2.0.0.zip"
-SOURCE_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_Source_v2.0.0.zip"
+RELEASE_DIR = BASE_DIR / "release" / VERSION_STR
+CLIENT_ZIP_PATH = RELEASE_DIR / f"SchoolFeeManager_{VERSION_STR}.zip"
+SOURCE_ZIP_PATH = RELEASE_DIR / f"SchoolFeeManager_Source_{VERSION_STR}.zip"
 
 def create_client_package():
     print("============================================================")
-    print("Creating Clean Client Release Package (v2.0.0)...")
+    print(f"Creating Clean Client Release Package ({VERSION_STR})...")
     print("============================================================")
 
     if not DIST_DIR.exists():
@@ -47,9 +55,9 @@ def create_client_package():
     # Copy Release Documentation
     docs_to_copy = [
         "Version.txt", "License.txt", "README.md", "CHANGELOG.md",
-        "PHASE_01_REPORT.md", "PHASE_01_RUNTIME_VALIDATION.md", "PHASE_02_REPORT.md", "PHASE_03_REPORT.md",
-        "PHASE_04_REPORT.md", "PHASE_05_REPORT.md", "PHASE_06_REPORT.md", "PHASE_07_REPORT.md", "PHASE_08_REPORT.md", "PHASE_09_REPORT.md", "PAGINATION_UI_FIX_REPORT.md", "PACKAGING_REPORT.md",
-        "PROJECT_COMPLETION_REPORT.md", "CLIENT_HANDOVER.md", "KNOWN_LIMITATIONS.md", "RELEASE_NOTES_v2.0.0.md",
+        "PROJECT_COMPLETION_REPORT.md", "CLIENT_HANDOVER.md", "KNOWN_LIMITATIONS.md",
+        "RELEASE_NOTES_v2.0.0.md", "RELEASE_NOTES_v2.1.0.md",
+        "LOGIN_UI_CLEANUP_REPORT.md", "STATUS_BAR_USER_LOCATION_REPORT.md", "UI_AND_DEMO_DATA_REPORT.md",
         "INSTALLATION_GUIDE.md", "INSTALLATION_GUIDE.pdf",
         "USER_MANUAL.md", "USER_MANUAL.pdf"
     ]
@@ -85,7 +93,7 @@ def create_source_package():
         except Exception:
             pass
 
-    exclude_dirs = {".git", ".venv", "build", "dist", "release_v1.0", "__pycache__", ".pytest_cache", ".idea", ".vscode"}
+    exclude_dirs = {".git", ".venv", "build", "dist", "release", "archive", "__pycache__", ".pytest_cache", ".idea", ".vscode"}
     exclude_exts = {".pyc", ".pyo", ".pyd", ".zip"}
 
     with zipfile.ZipFile(SOURCE_ZIP_PATH, 'w', zipfile.ZIP_DEFLATED) as zipf:

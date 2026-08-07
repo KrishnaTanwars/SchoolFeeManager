@@ -71,7 +71,7 @@ DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 # Application Metadata
 APP_NAME = "School Fee Management System"
-APP_VERSION = "2.0.0"
+APP_VERSION = "2.1.0"
 COMPANY_NAME = "SmartSchool Software Solutions"
 
 # Default Themes & Colors
