@@ -163,18 +163,12 @@ class ReceiptView(QWidget):
         fee_top_bar.addWidget(self.btn_deselect_all)
         fee_layout.addLayout(fee_top_bar)
 
-        # Fee Particulars Table with Fixed Column Widths & Auto Vertical Expansion
+        # Fee Particulars Table with Intelligent Auto Column Width Calculation
         self.table_fees = QTableWidget()
         self.table_fees.setColumnCount(4)
         self.table_fees.setHorizontalHeaderLabels(["Select", "Fee Head Description", "Course", "Amount (₹)"])
-        self.table_fees.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
-        self.table_fees.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.table_fees.horizontalHeader().setSectionResizeMode(2, QHeaderView.Fixed)
-        self.table_fees.horizontalHeader().setSectionResizeMode(3, QHeaderView.Fixed)
-        
-        self.table_fees.setColumnWidth(0, 50)
-        self.table_fees.setColumnWidth(2, 75)
-        self.table_fees.setColumnWidth(3, 150)
+        for col in range(4):
+            self.table_fees.horizontalHeader().setSectionResizeMode(col, QHeaderView.Interactive)
         self.table_fees.verticalHeader().setDefaultSectionSize(30)
 
         # Stretch table vertically to consume entire left column
@@ -648,6 +642,52 @@ class ReceiptView(QWidget):
 
         self._user_edited_paid = False
         self.recalculate_totals()
+        self.auto_fit_columns()
+
+    def auto_fit_columns(self):
+        """
+        Intelligent Auto Column Width Calculation for Fee Heads Particulars Table.
+        Calculates exact width for each column: MAX(Header Width, Longest Cell Width) + 20px Padding.
+        Does NOT stretch columns or distribute unallocated empty space.
+        """
+        font_metrics = self.table_fees.fontMetrics()
+        header_font_metrics = self.table_fees.horizontalHeader().fontMetrics()
+        padding = 22  # Consistent padding (15-25px range)
+
+        for col in range(self.table_fees.columnCount()):
+            # 1. Width of Column Header
+            header_item = self.table_fees.horizontalHeaderItem(col)
+            header_text = header_item.text() if header_item else ""
+            header_w = header_font_metrics.horizontalAdvance(header_text)
+
+            # 2. Width of Longest Cell Value in the Entire Column
+            max_cell_w = 0
+            for row in range(self.table_fees.rowCount()):
+                cell_widget = self.table_fees.cellWidget(row, col)
+                if cell_widget:
+                    if isinstance(cell_widget, QCheckBox):
+                        cell_w = 24
+                    elif isinstance(cell_widget, QDoubleSpinBox):
+                        val_str = f"₹ {cell_widget.value():,.2f}"
+                        cell_w = font_metrics.horizontalAdvance(val_str) + 30
+                    else:
+                        cell_w = cell_widget.sizeHint().width()
+                else:
+                    item = self.table_fees.item(row, col)
+                    txt = item.text() if item else ""
+                    cell_w = font_metrics.horizontalAdvance(txt)
+
+                if cell_w > max_cell_w:
+                    max_cell_w = cell_w
+
+            # Final Column Width = MAX(Header Width, Longest Cell Width) + Padding
+            final_width = max(header_w, max_cell_w) + padding
+
+            # Enforce minimum bounds for Select checkbox column
+            if col == 0:
+                final_width = max(final_width, 55)
+
+            self.table_fees.setColumnWidth(col, final_width)
 
     def select_all_fees(self):
         for r in range(self.table_fees.rowCount()):
@@ -769,6 +809,8 @@ class ReceiptView(QWidget):
         self.lbl_next_rec.setText(f"Next Receipt No: <b>{ReceiptController.generate_next_receipt_number()}</b>")
         if not self.selected_student:
             self.load_fee_heads()
+        else:
+            self.auto_fit_columns()
 
     # ---------------- RECEIPT GENERATION & VALIDATION ----------------
     def generate_receipt(self):

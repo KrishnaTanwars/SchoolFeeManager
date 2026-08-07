@@ -11,6 +11,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **Bulk Action Convenience Buttons**: Dedicated `☑ Select All` and `☐ Deselect All` buttons added to top action toolbar for instant page-level row checking/unchecking.
 - **High-Contrast Export Menu Styling**: Fixed dark-on-dark contrast issues in the Export dropdown menu with explicit QSS styling (`#ffffff` background, `#0f172a` text, `#e0f2fe` hover).
 - **100% Filter Control Text Visibility**: Combobox popup views automatically expand (`view().setMinimumWidth(180)`) for full visibility of long items ("Net Banking / NEFT", "Demand Draft (DD)", etc.).
+- **Intelligent Auto Column Width Calculation (Fee Heads Particulars Table)**: Dynamically calculates exact column widths based on `MAX(Header Width, Longest Cell Width) + 22px Padding` without stretching or distributing unallocated space. Auto-recalculates on load, record changes, course filtering, and student selection.
 
 ---
 
