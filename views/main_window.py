@@ -1,12 +1,12 @@
 """
-Main Application Shell Window with Commercial Sidebar Navigation & View Router.
+Main Application Shell Window with Commercial Auto-Collapsible Sidebar Navigation & View Router.
 """
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QFrame, QLabel,
     QPushButton, QStackedWidget, QStatusBar, QMessageBox, QApplication
 )
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QSettings
 from PySide6.QtGui import QKeySequence, QShortcut
 
 from views.login_view import LoginView
@@ -30,6 +30,11 @@ class MainWindow(QMainWindow):
         self.resize(1280, 800)
         self.setMinimumSize(1024, 680)
 
+        # Local User Preference Storage for Sidebar State
+        self.settings = QSettings("SmartSchool", "SchoolFeeManager")
+        # Default to COLLAPSED (False) on fresh launch
+        self.sidebar_expanded = self.settings.value("sidebar_expanded", False, type=bool)
+
         self.setup_ui()
         self.setup_shortcuts()
 
@@ -42,36 +47,58 @@ class MainWindow(QMainWindow):
         self.main_layout.setSpacing(0)
 
         # ---------------- SIDEBAR FRAME ----------------
-        self.sidebar_expanded = True
         self.sidebar_frame = QFrame()
         self.sidebar_frame.setObjectName("SidebarFrame")
-        self.sidebar_frame.setFixedWidth(220)
+        
+        initial_width = 220 if self.sidebar_expanded else 60
+        self.sidebar_frame.setFixedWidth(initial_width)
 
         sidebar_layout = QVBoxLayout(self.sidebar_frame)
-        sidebar_layout.setContentsMargins(8, 12, 8, 12)
+        sidebar_layout.setContentsMargins(6, 12, 6, 12)
         sidebar_layout.setSpacing(6)
 
         # App Brand & Toggle Header
         brand_layout = QHBoxLayout()
+        brand_layout.setContentsMargins(0, 0, 0, 0)
+        brand_layout.setSpacing(6)
+
         self.btn_toggle = QPushButton("☰")
         self.btn_toggle.setFixedSize(36, 36)
-        self.btn_toggle.setToolTip("Expand / Collapse Sidebar")
-        self.btn_toggle.setStyleSheet("font-size: 16px; font-weight: bold; background-color: #1e293b; color: #ffffff; border: none; border-radius: 4px;")
+        self.btn_toggle.setToolTip("Toggle Navigation Sidebar (Ctrl+B)")
+        self.btn_toggle.setStyleSheet("""
+            QPushButton {
+                font-size: 16px;
+                font-weight: bold;
+                background-color: #1e293b;
+                color: #ffffff;
+                border: none;
+                border-radius: 6px;
+            }
+            QPushButton:hover {
+                background-color: #2563eb;
+            }
+        """)
         self.btn_toggle.setCursor(Qt.PointingHandCursor)
         self.btn_toggle.clicked.connect(self.toggle_sidebar)
 
-        title_v = QVBoxLayout()
-        self.lbl_title = QLabel("SCHOOL FEE ERP")
+        self.title_container = QWidget()
+        title_v = QVBoxLayout(self.title_container)
+        title_v.setContentsMargins(4, 0, 0, 0)
+        title_v.setSpacing(2)
+
+        self.lbl_title = QLabel("EDULEDGER")
         self.lbl_title.setObjectName("SidebarTitle")
+        self.lbl_title.setStyleSheet("color: #ffffff; font-size: 15px; font-weight: 800; letter-spacing: 0.5px;")
 
         self.lbl_subtitle = QLabel(f"ERP v{APP_VERSION}")
         self.lbl_subtitle.setObjectName("SidebarSubtitle")
+        self.lbl_subtitle.setStyleSheet("color: #38bdf8; font-size: 10px; font-weight: 600;")
 
         title_v.addWidget(self.lbl_title)
         title_v.addWidget(self.lbl_subtitle)
 
         brand_layout.addWidget(self.btn_toggle)
-        brand_layout.addLayout(title_v)
+        brand_layout.addWidget(self.title_container)
         brand_layout.addStretch()
 
         sidebar_layout.addLayout(brand_layout)
@@ -79,19 +106,19 @@ class MainWindow(QMainWindow):
 
         # Navigation Items Data: (key, full_text, compact_text, tooltip)
         self.nav_items_data = [
-            ("dashboard", "📊  Dashboard", "📊", "Dashboard"),
-            ("receipt", "💳  Collect Fee", "💳", "Collect Fee"),
-            ("history", "📜  Receipt History", "📜", "Receipt History"),
-            ("students", "👨‍🎓  Student Master", "👨‍🎓", "Student Master"),
-            ("fees", "🏷️  Fee Heads Master", "🏷️", "Fee Heads Master"),
-            ("reports", "📈  Financial Reports", "📈", "Financial Reports"),
-            ("settings", "⚙️  Settings & Backup", "⚙️", "Settings & Backup"),
+            ("dashboard", "🏠   Dashboard", "🏠", "Dashboard (Alt+1)"),
+            ("receipt", "💰   Fee Collection", "💰", "Fee Collection (Alt+2)"),
+            ("history", "📜   Receipt History", "📜", "Receipt History (Alt+3)"),
+            ("students", "👨‍🎓   Student Master", "👨‍🎓", "Student Master (Alt+4)"),
+            ("fees", "🏷️   Fee Heads Master", "🏷️", "Fee Heads Master (Alt+5)"),
+            ("reports", "📊   Financial Reports", "📊", "Financial Reports (Alt+6)"),
+            ("settings", "⚙️   Settings & Backup", "⚙️", "Settings & Backup (Alt+7)"),
         ]
 
         # Navigation Buttons
         self.nav_buttons = {}
         for key, full_text, compact_text, tooltip in self.nav_items_data:
-            btn = QPushButton(full_text)
+            btn = QPushButton()
             btn.setCheckable(True)
             btn.setProperty("class", "NavBtn")
             btn.setFixedHeight(38)
@@ -104,7 +131,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.addStretch()
 
         # Logout Button
-        self.btn_logout = QPushButton("🔒  Log Out System")
+        self.btn_logout = QPushButton()
         self.btn_logout.setProperty("class", "NavBtn")
         self.btn_logout.setFixedHeight(38)
         self.btn_logout.setToolTip("Log Out System")
@@ -113,6 +140,9 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(self.btn_logout)
 
         self.main_layout.addWidget(self.sidebar_frame)
+
+        # Apply initial collapsed/expanded UI state
+        self.update_sidebar_visuals(animated=False)
 
         # ---------------- RIGHT CONTAINER ----------------
         right_container = QWidget()
@@ -172,6 +202,7 @@ class MainWindow(QMainWindow):
         self.show_login()
 
     def setup_shortcuts(self):
+        QShortcut(QKeySequence("Ctrl+B"), self, self.toggle_sidebar)
         QShortcut(QKeySequence("Ctrl+P"), self, lambda: self.navigate_to("receipt"))
         QShortcut(QKeySequence("Ctrl+N"), self, lambda: self.navigate_to("students_add"))
         QShortcut(QKeySequence("F5"), self, self.refresh_active_view)
@@ -197,22 +228,59 @@ class MainWindow(QMainWindow):
         self.navigate_to("dashboard")
 
     def toggle_sidebar(self):
+        """Toggle sidebar between expanded (220px) and collapsed (60px) state with smooth QPropertyAnimation."""
         self.sidebar_expanded = not self.sidebar_expanded
+        self.settings.setValue("sidebar_expanded", self.sidebar_expanded)
+        self.update_sidebar_visuals(animated=True)
 
-        if self.sidebar_expanded:
-            self.sidebar_frame.setFixedWidth(220)
-            self.lbl_title.show()
-            self.lbl_subtitle.show()
-            for key, full_text, compact_text, tooltip in self.nav_items_data:
-                self.nav_buttons[key].setText(full_text)
-            self.btn_logout.setText("🔒  Log Out System")
+    def update_sidebar_visuals(self, animated: bool = True):
+        start_w = self.sidebar_frame.width()
+        end_w = 220 if self.sidebar_expanded else 60
+
+        if animated:
+            # Smooth QPropertyAnimation over 200 ms
+            self.anim_min = QPropertyAnimation(self.sidebar_frame, b"minimumWidth")
+            self.anim_min.setDuration(200)
+            self.anim_min.setStartValue(start_w)
+            self.anim_min.setEndValue(end_w)
+            self.anim_min.setEasingCurve(QEasingCurve.InOutQuad)
+
+            self.anim_max = QPropertyAnimation(self.sidebar_frame, b"maximumWidth")
+            self.anim_max.setDuration(200)
+            self.anim_max.setStartValue(start_w)
+            self.anim_max.setEndValue(end_w)
+            self.anim_max.setEasingCurve(QEasingCurve.InOutQuad)
+
+            self.anim_group = QParallelAnimationGroup()
+            self.anim_group.addAnimation(self.anim_min)
+            self.anim_group.addAnimation(self.anim_max)
+            self.anim_group.start()
         else:
-            self.sidebar_frame.setFixedWidth(65)
-            self.lbl_title.hide()
-            self.lbl_subtitle.hide()
-            for key, full_text, compact_text, tooltip in self.nav_items_data:
-                self.nav_buttons[key].setText(compact_text)
+            self.sidebar_frame.setFixedWidth(end_w)
+
+        # Toggle Brand Title Container
+        if self.sidebar_expanded:
+            self.title_container.show()
+        else:
+            self.title_container.hide()
+
+        # Update Navigation Button Text & Alignment
+        for key, full_text, compact_text, tooltip in self.nav_items_data:
+            btn = self.nav_buttons[key]
+            if self.sidebar_expanded:
+                btn.setText(full_text)
+                btn.setStyleSheet("text-align: left; padding-left: 12px; font-size: 12px;")
+            else:
+                btn.setText(compact_text)
+                btn.setStyleSheet("text-align: center; padding-left: 0px; font-size: 16px;")
+
+        # Logout Button
+        if self.sidebar_expanded:
+            self.btn_logout.setText("🔒   Log Out System")
+            self.btn_logout.setStyleSheet("text-align: left; padding-left: 12px; font-size: 12px;")
+        else:
             self.btn_logout.setText("🔒")
+            self.btn_logout.setStyleSheet("text-align: center; padding-left: 0px; font-size: 16px;")
 
     def navigate_to(self, key: str):
         auto_add_student = False

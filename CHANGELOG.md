@@ -2,6 +2,18 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.5.4] - Phase 05.4 Professional Auto-Collapsible Navigation Sidebar Release
+
+### 🎨 Commercial Auto-Collapsible Sidebar Navigation Shell
+- **Collapsed by Default**: Application launches with navigation sidebar in collapsed state (width 60px) to maximize screen working area for tables and forms.
+- **Centered Icons & Hover Tooltips**: Displays clean, centered icons (`🏠`, `💰`, `📜`, `👨‍🎓`, `🏷️`, `📊`, `⚙️`, `🔒`) with descriptive hover tooltips when collapsed.
+- **Icons + Text When Expanded**: Expands to 220px displaying app title header and full item labels.
+- **Smooth `QPropertyAnimation`**: 200 ms smooth transition with `QEasingCurve.InOutQuad` on Hamburger button (`☰`) click or `Ctrl+B` keyboard shortcut.
+- **User Preference Storage (`QSettings`)**: Automatically persists user sidebar preference across application launches (`QSettings("SmartSchool", "SchoolFeeManager")`).
+- **Workspace Auto-Expansion**: Main content view dynamically expands to occupy all gained screen width without layout clipping or horizontal scrollbars.
+
+---
+
 ## [1.5.3] - Phase 05.3 Complete Fee Collection Layout Redesign Release
 
 ### 🎨 2-Column Commercial ERP Layout Architecture

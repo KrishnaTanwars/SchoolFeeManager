@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.5.4 — Professional Auto-Collapsible Navigation Sidebar (Phase 5.4 Release)
+- **Release Date**: August 2026
+- **Sidebar Features**:
+  - Auto-collapsible navigation sidebar shell (width 60px collapsed / 220px expanded).
+  - Collapsed by default on launch to maximize workspace area for office staff.
+  - Centered icons (`🏠`, `💰`, `📜`, `👨‍🎓`, `🏷️`, `📊`, `⚙️`, `🔒`) with full hover tooltips.
+  - Smooth 200ms `QPropertyAnimation` on Hamburger menu (`☰`) click or `Ctrl+B` shortcut.
+  - State persistence across application restarts via `QSettings`.
+  - Active screen button highlighting maintained in both collapsed and expanded states.
+
 ### v1.5.3 — Complete Fee Collection Layout Redesign (Phase 5.3 Release)
 - **Release Date**: August 2026
 - **Redesign Features**:
