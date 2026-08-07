@@ -5,6 +5,18 @@
 
 ## Semantic Version Release Progression
 
+### v1.8.0 — Professional Financial Reports & Analytics (Phase 8 Release)
+- **Release Date**: August 2026
+- **Financial Analytics & MIS Reporting Features**:
+  - **10-Category Card Reports Dashboard**: Interactive MIS reports center with visual cards (`Daily Collection`, `Monthly Collection`, `Date Range Collection`, `Class-wise Collection`, `Course-wise Collection`, `Outstanding Fee Report`, `Student Ledger Report`, `Receipt Register Log`, `Fee Head Collection`, `Payment Mode Report`).
+  - **Universal Common Filter Panel**: Multi-criteria filtering supporting Academic Session, Course (UG/PG), Class, Payment Mode, Fee Head, Date Range (From/To), Student Admission No/Name, with `Generate Report` and `Reset Filters`.
+  - **Real-Time Summary KPI Panels**: Summary metric cards on every report displaying Total Collection, Receipt Count, Total Discounts, Total Fines, Average Receipt Amount, and Outstanding Balance.
+  - **Class-wise & Course-wise Analytics**: Revenue breakdown by class with sorting options (Highest/Lowest Collection) and separate UG vs PG collection summaries.
+  - **Student Outstanding & Ledger Engine**: Complete outstanding fee balances report with status filters ("Only Outstanding", "Only Fully Paid") and complete individual student payment ledgers with running balance tracking.
+  - **Fee Head & Payment Mode Breakdown**: Revenue aggregation by fee category (Tuition, Development, Lab, Sports, etc.) and transaction mode breakdown (Cash, UPI, Cheque, Card, Net Banking, Demand Draft).
+  - **Report Viewer Ergonomics**: High-performance QTableWidget views with automatic content-aware column width sizing (`resizeColumnsToContents()`), column sorting, pagination controls (25, 50, 100, All rows per page with page controls `⏮ ◀ Page X of Y ▶ ⏭`), and live text search box.
+  - **Multi-Format Export & Printing Engine**: `📄 Export PDF` (ReportLab formatted report), `📥 Export CSV`, `📊 Export Excel`, and `🖨 Print Report` for filtered report views.
+
 ### v1.7.0 — Professional Settings & Administration Module (Phase 7 Release)
 - **Release Date**: August 2026
 - **Settings & Administration Features**:

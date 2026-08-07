@@ -2,7 +2,19 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
-## [1.7.0] - Phase 07 Professional Settings & Administration Module Release
+## [1.8.0] - Phase 08 Professional Financial Reports & Analytics Release
+
+### 📊 Management Information System (MIS) Reports Center
+- **Interactive 10-Report Dashboard Grid**: Transformed Reports module into an MIS executive reporting center featuring visual cards for 10 specialized financial and operational reports (`Daily Collection`, `Monthly Collection`, `Date Range Collection`, `Class-wise Collection`, `Course-wise Collection`, `Outstanding Fee Report`, `Student Ledger Report`, `Receipt Register Log`, `Fee Head Collection`, `Payment Mode Report`).
+- **Universal Multi-Criteria Filter Panel**: Common filter panel supporting Academic Session, Course (UG/PG), Class, Section, Payment Mode, Fee Head, Date From/To, Student Admission No/Name, Receipt Number, with instant `Generate Report` and `Reset Filters` capabilities.
+- **Real-Time Summary KPI Metric Panels**: Summary cards on every report displaying Total Collection, Receipt Count, Total Discounts, Total Fines, Average Receipt Amount, and Total Outstanding Dues.
+- **Class-wise & Course-wise Financial Analytics**: Class-wise collection and due summaries with sorting options (`Highest Collection`, `Lowest Collection`, `Class Name`) and comparative UG vs PG course summaries.
+- **Outstanding Fee & Student Ledger Engine**: Student outstanding fee balances report with status filtering (`All`, `Only Outstanding`, `Only Fully Paid`) and individual student ledger history with running balance calculation.
+- **Fee Head & Payment Method Breakdown**: Collection revenue grouped by fee category heads (Tuition, Development, Laboratory, Sports, etc.) and transaction mode breakdown (Cash, UPI, Cheque, Card, Net Banking, Demand Draft).
+- **Report Viewer Ergonomics**: High-performance QTableWidget views with content-aware column width auto-sizing (`resizeColumnsToContents()`), column sorting enabled, rows per page pagination (25, 50, 100, All rows per page with page controls `⏮ ◀ Page X of Y ▶ ⏭`), and live table search box.
+- **Multi-Format Export & Printing Engine**: `📄 Export PDF` (ReportLab formatted report with headers and footers), `📥 Export CSV`, `📊 Export Excel`, and `🖨 Print Report` for currently filtered report datasets.
+
+---
 
 ### ⚙️ Central Administration Panel & Category Dashboard
 - **Admin Password Protection**: Enforced password authorization on Settings access (`AdminAuthDialog`), automatically logging successful and denied access attempts to system audit entries.
