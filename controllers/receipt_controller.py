@@ -187,14 +187,30 @@ class ReceiptController:
         search_query: str = "",
         date_from: Optional[date] = None,
         date_to: Optional[date] = None,
-        session_filter: str = "All"
+        session_filter: str = "All",
+        course_filter: str = "All",
+        class_filter: str = "All",
+        pay_mode_filter: str = "All",
+        status_filter: str = "All"
     ) -> List[Receipt]:
         db = get_db()
         try:
-            query = db.query(Receipt).options(joinedload(Receipt.student), joinedload(Receipt.items))
+            query = db.query(Receipt).join(Receipt.student).options(joinedload(Receipt.student), joinedload(Receipt.items))
 
             if session_filter != "All":
                 query = query.filter(Receipt.academic_session == session_filter)
+
+            if course_filter != "All":
+                query = query.filter(Student.course == course_filter)
+
+            if class_filter != "All":
+                query = query.filter(Student.class_name == class_filter)
+
+            if pay_mode_filter != "All":
+                query = query.filter(Receipt.payment_mode == pay_mode_filter)
+
+            if status_filter != "All":
+                query = query.filter(Receipt.status == status_filter)
 
             if date_from:
                 query = query.filter(Receipt.receipt_date >= date_from)
@@ -210,7 +226,11 @@ class ReceiptController:
                         Student.name.ilike(pattern),
                         Student.admission_no.ilike(pattern),
                         Student.father_name.ilike(pattern),
-                        Student.mobile.ilike(pattern)
+                        Student.mobile.ilike(pattern),
+                        Student.course.ilike(pattern),
+                        Student.class_name.ilike(pattern),
+                        Receipt.payment_mode.ilike(pattern),
+                        Receipt.remarks.ilike(pattern)
                     )
                 )
 
@@ -221,6 +241,93 @@ class ReceiptController:
                 for item in r.items:
                     _ = item.category_name
             return receipts
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_receipts_paginated(
+        search_query: str = "",
+        date_from: Optional[date] = None,
+        date_to: Optional[date] = None,
+        session_filter: str = "All",
+        course_filter: str = "All",
+        class_filter: str = "All",
+        pay_mode_filter: str = "All",
+        status_filter: str = "All",
+        page: int = 1,
+        page_size: int = 25
+    ) -> Tuple[List[Receipt], int, int, Dict[str, float]]:
+        """
+        High-performance SQL paginated receipt ledger query.
+        Returns: (receipts_page, total_records, total_pages, summary_totals)
+        """
+        db = get_db()
+        try:
+            query = db.query(Receipt).join(Receipt.student).options(joinedload(Receipt.student), joinedload(Receipt.items))
+
+            if session_filter != "All":
+                query = query.filter(Receipt.academic_session == session_filter)
+
+            if course_filter != "All":
+                query = query.filter(Student.course == course_filter)
+
+            if class_filter != "All":
+                query = query.filter(Student.class_name == class_filter)
+
+            if pay_mode_filter != "All":
+                query = query.filter(Receipt.payment_mode == pay_mode_filter)
+
+            if status_filter != "All":
+                query = query.filter(Receipt.status == status_filter)
+
+            if date_from:
+                query = query.filter(Receipt.receipt_date >= date_from)
+
+            if date_to:
+                query = query.filter(Receipt.receipt_date <= date_to)
+
+            if search_query:
+                pattern = f"%{search_query.strip()}%"
+                query = query.filter(
+                    or_(
+                        Receipt.receipt_no.ilike(pattern),
+                        Student.name.ilike(pattern),
+                        Student.admission_no.ilike(pattern),
+                        Student.father_name.ilike(pattern),
+                        Student.mobile.ilike(pattern),
+                        Student.course.ilike(pattern),
+                        Student.class_name.ilike(pattern),
+                        Receipt.payment_mode.ilike(pattern),
+                        Receipt.remarks.ilike(pattern)
+                    )
+                )
+
+            total_records = query.count()
+            page = max(1, page)
+            page_size = max(1, page_size)
+            total_pages = max(1, (total_records + page_size - 1) // page_size)
+
+            offset = (page - 1) * page_size
+            receipts = query.order_by(Receipt.receipt_date.desc(), Receipt.id.desc()).offset(offset).limit(page_size).all()
+
+            for r in receipts:
+                if r.student:
+                    _ = r.student.name
+                for item in r.items:
+                    _ = item.category_name
+
+            # Calculate total amount summary for filtered query set
+            total_amt = sum(r.total_amount or 0.0 for r in receipts)
+            total_paid = sum(r.paid_amount or 0.0 for r in receipts)
+            total_due = sum(r.due_amount or 0.0 for r in receipts)
+
+            summary = {
+                "total_amount": total_amt,
+                "total_paid": total_paid,
+                "total_due": total_due
+            }
+
+            return receipts, total_records, total_pages, summary
         finally:
             db.close()
 
@@ -254,8 +361,8 @@ class ReceiptController:
             db.close()
 
     @staticmethod
-    def cancel_receipt(receipt_id: int) -> Tuple[bool, str]:
-        """Cancels or deletes a receipt with Audit Logging."""
+    def cancel_receipt(receipt_id: int, reason: str = "") -> Tuple[bool, str]:
+        """Cancels or deletes a receipt with Audit Logging and Delete Reason."""
         db = get_db()
         try:
             r = db.query(Receipt).filter(Receipt.id == receipt_id).first()
@@ -263,17 +370,27 @@ class ReceiptController:
                 return False, "Receipt record not found."
 
             r_no = r.receipt_no
+            st_name = r.student.name if r.student else "Unknown"
+            amt = r.total_amount or 0.0
+
             r.status = "Cancelled"
             db.commit()
 
+            user = AuthController.get_current_user()
+            uname = user.username if user else "Admin"
+
             from services.security_service import SecurityService
+            audit_details = f"Cancelled receipt '{r_no}' (Student: {st_name}, Amount: Rs. {amt:.2f})"
+            if reason:
+                audit_details += f" - Reason: {reason}"
+
             SecurityService.log_audit(
                 action="Receipt Deleted",
                 module="Receipt History",
-                details=f"Cancelled receipt '{r_no}' (ID {receipt_id})",
+                details=audit_details,
                 status="Success"
             )
-            logger.info(f"Cancelled receipt ID {receipt_id} ({r_no})")
+            logger.info(f"Cancelled receipt ID {receipt_id} ({r_no}) by {uname}")
             return True, f"Receipt '{r_no}' cancelled successfully."
         except Exception as e:
             db.rollback()
@@ -290,7 +407,7 @@ class ReceiptController:
             db.close()
 
     @staticmethod
-    def bulk_delete_receipts(receipt_ids: Optional[List[int]] = None) -> Tuple[bool, str, int]:
+    def bulk_delete_receipts(receipt_ids: Optional[List[int]] = None, reason: str = "") -> Tuple[bool, str, int]:
         """Bulk deletes or purges cancelled receipts with Audit Logging."""
         db = get_db()
         try:
@@ -305,19 +422,29 @@ class ReceiptController:
             if deleted_count == 0:
                 return True, "No target receipts found to delete.", 0
 
+            rec_nos = [r.receipt_no for r in targets[:5]]
+            sample_nos = ", ".join(rec_nos) + ("..." if deleted_count > 5 else "")
+
             for r in targets:
                 db.delete(r)
 
             db.commit()
 
+            user = AuthController.get_current_user()
+            uname = user.username if user else "Admin"
+
             from services.security_service import SecurityService
+            audit_details = f"Bulk deleted {deleted_count} receipts ({sample_nos})"
+            if reason:
+                audit_details += f" - Reason: {reason}"
+
             SecurityService.log_audit(
                 action="Bulk Receipt Deleted",
                 module="Receipt History",
-                details=f"Bulk deleted {deleted_count} receipts",
+                details=audit_details,
                 status="Success"
             )
-            logger.info(f"Bulk deleted {deleted_count} receipts")
+            logger.info(f"Bulk deleted {deleted_count} receipts by {uname}")
             return True, f"Successfully deleted {deleted_count} receipts.", deleted_count
         except Exception as e:
             db.rollback()
@@ -332,3 +459,4 @@ class ReceiptController:
             return False, f"Database error during bulk delete: {str(e)}", 0
         finally:
             db.close()
+

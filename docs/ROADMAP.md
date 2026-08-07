@@ -39,8 +39,8 @@ Removed short code across schema, forms, tables, and exports. Introduced UG and 
 ### Phase 5 — Fee Collection Professionalization (`v1.5.0`) ✅
 Redesigned Fee Collection module with instant keyboard-navigable autocomplete student search overlay, zero-clipping student profile summary card, automatic course-based fee filtering (`UG` vs `PG`), real-time totals calculation engine, dynamic payment mode fields, and keyboard ergonomics (`Alt+S`, `Ctrl+S`).
 
-### Phase 6 — Role-Based Access Control (RBAC) & Fine-Grained Permissions (`v1.6.0`)
-Replace simple Admin/Operator role flags with a granular permission matrix, enabling custom role creation (Accountant, Principal, Receptionist, Auditor) with explicit read/write/delete permissions per module.
+### Phase 6 — Receipt History Professionalization (`v1.6.0`) ✅
+Redesigned Receipt History into a commercial ERP searchable ledger featuring SQL pagination (25, 50, 100, 200 rows per page), 9-field live search, advanced multi-filter toolbar with quick date presets (Today, Yesterday, Last 7 Days, This Month, This Year), inline receipt actions (View, Print, PDF, Delete), bulk selection and bulk delete with Administrator Password authentication and Audit Logging, and multi-format exports (CSV, Excel, PDF).
 
 ### Phase 7 — Multi-Branch & Multi-Institution Support (`v1.7.0`)
 Enable multi-tenant architecture support, allowing educational groups to manage multiple branches, campuses, or institutes within a single ERP installation with branch-level data isolation and consolidated corporate reporting.

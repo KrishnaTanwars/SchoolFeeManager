@@ -23,6 +23,17 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.6.0 — Receipt History Professionalization (Phase 6 Release)
+- **Release Date**: August 2026
+- **Ledger Features**:
+  - Redesigned Receipt History into a commercial ERP searchable ledger.
+  - SQL pagination (25, 50, 100, 200 rows per page) with page navigation controls.
+  - 9-field live search matching Receipt No, Adm No, Student Name, Father Name, Mobile, Course, Class, Mode, Remarks.
+  - Advanced multi-filter toolbar + quick date presets (`Today`, `Yesterday`, `Last 7 Days`, `This Month`, `This Year`, `Reset`).
+  - Inline row actions: View, Print, PDF, Delete.
+  - Bulk Selection, Bulk Delete, Bulk Export (CSV, Excel, PDF).
+  - Admin Password protection + Deletion Reason prompt + Full Audit Logging.
+
 ### v1.5.4 — Professional Auto-Collapsible Navigation Sidebar (Phase 5.4 Release)
 - **Release Date**: August 2026
 - **Sidebar Features**:

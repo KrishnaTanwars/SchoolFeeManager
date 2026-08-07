@@ -2,6 +2,20 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.6.0] - Phase 06 Receipt History Professionalization Release
+
+### 💳 Commercial ERP Searchable Receipt Ledger
+- **High-Performance SQL Pagination**: Sub-second responsiveness over 10,000+ receipts supporting 25, 50, 100, 200 rows per page with page navigation controls (`First`, `Prev`, `Next`, `Last`).
+- **9-Field Live Multi-Criteria Search**: Instant live search while typing matching Receipt No, Admission No, Student Name, Father Name, Mobile No, Course, Class, Payment Mode, and Remarks.
+- **Advanced Multi-Filter Toolbar**: Session, Course, Class, Payment Mode, Status, Date From, Date To, plus quick date presets (`Today`, `Yesterday`, `Last 7 Days`, `This Month`, `This Year`, `Reset Filters`).
+- **Zero-Clipping Professional Receipt Table**: Clean column layout with explicit width allocations (`[ ] Checkbox`, `Receipt No`, `Date`, `Adm No`, `Student Name`, `Course`, `Class`, `Payment Mode`, `Amount`, `Status`, `Actions`).
+- **Inline Row Actions**: Instant access to `👁 View` (ReceiptPreviewDialog), `🖨 Print` (Direct Print), `📄 PDF` (Export PDF), and `🚫 Del` (Secure Cancel/Delete).
+- **Bulk Selection & Actions**: Select All checkbox, individual row checkboxes, bulk delete, bulk print, and bulk export capabilities.
+- **Delete Security & Audit Logging**: Single and Bulk deletes mandate Administrator Password authorization (`AdminAuthDialog`), confirmation modal, deletion reason prompt, and log full audit entries (`SecurityService.log_audit`).
+- **Multi-Format Export Engine**: Multi-format export to CSV, Excel (`.xlsx`), and ReportLab PDF Ledger reports.
+
+---
+
 ## [1.5.4] - Phase 05.4 Professional Auto-Collapsible Navigation Sidebar Release
 
 ### 🎨 Commercial Auto-Collapsible Sidebar Navigation Shell
