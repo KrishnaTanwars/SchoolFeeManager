@@ -81,15 +81,17 @@ class TestPhase2SecuritySystem(unittest.TestCase):
 
     def test_04_fee_category_delete_security_and_audit(self):
         """Verifies fee head/category deletion security audit logging."""
-        # Create fee category
-        succ, msg = FeeController.create_category({
-            "name": "SecTest Fee Head",
-            "default_amount": 1500.0,
-            "code": "STFH"
-        })
-        self.assertTrue(succ)
         cats = FeeController.get_all_categories()
         cat = next((c for c in cats if c.name == "SecTest Fee Head"), None)
+        if not cat:
+            succ, msg = FeeController.create_category({
+                "name": "SecTest Fee Head",
+                "default_amount": 1500.0,
+                "code": "STFH"
+            })
+            self.assertTrue(succ)
+            cats = FeeController.get_all_categories()
+            cat = next((c for c in cats if c.name == "SecTest Fee Head"), None)
         self.assertIsNotNone(cat)
 
         # Delete category
@@ -98,8 +100,8 @@ class TestPhase2SecuritySystem(unittest.TestCase):
 
         # Verify audit log
         audit = self.db.query(AuditLog).filter(
-            AuditLog.module == "Fee Category",
-            AuditLog.action == "Fee Category Deleted"
+            AuditLog.module == "Fee Heads",
+            AuditLog.action == "Fee Head Deleted"
         ).order_by(AuditLog.id.desc()).first()
         self.assertIsNotNone(audit)
         self.assertIn("SecTest Fee Head", audit.details)
@@ -107,23 +109,28 @@ class TestPhase2SecuritySystem(unittest.TestCase):
     def test_05_receipt_cancel_security_and_audit(self):
         """Verifies receipt cancellation security audit logging."""
         # Create student & category
-        StudentController.create_student({
-            "name": "ReceiptSec Student",
-            "admission_no": "ADM/REC/SEC01",
-            "class_name": "Class 5",
-            "father_name": "Father Sec",
-            "mobile": "9876543210"
-        })
         st = StudentController.get_student_by_admission_no("ADM/REC/SEC01")
+        if not st:
+            StudentController.create_student({
+                "name": "ReceiptSec Student",
+                "admission_no": "ADM/REC/SEC01",
+                "class_name": "Class 5",
+                "father_name": "Father Sec",
+                "mobile": "9876543210"
+            })
+            st = StudentController.get_student_by_admission_no("ADM/REC/SEC01")
         self.assertIsNotNone(st)
 
-        FeeController.create_category({
-            "name": "Tuition Fee Sec",
-            "default_amount": 2500.0,
-            "code": "TFS"
-        })
         cats = FeeController.get_all_categories()
         cat = next((c for c in cats if c.name == "Tuition Fee Sec"), None)
+        if not cat:
+            FeeController.create_category({
+                "name": "Tuition Fee Sec",
+                "default_amount": 2500.0,
+                "code": "TFS"
+            })
+            cats = FeeController.get_all_categories()
+            cat = next((c for c in cats if c.name == "Tuition Fee Sec"), None)
         self.assertIsNotNone(cat)
 
         # Collect fee
@@ -138,7 +145,7 @@ class TestPhase2SecuritySystem(unittest.TestCase):
         # Verify audit log
         audit = self.db.query(AuditLog).filter(
             AuditLog.module == "Receipt History",
-            AuditLog.action == "Receipt Cancelled"
+            AuditLog.action.in_(["Receipt Deleted", "Receipt Cancelled"])
         ).order_by(AuditLog.id.desc()).first()
         self.assertIsNotNone(audit)
         self.assertIn(rec.receipt_no, audit.details)

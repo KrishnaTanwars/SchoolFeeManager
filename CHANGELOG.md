@@ -2,6 +2,19 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.5.0] - Phase 05 Fee Collection Professionalization Release
+
+### 💳 Fee Collection & ERP Workflow Professionalization
+- **Instant Keyboard-Navigable Autocomplete Search**: Redesigned student search using an instant floating popup suggestions list (`QListWidget` popup attached to search input) matching across Admission Number, Student Name, Father Name, Mobile Number, and Roll Number (case-insensitive). Implemented keyboard arrow navigation (Up/Down), Enter selection, and Escape dismissal.
+- **Zero-Clipping Student Summary Card**: Built a full student summary card displaying Admission No, Student Name, Course, Class, Section, Father Name, Mobile, Academic Session, Status, Total Paid Till Date, and Outstanding Due with clean column widths and word wrapping to guarantee zero label clipping across 1366x768, 1600x900, and 1920x1080 resolutions.
+- **Course-Based Auto Fee Filtering**: Automatically filters fee heads table according to selected student's course level (`UG` vs `PG` vs `All`). Included quick "Select All" and "Deselect All" master buttons.
+- **Real-Time Calculation Engine**: Instant real-time updates for Subtotal, Discount, Fine, Total Fee Payable, Actual Paid Amount, Remaining Due Amount, and Amount in Words (Indian numbering system format) without needing calculation buttons.
+- **Dynamic Payment Mode Fields & Optional Remarks**: Dynamic input fields for Cash, UPI/QR (UTR No), Cheque/DD (Cheque No, Cheque Date, Bank Name), Net Banking/NEFT/Card (Txn/Ref No), and optional Remarks.
+- **Keyboard Shortcut Ergonomics**: Integrated global focus shortcut (`Alt+S` for Student Search) and save shortcut (`Ctrl+S` for Receipt Generation).
+- **Automated Unit & Integration Testing**: Created `tests/test_phase5_fee_collection.py` bringing total test suite count to 47 / 47 passing (100% pass rate).
+
+---
+
 ## [1.4.0] - Phase 04 Fee Heads Master Professionalization Release
 
 ### 🏷️ Fee Heads Master ERP Enhancements

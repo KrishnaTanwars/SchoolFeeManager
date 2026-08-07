@@ -143,6 +143,22 @@ class ReceiptController:
             db.close()
 
     @staticmethod
+    def collect_fee(student_id: int, items: List[Dict[str, Any]], payment_mode: str = "Cash", **kwargs) -> Tuple[Optional[Receipt], str]:
+        """Legacy helper alias for create_receipt used in Phase 2 test suite."""
+        academic_session = kwargs.get("academic_session", "2024-2025")
+        discount = kwargs.get("discount_amount", 0.0)
+        fine = kwargs.get("fine_amount", 0.0)
+        ok, msg, rec = ReceiptController.create_receipt(
+            student_id=student_id,
+            academic_session=academic_session,
+            items=items,
+            discount_amount=discount,
+            fine_amount=fine,
+            payment_mode=payment_mode
+        )
+        return rec, msg
+
+    @staticmethod
     def get_student_outstanding_due(student_id: int) -> float:
         """Calculates total outstanding due amount across all active receipts for a student."""
         db = get_db()

@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.5.0 — Fee Collection Professionalization (Phase 5 Release)
+- **Release Date**: August 2026
+- **Features**:
+  - Instant Keyboard-Navigable Autocomplete Search overlay widget matching Admission No, Name, Father Name, Mobile, and Roll No.
+  - Zero-Clipping Student Summary Profile Card with word wrapping and clean layout for 1366x768, 1600x900, 1920x1080 resolutions.
+  - Automatic Course-Based Fee Filtering (`UG` vs `PG` vs `All`) matching selected student.
+  - Real-Time Calculation Engine instantly updating Subtotal, Discount, Fine, Total, Paid Amount, Due, and Amount in Words.
+  - Dynamic Payment Mode Inputs (Cash, UPI UTR, Cheque/DD, Net Banking/NEFT/Card) & Optional Remarks.
+  - High-Speed ERP Ergonomics with Keyboard Shortcuts (`Alt+S` Search, `Ctrl+S` Generate).
+
 ### v1.4.0 — Fee Heads Master Professionalization (Phase 4 Release)
 - **Release Date**: August 2026
 - **Features**:

@@ -42,6 +42,11 @@ class TestPhase4FeeHeadsMaster(unittest.TestCase):
 
     def test_02_create_ug_pg_fee_heads(self):
         """Verifies creating UG and PG fee heads without short code."""
+        # Cleanup if left over from prior test run
+        for c in FeeController.get_all_categories():
+            if c.name in ["UG Special Library Fee", "PG Special Research Fee"]:
+                FeeController.delete_category(c.id)
+
         succ_ug, msg_ug = FeeController.create_category({
             "name": "UG Special Library Fee",
             "course": "UG",
@@ -60,6 +65,11 @@ class TestPhase4FeeHeadsMaster(unittest.TestCase):
 
     def test_03_duplicate_validation_within_course(self):
         """Verifies duplicate prevention within same course, while allowing same name across UG and PG."""
+        # Cleanup if left over from prior test run
+        for c in FeeController.get_all_categories():
+            if c.name == "Custom Shared Fee":
+                FeeController.delete_category(c.id)
+
         # Create UG Tuition Custom
         FeeController.create_category({
             "name": "Custom Shared Fee",

@@ -36,8 +36,8 @@ Expand fee management capabilities with recurring fee scheduling (Monthly, Quart
 ### Phase 4 — Fee Heads Master Professionalization (`v1.4.0`) ✅
 Removed short code across schema, forms, tables, and exports. Introduced UG and PG course level classification, default seeding of 14 UG and 3 PG fee heads, duplicate validation within course, and course-based fee head filtering in receipt collection.
 
-### Phase 5 — Advanced Financial Reporting & Executive Dashboards (`v1.5.0`)
-Deliver deep financial business intelligence with interactive charts, class-wise revenue comparisons, fee collection forecasting, outstanding due age analysis reports, and automated daily email financial summaries for management.
+### Phase 5 — Fee Collection Professionalization (`v1.5.0`) ✅
+Redesigned Fee Collection module with instant keyboard-navigable autocomplete student search overlay, zero-clipping student profile summary card, automatic course-based fee filtering (`UG` vs `PG`), real-time totals calculation engine, dynamic payment mode fields, and keyboard ergonomics (`Alt+S`, `Ctrl+S`).
 
 ### Phase 6 — Role-Based Access Control (RBAC) & Fine-Grained Permissions (`v1.6.0`)
 Replace simple Admin/Operator role flags with a granular permission matrix, enabling custom role creation (Accountant, Principal, Receptionist, Auditor) with explicit read/write/delete permissions per module.

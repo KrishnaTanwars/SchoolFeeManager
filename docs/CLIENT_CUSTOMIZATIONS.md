@@ -66,3 +66,12 @@
 - **Reason**: Client institutions requested full visibility of student information without horizontal scrolling or clipped text across high and low resolution monitors.
 - **Files Modified**: `views/student_view.py`, `controllers/student_controller.py`, `tests/test_student.py`.
 - **Version Introduced**: v1.3.0 (Phase 3)
+
+---
+
+### Customization 8: High-Speed Autocomplete Fee Collection & Real-Time Calculation Engine
+- **Original Behavior**: Slow student search dropdown requiring manual clicking, clipped student text, manual course filtering, slow workflow.
+- **New Behavior**: Instant keyboard-navigable autocomplete suggestions overlay, zero-clipping student profile card, automatic course-based fee head filtering (`UG` vs `PG`), real-time calculation engine (Subtotal, Discount, Fine, Total, Paid Amount, Due Amount, Words), dynamic payment mode fields, and keyboard ergonomics (`Alt+S`, `Ctrl+S`).
+- **Reason**: Client office staff perform fee collection hundreds of times daily and required maximum speed with minimum clicks and full keyboard usability.
+- **Files Modified**: `views/receipt_view.py`, `controllers/receipt_controller.py`, `dialogs/receipt_preview_dialog.py`, `tests/test_phase5_fee_collection.py`.
+- **Version Introduced**: v1.5.0 (Phase 5)

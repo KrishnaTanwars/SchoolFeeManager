@@ -86,13 +86,47 @@ def run_migrations():
             if "machine_name" not in audit_cols:
                 cursor.execute("ALTER TABLE audit_logs ADD COLUMN machine_name VARCHAR(100);")
 
-            # Check fee_categories columns
+            # Check fee_categories columns and indexes
             cursor.execute("PRAGMA table_info(fee_categories);")
             fee_cat_cols = {row[1] for row in cursor.fetchall()}
             if "course" not in fee_cat_cols:
                 cursor.execute("ALTER TABLE fee_categories ADD COLUMN course VARCHAR(20) DEFAULT 'UG';")
             if "created_at" not in fee_cat_cols:
                 cursor.execute("ALTER TABLE fee_categories ADD COLUMN created_at DATETIME;")
+
+            # Remove legacy unique constraint on name if present
+            cursor.execute("PRAGMA index_list(fee_categories);")
+            indexes = cursor.fetchall()
+            has_unique_name = False
+            for idx in indexes:
+                idx_name, is_unique = idx[1], idx[2]
+                if is_unique:
+                    cursor.execute(f"PRAGMA index_info('{idx_name}');")
+                    cols = [info[2] for info in cursor.fetchall()]
+                    if cols == ['name']:
+                        has_unique_name = True
+                        break
+
+            if has_unique_name:
+                cursor.execute("""
+                    CREATE TABLE fee_categories_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name VARCHAR(150) NOT NULL,
+                        course VARCHAR(20) NOT NULL DEFAULT 'UG',
+                        default_amount FLOAT NOT NULL DEFAULT 0.0,
+                        is_active BOOLEAN NOT NULL DEFAULT 1,
+                        description VARCHAR(255),
+                        created_at DATETIME
+                    );
+                """)
+                cursor.execute("""
+                    INSERT INTO fee_categories_new (id, name, course, default_amount, is_active, description, created_at)
+                    SELECT id, name, COALESCE(course, 'UG'), default_amount, is_active, description, created_at FROM fee_categories;
+                """)
+                cursor.execute("DROP TABLE fee_categories;")
+                cursor.execute("ALTER TABLE fee_categories_new RENAME TO fee_categories;")
+                cursor.execute("CREATE INDEX IF NOT EXISTS ix_fee_categories_name ON fee_categories (name);")
+                cursor.execute("CREATE INDEX IF NOT EXISTS ix_fee_categories_course ON fee_categories (course);")
 
             # Data backfill for legacy V1.0 records
             cursor.execute("UPDATE receipts SET paid_amount = total_amount WHERE paid_amount IS NULL OR paid_amount = 0.0;")
