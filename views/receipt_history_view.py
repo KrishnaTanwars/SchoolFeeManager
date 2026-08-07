@@ -1,7 +1,7 @@
 """
 Commercial ERP Receipt History & Search Ledger View with SQL Pagination, Multi-Filter Bar, 
-Quick Date Presets, Bulk Actions, Export Engine, and Admin Security Audit Trail.
-Redesigned for 1366x768 Primary Desktop Resolution with Zero Text Clipping & Zero Horizontal Scrollbars.
+Quick Date Presets, Bulk Actions, Export Engine, Admin Security Audit Trail, and Auto-Sized Columns.
+Redesigned for 1366x768 Primary Desktop Resolution with Zero Text Clipping & Simplified Row Actions.
 """
 
 from typing import List, Dict, Any, Optional
@@ -102,6 +102,44 @@ class ReceiptHistoryView(QWidget):
         hdr_layout.addWidget(title_lbl)
         hdr_layout.addStretch()
 
+        self.btn_select_all_top = QPushButton("☑  Select All")
+        self.btn_select_all_top.setFixedHeight(34)
+        self.btn_select_all_top.setStyleSheet("""
+            QPushButton {
+                background-color: #f1f5f9;
+                color: #0f172a;
+                border: 1px solid #cbd5e1;
+                font-weight: bold;
+                padding: 0 12px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #e2e8f0;
+            }
+        """)
+        self.btn_select_all_top.setCursor(Qt.PointingHandCursor)
+        self.btn_select_all_top.clicked.connect(self.select_all_page_rows)
+
+        self.btn_deselect_all_top = QPushButton("☐  Deselect All")
+        self.btn_deselect_all_top.setFixedHeight(34)
+        self.btn_deselect_all_top.setStyleSheet("""
+            QPushButton {
+                background-color: #f1f5f9;
+                color: #0f172a;
+                border: 1px solid #cbd5e1;
+                font-weight: bold;
+                padding: 0 12px;
+                border-radius: 6px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #e2e8f0;
+            }
+        """)
+        self.btn_deselect_all_top.setCursor(Qt.PointingHandCursor)
+        self.btn_deselect_all_top.clicked.connect(self.deselect_all_rows)
+
         self.btn_bulk_del = QPushButton("🗑️  Delete Selected")
         self.btn_bulk_del.setFixedHeight(34)
         self.btn_bulk_del.setStyleSheet("""
@@ -164,6 +202,8 @@ class ReceiptHistoryView(QWidget):
         self.btn_refresh.setCursor(Qt.PointingHandCursor)
         self.btn_refresh.clicked.connect(self.load_receipts)
 
+        hdr_layout.addWidget(self.btn_select_all_top)
+        hdr_layout.addWidget(self.btn_deselect_all_top)
         hdr_layout.addWidget(self.btn_bulk_del)
         hdr_layout.addWidget(self.btn_export_menu)
         hdr_layout.addWidget(self.btn_refresh)
@@ -199,31 +239,39 @@ class ReceiptHistoryView(QWidget):
 
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(34)
-        self.txt_search.setMinimumWidth(350)
-        self.txt_search.setPlaceholderText("🔍 Search Receipt No, Student, Admission No, Father, Mobile...")
+        self.txt_search.setMinimumWidth(380)
+        self.txt_search.setPlaceholderText("🔍 Live Search: Receipt No, Adm No, Student Name, Father, Mobile...")
         self.txt_search.textChanged.connect(self.on_filter_changed)
 
         self.cmb_session = QComboBox()
         self.cmb_session.setFixedHeight(34)
         self.cmb_session.setMinimumWidth(130)
+        self.cmb_session.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.cmb_session.view().setMinimumWidth(160)
         self.cmb_session.addItems(["Session: All", "2024-2025", "2025-2026", "2026-2027"])
         self.cmb_session.currentIndexChanged.connect(self.on_filter_changed)
 
         self.cmb_course = QComboBox()
         self.cmb_course.setFixedHeight(34)
         self.cmb_course.setMinimumWidth(110)
+        self.cmb_course.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.cmb_course.view().setMinimumWidth(140)
         self.cmb_course.addItems(["Course: All", "UG", "PG", "Diploma", "School"])
         self.cmb_course.currentIndexChanged.connect(self.on_filter_changed)
 
         self.cmb_pay_mode = QComboBox()
         self.cmb_pay_mode.setFixedHeight(34)
-        self.cmb_pay_mode.setMinimumWidth(140)
+        self.cmb_pay_mode.setMinimumWidth(150)
+        self.cmb_pay_mode.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.cmb_pay_mode.view().setMinimumWidth(200)
         self.cmb_pay_mode.addItems(["Mode: All", "Cash", "UPI / QR", "Cheque", "Demand Draft (DD)", "Net Banking / NEFT", "Card"])
         self.cmb_pay_mode.currentIndexChanged.connect(self.on_filter_changed)
 
         self.cmb_status = QComboBox()
         self.cmb_status.setFixedHeight(34)
         self.cmb_status.setMinimumWidth(110)
+        self.cmb_status.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.cmb_status.view().setMinimumWidth(140)
         self.cmb_status.addItems(["Status: All", "Paid", "Cancelled"])
         self.cmb_status.currentIndexChanged.connect(self.on_filter_changed)
 
@@ -308,7 +356,7 @@ class ReceiptHistoryView(QWidget):
         filter_v.addLayout(r2_layout)
         main_layout.addWidget(filter_box)
 
-        # ---------------- 4. PROFESSIONAL RECEIPT TABLE ----------------
+        # ---------------- 4. PROFESSIONAL RECEIPT TABLE (Auto-Sized Columns) ----------------
         self.table = QTableWidget()
         self.table.setColumnCount(11)
         
@@ -323,28 +371,27 @@ class ReceiptHistoryView(QWidget):
         ])
 
         header = self.table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Fixed)
-        header.setSectionResizeMode(1, QHeaderView.Fixed)
-        header.setSectionResizeMode(2, QHeaderView.Fixed)
-        header.setSectionResizeMode(3, QHeaderView.Fixed)
-        header.setSectionResizeMode(4, QHeaderView.Stretch)
-        header.setSectionResizeMode(5, QHeaderView.Fixed)
-        header.setSectionResizeMode(6, QHeaderView.Fixed)
-        header.setSectionResizeMode(7, QHeaderView.Fixed)
-        header.setSectionResizeMode(8, QHeaderView.Fixed)
-        header.setSectionResizeMode(9, QHeaderView.Fixed)
-        header.setSectionResizeMode(10, QHeaderView.Fixed)
+        # Set section resize mode: Stretch Student Name, Actions fixed 90px (single View button), others content-aware
+        for col in range(11):
+            if col == 0:
+                header.setSectionResizeMode(col, QHeaderView.Fixed)
+            elif col == 4:
+                header.setSectionResizeMode(col, QHeaderView.Stretch)
+            elif col == 10:
+                header.setSectionResizeMode(col, QHeaderView.Fixed)
+            else:
+                header.setSectionResizeMode(col, QHeaderView.Interactive)
 
         self.table.setColumnWidth(0, 40)
-        self.table.setColumnWidth(1, 140)
-        self.table.setColumnWidth(2, 110)
-        self.table.setColumnWidth(3, 150)
+        self.table.setColumnWidth(1, 130)
+        self.table.setColumnWidth(2, 100)
+        self.table.setColumnWidth(3, 135)
         self.table.setColumnWidth(5, 70)
-        self.table.setColumnWidth(6, 120)
-        self.table.setColumnWidth(7, 140)
-        self.table.setColumnWidth(8, 120)
-        self.table.setColumnWidth(9, 90)
-        self.table.setColumnWidth(10, 250)
+        self.table.setColumnWidth(6, 115)
+        self.table.setColumnWidth(7, 135)
+        self.table.setColumnWidth(8, 110)
+        self.table.setColumnWidth(9, 85)
+        self.table.setColumnWidth(10, 90)
 
         self.table.verticalHeader().setDefaultSectionSize(42)
         self.table.setAlternatingRowColors(True)
@@ -365,6 +412,10 @@ class ReceiptHistoryView(QWidget):
             }
             QTableWidget::item {
                 padding: 4px;
+            }
+            QTableWidget::item:selected {
+                background-color: #e0f2fe;
+                color: #0f172a;
             }
         """)
 
@@ -461,6 +512,26 @@ class ReceiptHistoryView(QWidget):
         vbox.addWidget(lbl_v)
         card.lbl_val = lbl_v
         return card
+
+    def select_all_page_rows(self):
+        self.chk_select_all.setChecked(True)
+        for row in range(self.table.rowCount()):
+            cell_widget = self.table.cellWidget(row, 0)
+            if cell_widget:
+                chk = cell_widget.findChild(QCheckBox)
+                if chk:
+                    chk.setChecked(True)
+
+    def deselect_all_rows(self):
+        self.chk_select_all.setChecked(False)
+        self.selected_receipt_ids.clear()
+        for row in range(self.table.rowCount()):
+            cell_widget = self.table.cellWidget(row, 0)
+            if cell_widget:
+                chk = cell_widget.findChild(QCheckBox)
+                if chk:
+                    chk.setChecked(False)
+        self.update_selection_counter()
 
     def apply_date_preset(self, preset: str):
         today = QDate.currentDate()
@@ -611,14 +682,15 @@ class ReceiptHistoryView(QWidget):
             stat_item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(row_idx, 9, stat_item)
 
-            # Column 10: Action Buttons Widget (4 Equal 28px Height Buttons with 4px Spacing)
+            # Column 10: Simplified Row Actions Column (ONLY View Button)
             act_widget = QWidget()
             act_layout = QHBoxLayout(act_widget)
-            act_layout.setContentsMargins(4, 4, 4, 4)
-            act_layout.setSpacing(4)
+            act_layout.setContentsMargins(2, 2, 2, 2)
+            act_layout.setAlignment(Qt.AlignCenter)
 
             btn_view = QPushButton("👁 View")
             btn_view.setFixedHeight(28)
+            btn_view.setFixedWidth(70)
             btn_view.setStyleSheet("""
                 QPushButton {
                     background-color: #1e3a8a;
@@ -627,7 +699,6 @@ class ReceiptHistoryView(QWidget):
                     border-radius: 4px;
                     border: none;
                     font-size: 11px;
-                    padding: 0 4px;
                 }
                 QPushButton:hover {
                     background-color: #1d4ed8;
@@ -636,68 +707,17 @@ class ReceiptHistoryView(QWidget):
             btn_view.setCursor(Qt.PointingHandCursor)
             btn_view.clicked.connect(lambda _, rec=r: self.view_receipt(rec))
 
-            btn_print = QPushButton("🖨 Print")
-            btn_print.setFixedHeight(28)
-            btn_print.setStyleSheet("""
-                QPushButton {
-                    background-color: #0284c7;
-                    color: #ffffff;
-                    font-weight: bold;
-                    border-radius: 4px;
-                    border: none;
-                    font-size: 11px;
-                    padding: 0 4px;
-                }
-                QPushButton:hover {
-                    background-color: #0369a1;
-                }
-            """)
-            btn_print.setCursor(Qt.PointingHandCursor)
-            btn_print.clicked.connect(lambda _, rec=r: self.print_receipt(rec))
-
-            btn_pdf = QPushButton("📄 PDF")
-            btn_pdf.setFixedHeight(28)
-            btn_pdf.setStyleSheet("""
-                QPushButton {
-                    background-color: #059669;
-                    color: #ffffff;
-                    font-weight: bold;
-                    border-radius: 4px;
-                    border: none;
-                    font-size: 11px;
-                    padding: 0 4px;
-                }
-                QPushButton:hover {
-                    background-color: #047857;
-                }
-            """)
-            btn_pdf.setCursor(Qt.PointingHandCursor)
-            btn_pdf.clicked.connect(lambda _, rec=r: self.export_single_pdf(rec))
-
-            btn_del = QPushButton("🚫 Del")
-            btn_del.setFixedHeight(28)
-            btn_del.setStyleSheet("""
-                QPushButton {
-                    background-color: #dc2626;
-                    color: #ffffff;
-                    font-weight: bold;
-                    border-radius: 4px;
-                    border: none;
-                    font-size: 11px;
-                    padding: 0 4px;
-                }
-                QPushButton:hover {
-                    background-color: #b91c1c;
-                }
-            """)
-            btn_del.setCursor(Qt.PointingHandCursor)
-            btn_del.clicked.connect(lambda _, rec=r: self.cancel_receipt(rec))
-
-            act_layout.addWidget(btn_view, stretch=1)
-            act_layout.addWidget(btn_print, stretch=1)
-            act_layout.addWidget(btn_pdf, stretch=1)
-            act_layout.addWidget(btn_del, stretch=1)
+            act_layout.addWidget(btn_view)
             self.table.setCellWidget(row_idx, 10, act_widget)
+
+        # Dynamic Content-Aware Column Width Sizing Strategy
+        self.table.resizeColumnsToContents()
+        self.table.setColumnWidth(0, 40)
+        self.table.setColumnWidth(10, 90)
+        
+        # Enforce minimum section width bounds for readability
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(4, QHeaderView.Stretch) # Student name stretches cleanly
 
         self.update_selection_counter()
 
@@ -733,60 +753,6 @@ class ReceiptHistoryView(QWidget):
         dlg = ReceiptPreviewDialog(self, receipt)
         dlg.exec()
 
-    def print_receipt(self, receipt):
-        try:
-            pdf_path = PDFService.generate_receipt_pdf(receipt)
-            SecurityService.log_audit(
-                action="Print Receipt",
-                module="Receipt History",
-                details=f"Generated print job for receipt '{receipt.receipt_no}'",
-                status="Success"
-            )
-            import os
-            os.startfile(pdf_path, "print")
-        except Exception as e:
-            QMessageBox.information(self, "Receipt PDF Generated", f"PDF receipt generated successfully at:\n{pdf_path}")
-
-    def export_single_pdf(self, receipt):
-        try:
-            pdf_path = PDFService.generate_receipt_pdf(receipt)
-            SecurityService.log_audit(
-                action="Export PDF Receipt",
-                module="Receipt History",
-                details=f"Exported PDF receipt '{receipt.receipt_no}' to '{pdf_path}'",
-                status="Success"
-            )
-            QMessageBox.information(self, "PDF Exported", f"Receipt PDF saved successfully:\n{pdf_path}")
-        except Exception as e:
-            QMessageBox.critical(self, "PDF Error", f"Could not export PDF: {str(e)}")
-
-    def cancel_receipt(self, receipt):
-        auth_dlg = AdminAuthDialog(
-            self,
-            action_title="Administrator Password Required",
-            action_context=f"Delete / Cancel Receipt: '{receipt.receipt_no}'",
-            module="Receipt History"
-        )
-        if not auth_dlg.exec():
-            return
-
-        reason_dlg = DeleteReasonDialog(self, context_text=f"Deleting Receipt '{receipt.receipt_no}'")
-        if not reason_dlg.exec():
-            return
-
-        reply = QMessageBox.question(
-            self, "Confirm Delete Receipt",
-            f"Are you sure you want to cancel/delete receipt '{receipt.receipt_no}'?\nThis action cannot be undone.",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-        )
-        if reply == QMessageBox.Yes:
-            success, msg = ReceiptController.cancel_receipt(receipt.id, reason=reason_dlg.reason)
-            if success:
-                QMessageBox.information(self, "Success", msg)
-                self.load_receipts()
-            else:
-                QMessageBox.critical(self, "Error", msg)
-
     def bulk_delete_selected(self):
         if not self.selected_receipt_ids:
             QMessageBox.warning(self, "No Selection", "Please select at least one receipt to delete.")
@@ -819,9 +785,37 @@ class ReceiptHistoryView(QWidget):
             else:
                 QMessageBox.critical(self, "Bulk Delete Error", msg)
 
-    # ---------------- EXPORT MENU ----------------
+    # ---------------- EXPORT MENU WITH HIGH CONTRAST QSS STYLING ----------------
     def show_export_menu(self):
         menu = QMenu(self)
+        menu.setStyleSheet("""
+            QMenu {
+                background-color: #ffffff;
+                color: #0f172a;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                padding: 4px;
+                font-size: 12px;
+            }
+            QMenu::item {
+                padding: 6px 20px 6px 10px;
+                border-radius: 4px;
+                color: #0f172a;
+            }
+            QMenu::item:selected {
+                background-color: #e0f2fe;
+                color: #0284c7;
+                font-weight: bold;
+            }
+            QMenu::item:disabled {
+                color: #94a3b8;
+            }
+            QMenu::separator {
+                height: 1px;
+                background-color: #e2e8f0;
+                margin: 4px 0px;
+            }
+        """)
         
         act_csv_page = QAction("📄 Export Current Page (CSV)", self)
         act_csv_page.triggered.connect(lambda: self.export_ledger("csv", scope="page"))

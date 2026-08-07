@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.6.2 — Receipt History Final UI Polish & Table Optimization (Phase 6.2 Release)
+- **Release Date**: August 2026
+- **UI & Layout Features**:
+  - Simplified table row actions column to contain ONLY the `👁 View` button.
+  - Integrated `🖨 Print Receipt`, `📄 Export PDF`, and `🚫 Delete Receipt (Admin)` buttons inside `ReceiptPreviewDialog`.
+  - Dynamic content-aware column auto-sizing (`resizeColumnsToContents()` + `Stretch` on Student Name column).
+  - Dedicated `☑ Select All` and `☐ Deselect All` buttons in top action toolbar.
+  - High-contrast QSS styling on Export menu (`#ffffff` background, `#0f172a` text, `#e0f2fe` hover).
+  - Expanded combobox popups (`view().setMinimumWidth(...)`) for 100% text visibility.
+
 ### v1.6.1 — Receipt History Complete UI Redesign & Responsive Layout Fix (Phase 6.1 Release)
 - **Release Date**: August 2026
 - **UI & Layout Fixes**:

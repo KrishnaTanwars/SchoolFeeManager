@@ -2,6 +2,18 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.6.2] - Phase 06.2 Receipt History Final UI Polish & Table Optimization Release
+
+### 🎨 Commercial ERP Table Optimization & Preview Actions Integration
+- **Actions Column Simplification**: Table row actions column simplified to contain ONLY the `👁 View` button for maximum table readability and zero row crowding.
+- **Integrated Receipt Preview Dialog**: `ReceiptPreviewDialog` expanded with `🖨 Print Receipt`, `📄 Export PDF`, and `🚫 Delete Receipt (Admin Protected)` buttons.
+- **Dynamic Content-Aware Table Column Sizing**: Automatic column width strategy calculating optimal widths based on longest cell value plus header label and padding (`resizeColumnsToContents()` with `Stretch` on Student Name column).
+- **Bulk Action Convenience Buttons**: Dedicated `☑ Select All` and `☐ Deselect All` buttons added to top action toolbar for instant page-level row checking/unchecking.
+- **High-Contrast Export Menu Styling**: Fixed dark-on-dark contrast issues in the Export dropdown menu with explicit QSS styling (`#ffffff` background, `#0f172a` text, `#e0f2fe` hover).
+- **100% Filter Control Text Visibility**: Combobox popup views automatically expand (`view().setMinimumWidth(180)`) for full visibility of long items ("Net Banking / NEFT", "Demand Draft (DD)", etc.).
+
+---
+
 ## [1.6.1] - Phase 06.1 Receipt History Complete UI Redesign & Responsive Layout Fix Release
 
 ### 🎨 Receipt History Commercial ERP Layout Polish & 1366x768 Responsiveness
