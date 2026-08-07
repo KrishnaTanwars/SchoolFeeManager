@@ -1,4 +1,4 @@
-# School Fee Management System v1.0 (Windows ERP)
+# EduLedger ERP v2.0.0 (School Fee Management System)
 
 A production-ready, offline-first Desktop ERP application designed specifically for Indian Schools, Colleges, Private Institutes, and Coaching Centers.
 

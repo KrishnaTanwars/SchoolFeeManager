@@ -26,7 +26,7 @@ from utils.helpers import format_date
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"{APP_NAME} v{APP_VERSION} - Enterprise Edition")
+        self.setWindowTitle(f"EduLedger ERP v{APP_VERSION} - Enterprise Production Edition")
         self.resize(1280, 800)
         self.setMinimumSize(1024, 680)
 
