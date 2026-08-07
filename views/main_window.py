@@ -152,9 +152,9 @@ class MainWindow(QMainWindow):
         right_layout.setSpacing(0)
 
         # Header Bar
-        header_frame = QFrame()
-        header_frame.setObjectName("HeaderFrame")
-        header_layout = QHBoxLayout(header_frame)
+        self.header_frame = QFrame()
+        self.header_frame.setObjectName("HeaderFrame")
+        header_layout = QHBoxLayout(self.header_frame)
         header_layout.setContentsMargins(20, 10, 20, 10)
         header_layout.setSpacing(12)
 
@@ -189,15 +189,11 @@ class MainWindow(QMainWindow):
         shortcut_search = QShortcut(QKeySequence("Ctrl+K"), self)
         shortcut_search.activated.connect(self.open_global_search)
 
-        self.lbl_user_info = QLabel("User: System Administrator")
-        self.lbl_user_info.setObjectName("HeaderUser")
-
         header_layout.addWidget(self.lbl_school_header)
         header_layout.addStretch()
         header_layout.addWidget(self.btn_global_search)
-        header_layout.addWidget(self.lbl_user_info)
 
-        right_layout.addWidget(header_frame)
+        right_layout.addWidget(self.header_frame)
 
         # QStackedWidget Content Views
         self.stacked_widget = QStackedWidget()
@@ -229,6 +225,19 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.status_bar)
         self.status_bar.showMessage("School Fee ERP System | Status: Connected (Offline DB)")
 
+        # Logged-in User Status Bar Label (Permanent Right-Aligned Widget)
+        self.lbl_status_user = QLabel("")
+        self.lbl_status_user.setObjectName("StatusUserLabel")
+        self.lbl_status_user.setStyleSheet("""
+            QLabel {
+                font-size: 11px;
+                font-weight: 500;
+                color: #475569;
+                padding-right: 12px;
+            }
+        """)
+        self.status_bar.addPermanentWidget(self.lbl_status_user)
+
         # Start at Login
         self.show_login()
 
@@ -240,22 +249,28 @@ class MainWindow(QMainWindow):
 
     def show_login(self):
         self.sidebar_frame.hide()
+        self.header_frame.hide()
         self.lbl_school_header.hide()
-        self.lbl_user_info.hide()
+        self.btn_global_search.hide()
+        self.lbl_status_user.setText("")
+        self.lbl_status_user.hide()
         self.stacked_widget.setCurrentWidget(self.views["login"])
 
     def on_login_success(self):
         user = AuthController.get_current_user()
         if user:
-            self.lbl_user_info.setText(f"Logged in as: <b>{user.full_name}</b> ({user.role})")
+            role_display = user.role.capitalize() if user.role else "User"
+            self.lbl_status_user.setText(f"Logged in as: <b>{user.full_name}</b> ({role_display})")
+            self.lbl_status_user.show()
         
         info = SettingsController.get_school_info()
         if info:
             self.lbl_school_header.setText(f"<b>{info.school_name}</b> &nbsp;|&nbsp; Academic Session: <b>{info.current_session}</b>")
 
         self.sidebar_frame.show()
+        self.header_frame.show()
         self.lbl_school_header.show()
-        self.lbl_user_info.show()
+        self.btn_global_search.show()
         self.navigate_to("dashboard")
 
     def toggle_sidebar(self):
@@ -377,6 +392,8 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(f"Active Screen: {key.capitalize()}")
 
     def open_global_search(self):
+        if not AuthController.is_authenticated() or self.stacked_widget.currentWidget() == self.views.get("login"):
+            return
         from dialogs.global_search_dialog import GlobalSearchDialog
         dlg = GlobalSearchDialog(self, on_navigate_callback=self.on_global_search_navigate)
         dlg.exec()

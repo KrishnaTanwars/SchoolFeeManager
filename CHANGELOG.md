@@ -2,6 +2,26 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.0.2] - Status Bar User Info Relocation
+
+### 📌 ERP Layout & Status Bar Ergonomics
+- **Relocated Logged-In User Label**: Moved active user information (`Logged in as: System Administrator (Admin)`) from the top header bar to the bottom-right corner of the `QStatusBar` (`addPermanentWidget`).
+- **Clean Header Space**: Reserved top header bar exclusively for School Name, Academic Session, and the Global Search widget (`Search everywhere... (Ctrl+K)`), eliminating header clutter.
+- **Dynamic Status Updates**: User label clears on logout and updates automatically on login with current full name and capitalized role in brackets.
+- **Responsive Status Bar Typography**: Styled status bar label with subtle typography (11px, slate text, normal weight, right padding).
+
+---
+
+## [2.0.1] - UI Cleanup & Login Security Polish
+
+### 🎨 Login UI Cleanup & Security Header Focus
+- **Removed Pre-Authentication Global Search**: Completely removed the Global Search button (`Search everywhere... (Ctrl+K)`) and top header bar from the login screen to keep authentication clean, focused, and secure.
+- **Top Margin & Spacing Optimization**: Eliminated top reserved header space on the login view, ensuring the login form card is centered in the viewport without layout shifts or blank areas.
+- **Post-Login Search Visibility**: Ensured Global Search (`Ctrl+K`) and top header automatically reappear across all authenticated screens (Dashboard, Student Master, Fee Collection, Reports, Settings) post-login.
+- **Keyboard Shortcut Guard**: Added authentication status check to `open_global_search()` to prevent shortcut triggering prior to user login.
+
+---
+
 ## [2.0.0] - Phase 10 Production Ready & Final Client Release
 
 ### 🚀 Production Polish & Final Client Delivery
