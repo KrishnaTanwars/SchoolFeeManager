@@ -23,6 +23,17 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.6.1 — Receipt History Complete UI Redesign & Responsive Layout Fix (Phase 6.1 Release)
+- **Release Date**: August 2026
+- **UI & Layout Fixes**:
+  - Complete elimination of horizontal scrollbars, text clipping, and overlapping controls at 1366x768.
+  - 4 equal-width KPI summary cards (`Today's Collection`, `Monthly Collection`, `Receipts Today`, `Filtered Total`).
+  - Consolidated top action toolbar (`Delete Selected`, `Export Ledger ▾`, `Refresh`).
+  - Clean 2-row filter panel: 380px live search box + expanded comboboxes showing full text ("Net Banking", "Demand Draft", etc.).
+  - Explicit table column section widths: Checkbox 40px, Receipt No 140px, Date 110px, Adm No 150px, Student Name Stretch, Course 70px, Class 120px, Mode 140px, Amount 120px, Status 90px, Actions 250px.
+  - Uniform 4 inline action buttons (`👁 View`, `🖨 Print`, `📄 PDF`, `🚫 Del`) inside 250px Actions column.
+  - 3-Zone bottom footer toolbar (Left: Selection count, Center: Rows & Page info, Right: Navigation buttons).
+
 ### v1.6.0 — Receipt History Professionalization (Phase 6 Release)
 - **Release Date**: August 2026
 - **Ledger Features**:

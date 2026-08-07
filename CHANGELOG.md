@@ -2,6 +2,19 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.6.1] - Phase 06.1 Receipt History Complete UI Redesign & Responsive Layout Fix Release
+
+### 🎨 Receipt History Commercial ERP Layout Polish & 1366x768 Responsiveness
+- **1366x768 Primary Resolution Optimization**: Complete elimination of horizontal scrollbars, text clipping, control overlapping, and cropped buttons across all desktop screen sizes.
+- **4 Equal Summary KPI Cards**: Re-architected KPI cards for equal width (`Today's Collection`, `Monthly Collection`, `Receipts Today`, `Filtered Total`) with zero text truncation.
+- **Clean Action Toolbar**: Consolidated `Delete Selected`, `Export Ledger ▾`, and `Refresh` into a clean right-aligned top header toolbar with uniform 34px height.
+- **Clean 2-Row Filter Toolbar**: Removed empty box placeholders. Expanded live search box to 380px, increased dropdown widths (Session 130px, Course 110px, Mode 140px, Status 110px) to show full values ("Net Banking", "Demand Draft", etc.).
+- **Redesigned Receipt Table Columns**: Explicit column section widths (Checkbox 40px, Receipt No 140px, Date 110px, Adm No 150px, Student Name Stretch, Course 70px, Class 120px, Mode 140px, Amount 120px, Status 90px, Actions 250px).
+- **Uniform 4 Inline Action Buttons**: Formatted `👁 View`, `🖨 Print`, `📄 PDF`, `🚫 Del` with equal 28px height, 4px spacing, and clean hover states inside the 250px Actions column.
+- **3-Zone Bottom Footer Toolbar**: Aligned selection counter on Left, Rows per page combo & Page info in Center, and navigation controls on Right without overlapping.
+
+---
+
 ## [1.6.0] - Phase 06 Receipt History Professionalization Release
 
 ### 💳 Commercial ERP Searchable Receipt Ledger
