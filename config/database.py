@@ -128,6 +128,30 @@ def run_migrations():
                 cursor.execute("CREATE INDEX IF NOT EXISTS ix_fee_categories_name ON fee_categories (name);")
                 cursor.execute("CREATE INDEX IF NOT EXISTS ix_fee_categories_course ON fee_categories (course);")
 
+            # Check school_information columns
+            cursor.execute("PRAGMA table_info(school_information);")
+            school_cols = {row[1] for row in cursor.fetchall()}
+            if "city" not in school_cols:
+                cursor.execute("ALTER TABLE school_information ADD COLUMN city VARCHAR(100) DEFAULT 'New Delhi';")
+            if "state" not in school_cols:
+                cursor.execute("ALTER TABLE school_information ADD COLUMN state VARCHAR(100) DEFAULT 'Delhi';")
+            if "pin_code" not in school_cols:
+                cursor.execute("ALTER TABLE school_information ADD COLUMN pin_code VARCHAR(20) DEFAULT '110001';")
+            if "principal_name" not in school_cols:
+                cursor.execute("ALTER TABLE school_information ADD COLUMN principal_name VARCHAR(100) DEFAULT 'Dr. A. K. Sharma';")
+
+            # Check users columns
+            cursor.execute("PRAGMA table_info(users);")
+            user_cols = {row[1] for row in cursor.fetchall()}
+            if "failed_attempts" not in user_cols:
+                cursor.execute("ALTER TABLE users ADD COLUMN failed_attempts INTEGER DEFAULT 0;")
+
+            # Check backup_history columns
+            cursor.execute("PRAGMA table_info(backup_history);")
+            backup_cols = {row[1] for row in cursor.fetchall()}
+            if "created_by" not in backup_cols:
+                cursor.execute("ALTER TABLE backup_history ADD COLUMN created_by VARCHAR(100) DEFAULT 'Administrator';")
+
             # Data backfill for legacy V1.0 records
             cursor.execute("UPDATE receipts SET paid_amount = total_amount WHERE paid_amount IS NULL OR paid_amount = 0.0;")
             cursor.execute("UPDATE receipts SET due_amount = 0.0 WHERE due_amount IS NULL;")

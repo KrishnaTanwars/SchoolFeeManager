@@ -5,6 +5,20 @@
 
 ## Semantic Version Release Progression
 
+### v1.7.0 — Professional Settings & Administration Module (Phase 7 Release)
+- **Release Date**: August 2026
+- **Settings & Administration Features**:
+  - **Administrator Password Security**: Protected Settings navigation with `AdminAuthDialog` modal authorization, logging failed attempts to audit trail.
+  - **Interactive Category Cards Dashboard**: Central control panel featuring 8 sleek commercial category cards (`School Information`, `User Management`, `Academic Settings`, `Database Management`, `Backup & Restore`, `Audit Log Viewer`, `Application Preferences`, `About Software`).
+  - **School Information & Branding**: Editable fields for School Name, Address, City, State, PIN Code, Contact Numbers, Email, Website, Principal Name, Logo selector, Academic Session, and Receipt Footer note.
+  - **User Management & Accounts**: Full user CRUD supporting Administrator, Operator, and Viewer roles; Active/Disabled status toggling; Admin password resets; user password changes; and login tracking.
+  - **Academic Session Settings**: Manage academic years/sessions, create new sessions, and switch active operational year.
+  - **Database Management & Integrity**: View real-time database statistics (Path, Size, Students, Receipts, Fee Heads, Users, Audit entries); SQLite `VACUUM` and `ANALYZE` database optimization; `PRAGMA integrity_check` database verification.
+  - **Database Backup & Disaster Recovery**: 1-Click ZIP database backup, restore with automatic pre-restore safety backup, backup history table with size and author details.
+  - **Audit Log Viewer**: Interactive security & administration event log viewer with Module/Action/User/Date filtering, live search, CSV & Excel export, and ReportLab PDF/Print report generation.
+  - **Application Preferences**: Configurable window sizes, default sidebar state, theme presets, printer selection, backup/export folder paths, currency symbol, date/time format, and auto-logout timers.
+  - **Commercial About Software Page**: Software metadata, versioning, build number, Python/Qt/SQLite runtime specs, developer credits, commercial license terms, and dynamic Git commit hash.
+
 ### v1.0.0 — Production Baseline Freeze (Phase 0 Baseline)
 - **Release Date**: August 2026
 - **Architecture**: Layered MVC + Service Architecture.

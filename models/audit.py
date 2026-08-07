@@ -31,6 +31,7 @@ class BackupHistory(Base):
     filename = Column(String(255), nullable=False)
     file_size = Column(String(50), nullable=False)
     backup_type = Column(String(30), default="Manual", nullable=False)
+    created_by = Column(String(100), default="Administrator", nullable=True)
     status = Column(String(30), default="Success", nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 

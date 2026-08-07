@@ -17,6 +17,7 @@ class User(Base):
     role = Column(String(30), default="Operator", nullable=False)  # Admin / Operator
     status = Column(String(20), default="Active", nullable=False)
     last_login = Column(DateTime, nullable=True)
+    failed_attempts = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     receipts = relationship("Receipt", back_populates="creator")

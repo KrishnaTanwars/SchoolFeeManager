@@ -2,7 +2,21 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
-## [1.6.2] - Phase 06.2 Receipt History Final UI Polish & Table Optimization Release
+## [1.7.0] - Phase 07 Professional Settings & Administration Module Release
+
+### ⚙️ Central Administration Panel & Category Dashboard
+- **Admin Password Protection**: Enforced password authorization on Settings access (`AdminAuthDialog`), automatically logging successful and denied access attempts to system audit entries.
+- **Interactive 8-Category Dashboard Grid**: Transformed Settings into a modern category dashboard with interactive visual cards (`School Information`, `User Management`, `Academic Settings`, `Database Management`, `Backup & Restore`, `Audit Log Viewer`, `Application Preferences`, `About Software`).
+- **School Information & Branding**: Full profile manager for School Name, Address, City, State, PIN Code, Contact Phone(s), Email, Website, Principal Name, Logo Image selector, Academic Session, and Receipt Footer note.
+- **User Management Engine**: Complete user account CRUD supporting Administrator, Operator, and Viewer roles; Active/Disabled account toggling; Admin password resets; user password changes; last login tracking; and failed login attempt counter.
+- **Academic Session Settings**: Dynamic academic year manager with active session switching and new session creation.
+- **Database Management Tools & Statistics**: Real-time database statistics (Path, File Size, Total Students, Receipts, Fee Heads, Users, Audit Entries); SQLite `VACUUM` and `ANALYZE` database optimization; SQLite `PRAGMA integrity_check` validation.
+- **Disaster Recovery Backup & Restore**: Immediate 1-Click ZIP database backups, database restoration with automatic pre-restore safety snapshot, and backup history tracking with file sizes and author details.
+- **Comprehensive Audit Log Viewer**: Interactive audit trail viewer featuring Module/Action/User/Date filtering, live text search, CSV & Excel export, and ReportLab PDF/Print report generation.
+- **Application Preferences**: Configurable application defaults for Window Size, Sidebar State, Visual Themes, Auto Backup, Printers, Export/Backup folders, Currency Symbol, Date/Time Formats, and Auto-Logout timer.
+- **Commercial About Software Dialog**: Enterprise system metadata page displaying Software Name, Version v1.7.0, Build Number, Python version, PySide6 GUI version, SQLite engine version, Developer credits, License terms, and dynamic Git Commit hash.
+
+---
 
 ### 🎨 Commercial ERP Table Optimization & Preview Actions Integration
 - **Actions Column Simplification**: Table row actions column simplified to contain ONLY the `👁 View` button for maximum table readability and zero row crowding.
@@ -12,6 +26,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **High-Contrast Export Menu Styling**: Fixed dark-on-dark contrast issues in the Export dropdown menu with explicit QSS styling (`#ffffff` background, `#0f172a` text, `#e0f2fe` hover).
 - **100% Filter Control Text Visibility**: Combobox popup views automatically expand (`view().setMinimumWidth(180)`) for full visibility of long items ("Net Banking / NEFT", "Demand Draft (DD)", etc.).
 - **Intelligent Auto Column Width Calculation (Fee Heads Particulars Table)**: Dynamically calculates exact column widths based on `MAX(Header Width, Longest Cell Width) + 22px Padding` without stretching or distributing unallocated space. Auto-recalculates on load, record changes, course filtering, and student selection.
+- **Icon-Only Pagination Controls (Receipt History)**: Replaced text pagination buttons with modern square icon buttons (`⏮`, `◀`, `▶`, `⏭`) with 38x32px dimensions, clear tooltips ("First Page", "Previous Page", "Next Page", "Last Page"), flat ERP hover styling, and disabled state opacities.
 
 ---
 
