@@ -650,12 +650,18 @@ class SettingsView(QWidget):
         self.btn_optimize_db.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; border-radius: 5px;")
         self.btn_optimize_db.clicked.connect(self.run_optimize_db)
 
+        self.btn_repair_db = QPushButton("🔧  Repair Database (REINDEX)")
+        self.btn_repair_db.setFixedHeight(38)
+        self.btn_repair_db.setProperty("class", "SecondaryBtn")
+        self.btn_repair_db.clicked.connect(self.run_repair_db)
+
         self.btn_verify_db = QPushButton("🔍  Verify Database Integrity")
         self.btn_verify_db.setFixedHeight(38)
         self.btn_verify_db.setProperty("class", "SecondaryBtn")
         self.btn_verify_db.clicked.connect(self.run_verify_db)
 
         layout_tools.addWidget(self.btn_optimize_db)
+        layout_tools.addWidget(self.btn_repair_db)
         layout_tools.addWidget(self.btn_verify_db)
 
         layout.addWidget(box_tools)
@@ -683,6 +689,14 @@ class SettingsView(QWidget):
             self.load_db_stats()
         else:
             QMessageBox.critical(self, "Optimization Error", msg)
+
+    def run_repair_db(self):
+        success, msg = BackupService.repair_database()
+        if success:
+            QMessageBox.information(self, "Database Repair Complete", msg)
+            self.load_db_stats()
+        else:
+            QMessageBox.critical(self, "Repair Error", msg)
 
     def run_verify_db(self):
         success, msg = SettingsController.verify_database_integrity()
@@ -714,6 +728,34 @@ class SettingsView(QWidget):
         h_act.addWidget(self.btn_restore_now)
         layout.addWidget(box_actions)
 
+        # Auto Backup Preferences Panel
+        box_auto = QGroupBox("Automatic Backup & Retention Schedule")
+        h_auto = QHBoxLayout(box_auto)
+        h_auto.setSpacing(12)
+
+        self.chk_auto_backup = QCheckBox("Enable Automatic Scheduled Backups")
+        self.chk_auto_backup.setChecked(True)
+
+        self.cmb_auto_freq = QComboBox()
+        self.cmb_auto_freq.addItems(["Daily", "Weekly", "Monthly"])
+
+        self.cmb_auto_retention = QComboBox()
+        self.cmb_auto_retention.addItems(["5", "10", "20", "Unlimited"])
+
+        self.btn_save_auto = QPushButton("💾 Save Schedule")
+        self.btn_save_auto.setFixedHeight(32)
+        self.btn_save_auto.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; border-radius: 5px; padding: 0 12px;")
+        self.btn_save_auto.clicked.connect(self.save_auto_backup_prefs)
+
+        h_auto.addWidget(self.chk_auto_backup)
+        h_auto.addWidget(QLabel("Frequency:"))
+        h_auto.addWidget(self.cmb_auto_freq)
+        h_auto.addWidget(QLabel("Retention (Backups to Keep):"))
+        h_auto.addWidget(self.cmb_auto_retention)
+        h_auto.addWidget(self.btn_save_auto)
+
+        layout.addWidget(box_auto)
+
         # Backup History Table
         box_hist = QGroupBox("Database Backup Archive History")
         v_hist = QVBoxLayout(box_hist)
@@ -725,6 +767,26 @@ class SettingsView(QWidget):
         v_hist.addWidget(self.table_backup_history)
 
         layout.addWidget(box_hist)
+
+        self.load_auto_backup_prefs()
+
+    def load_auto_backup_prefs(self):
+        prefs = SettingsController.get_app_preferences()
+        self.chk_auto_backup.setChecked(prefs.get("auto_backup_enabled", True))
+        self.cmb_auto_freq.setCurrentText(prefs.get("auto_backup_frequency", "Daily"))
+        self.cmb_auto_retention.setCurrentText(str(prefs.get("backup_retention", "10")))
+
+    def save_auto_backup_prefs(self):
+        prefs = SettingsController.get_app_preferences()
+        prefs["auto_backup_enabled"] = self.chk_auto_backup.isChecked()
+        prefs["auto_backup_frequency"] = self.cmb_auto_freq.currentText()
+        prefs["backup_retention"] = self.cmb_auto_retention.currentText()
+
+        success, msg = SettingsController.save_app_preferences(prefs)
+        if success:
+            QMessageBox.information(self, "Success", "Auto-backup schedule and retention preferences saved successfully.")
+        else:
+            QMessageBox.critical(self, "Error", msg)
 
     def load_backup_history(self):
         db = SettingsController.get_db() if hasattr(SettingsController, "get_db") else None
@@ -754,18 +816,33 @@ class SettingsView(QWidget):
             QMessageBox.critical(self, "Backup Failed", msg)
 
     def run_restore(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select Backup Zip File to Restore", "", "Zip Files (*.zip)")
+        if not file_path:
+            return
+
+        # Preview Backup Archive details before restoring
+        preview = BackupService.get_backup_preview(file_path)
+        if not preview.get("valid"):
+            QMessageBox.critical(self, "Corrupted Backup File", preview.get("message", "Invalid backup archive."))
+            return
+
+        prompt_msg = (
+            f"<b>=== BACKUP ARCHIVE PREVIEW ===</b><br><br>"
+            f"• <b>Filename</b>: {preview['filename']}<br>"
+            f"• <b>Archive Date</b>: {preview['date']}<br>"
+            f"• <b>Archive Size</b>: {preview['size']}<br>"
+            f"• <b>Database Included</b>: {'Yes ✓' if preview['has_db'] else 'No ❌'}<br>"
+            f"• <b>Settings Included</b>: {'Yes ✓' if preview['has_settings'] else 'No ❌'}<br><br>"
+            f"<span style='color: #dc2626;'><b>CRITICAL WARNING:</b> Restoring will replace active database records.<br>"
+            f"A safety snapshot of your current database will be created automatically.</span><br><br>"
+            f"Do you want to proceed with restore?"
+        )
+
         reply = QMessageBox.warning(
-            self, "Confirm Database Restore",
-            "CRITICAL WARNING:\nRestoring a database will replace your current database records with the selected backup snapshot.\n"
-            "A safety backup of your current database will be created automatically before restoring.\n\n"
-            "Do you want to proceed with restore?",
+            self, "Confirm Database Restore", prompt_msg,
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
         if reply != QMessageBox.Yes:
-            return
-
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Backup Zip File", "", "Zip Files (*.zip)")
-        if not file_path:
             return
 
         success, msg = BackupService.restore_backup(file_path)

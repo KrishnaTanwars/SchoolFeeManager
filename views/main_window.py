@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
 
         self.setup_ui()
         self.setup_shortcuts()
+        self.trigger_auto_backup()
 
     def setup_ui(self):
         central_widget = QWidget()
@@ -155,15 +156,45 @@ class MainWindow(QMainWindow):
         header_frame.setObjectName("HeaderFrame")
         header_layout = QHBoxLayout(header_frame)
         header_layout.setContentsMargins(20, 10, 20, 10)
+        header_layout.setSpacing(12)
 
         self.lbl_school_header = QLabel("DPS International School")
         self.lbl_school_header.setObjectName("HeaderTitle")
+
+        # Global Search Header Button
+        self.btn_global_search = QPushButton("🔍  Search everywhere... (Ctrl+K)")
+        self.btn_global_search.setFixedHeight(30)
+        self.btn_global_search.setMinimumWidth(220)
+        self.btn_global_search.setStyleSheet("""
+            QPushButton {
+                background-color: #f1f5f9;
+                color: #475569;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 0 10px;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #e2e8f0;
+                color: #1e3a8a;
+                border-color: #2563eb;
+            }
+        """)
+        self.btn_global_search.setCursor(Qt.PointingHandCursor)
+        self.btn_global_search.clicked.connect(self.open_global_search)
+
+        # Global Search Keyboard Shortcut (Ctrl+K)
+        shortcut_search = QShortcut(QKeySequence("Ctrl+K"), self)
+        shortcut_search.activated.connect(self.open_global_search)
 
         self.lbl_user_info = QLabel("User: System Administrator")
         self.lbl_user_info.setObjectName("HeaderUser")
 
         header_layout.addWidget(self.lbl_school_header)
         header_layout.addStretch()
+        header_layout.addWidget(self.btn_global_search)
         header_layout.addWidget(self.lbl_user_info)
 
         right_layout.addWidget(header_frame)
@@ -344,6 +375,37 @@ class MainWindow(QMainWindow):
             view.load_receipts()
 
         self.status_bar.showMessage(f"Active Screen: {key.capitalize()}")
+
+    def open_global_search(self):
+        from dialogs.global_search_dialog import GlobalSearchDialog
+        dlg = GlobalSearchDialog(self, on_navigate_callback=self.on_global_search_navigate)
+        dlg.exec()
+
+    def on_global_search_navigate(self, target_data: dict):
+        t_view = target_data.get("target_view", "dashboard")
+        self.navigate_to(t_view)
+
+        if t_view == "reports" and "report_key" in target_data:
+            report_view = self.views.get("reports")
+            if hasattr(report_view, "open_report"):
+                report_view.open_report(target_data["report_key"])
+
+        elif t_view == "students" and target_data.get("title"):
+            student_view = self.views.get("students")
+            if hasattr(student_view, "txt_search"):
+                student_view.txt_search.setText(target_data["title"])
+
+        elif t_view == "receipt_history" and target_data.get("receipt_no"):
+            history_view = self.views.get("history")
+            if hasattr(history_view, "txt_search"):
+                history_view.txt_search.setText(target_data["receipt_no"])
+
+    def trigger_auto_backup(self):
+        try:
+            from services.backup_service import BackupService
+            BackupService.check_and_run_auto_backup()
+        except Exception as e:
+            logger.warning(f"Startup auto-backup notice: {e}")
 
     def refresh_active_view(self):
         curr = self.stacked_widget.currentWidget()

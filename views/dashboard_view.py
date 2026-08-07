@@ -116,78 +116,120 @@ class DashboardView(QWidget):
         analytics_layout.addWidget(self.table_analytics)
         bottom_split.addWidget(analytics_group, stretch=1)
 
-        layout.addLayout(bottom_split, stretch=1)
+        # Recent Activity & Recently Opened Split Section (Section 10 & 11)
+        activity_split = QHBoxLayout()
+        activity_split.setSpacing(15)
+
+        # Recent Activity (Audit Log Widget)
+        act_group = QGroupBox("📜  Recent System Activity (Last 20 Events)")
+        v_act = QVBoxLayout(act_group)
+        v_act.setContentsMargins(10, 10, 10, 10)
+
+        self.table_recent_activity = QTableWidget()
+        self.table_recent_activity.setColumnCount(4)
+        self.table_recent_activity.setHorizontalHeaderLabels(["Timestamp", "User", "Action", "Description Details"])
+        self.table_recent_activity.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.table_recent_activity.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+        self.table_recent_activity.verticalHeader().setDefaultSectionSize(30)
+        self.table_recent_activity.setAlternatingRowColors(True)
+
+        v_act.addWidget(self.table_recent_activity)
+        activity_split.addWidget(act_group, stretch=2)
+
+        # Recently Opened Quick Access
+        rec_opened_group = QGroupBox("📌  Recently Opened Items")
+        v_rec_opened = QVBoxLayout(rec_opened_group)
+        v_rec_opened.setContentsMargins(10, 10, 10, 10)
+
+        self.table_recently_opened = QTableWidget()
+        self.table_recently_opened.setColumnCount(3)
+        self.table_recently_opened.setHorizontalHeaderLabels(["Type", "Title / Item", "Time"])
+        self.table_recently_opened.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_recently_opened.verticalHeader().setDefaultSectionSize(30)
+        self.table_recently_opened.setAlternatingRowColors(True)
+
+        v_rec_opened.addWidget(self.table_recently_opened)
+        activity_split.addWidget(rec_opened_group, stretch=1)
+
+        layout.addLayout(activity_split, stretch=1)
 
         self.refresh_dashboard()
 
-    def _create_kpi_card(self, title: str, initial_value: str, color: str) -> QFrame:
-        card = QFrame()
-        card.setProperty("class", "KPICard")
-
-        vbox = QVBoxLayout(card)
-        vbox.setContentsMargins(16, 14, 16, 14)
-
-        lbl_t = QLabel(title)
-        lbl_t.setProperty("class", "KPITitle")
-
-        lbl_v = QLabel(initial_value)
-        lbl_v.setProperty("class", "KPIValue")
-        lbl_v.setStyleSheet(f"color: {color}; font-size: 22px; font-weight: 800;")
-
-        vbox.addWidget(lbl_t)
-        vbox.addWidget(lbl_v)
-        card.lbl_val = lbl_v
-        return card
-
     def refresh_dashboard(self):
-        # Recent Receipts
-        recent_receipts = ReceiptController.get_all_receipts()[:10]
-        self.table_recent.setRowCount(len(recent_receipts))
+        try:
+            # Recent Receipts
+            recent_receipts = ReceiptController.get_all_receipts()[:10]
+            self.table_recent.setRowCount(len(recent_receipts))
 
-        for row_idx, r in enumerate(recent_receipts):
-            self.table_recent.setItem(row_idx, 0, QTableWidgetItem(r.receipt_no))
-            self.table_recent.setItem(row_idx, 1, QTableWidgetItem(format_date(r.receipt_date)))
-            self.table_recent.setItem(row_idx, 2, QTableWidgetItem(r.student.name if r.student else "N/A"))
-            self.table_recent.setItem(row_idx, 3, QTableWidgetItem(f"{r.student.class_name} ({r.student.section or 'A'})" if r.student else "N/A"))
-            self.table_recent.setItem(row_idx, 4, QTableWidgetItem(format_currency(r.total_amount)))
+            for row_idx, r in enumerate(recent_receipts):
+                self.table_recent.setItem(row_idx, 0, QTableWidgetItem(r.receipt_no))
+                self.table_recent.setItem(row_idx, 1, QTableWidgetItem(format_date(r.receipt_date)))
+                self.table_recent.setItem(row_idx, 2, QTableWidgetItem(r.student.name if r.student else "N/A"))
+                self.table_recent.setItem(row_idx, 3, QTableWidgetItem(f"{r.student.class_name} ({r.student.section or 'A'})" if r.student else "N/A"))
+                self.table_recent.setItem(row_idx, 4, QTableWidgetItem(format_currency(r.total_amount)))
 
-            action_widget = QWidget()
-            act_layout = QHBoxLayout(action_widget)
-            act_layout.setContentsMargins(6, 4, 6, 4)
-            act_layout.setAlignment(Qt.AlignCenter)
+                action_widget = QWidget()
+                act_layout = QHBoxLayout(action_widget)
+                act_layout.setContentsMargins(6, 4, 6, 4)
+                act_layout.setAlignment(Qt.AlignCenter)
 
-            btn_view = QPushButton("👁  View / Print")
-            btn_view.setFixedHeight(30)
-            btn_view.setMinimumWidth(130)
-            btn_view.setStyleSheet("""
-                QPushButton {
-                    background-color: #1e3a8a;
-                    color: #ffffff;
-                    font-size: 12px;
-                    font-weight: bold;
-                    border-radius: 5px;
-                    border: none;
-                    padding: 4px 10px;
-                }
-                QPushButton:hover {
-                    background-color: #2563eb;
-                }
-            """)
-            btn_view.setCursor(Qt.PointingHandCursor)
-            btn_view.clicked.connect(lambda _, rec=r: self.view_receipt(rec))
+                btn_view = QPushButton("👁  View / Print")
+                btn_view.setFixedHeight(30)
+                btn_view.setMinimumWidth(130)
+                btn_view.setStyleSheet("""
+                    QPushButton {
+                        background-color: #1e3a8a;
+                        color: #ffffff;
+                        font-size: 12px;
+                        font-weight: bold;
+                        border-radius: 5px;
+                        border: none;
+                        padding: 4px 10px;
+                    }
+                    QPushButton:hover {
+                        background-color: #2563eb;
+                    }
+                """)
+                btn_view.setCursor(Qt.PointingHandCursor)
+                btn_view.clicked.connect(lambda _, rec=r: self.view_receipt(rec))
 
-            act_layout.addWidget(btn_view)
-            self.table_recent.setCellWidget(row_idx, 5, action_widget)
+                act_layout.addWidget(btn_view)
+                self.table_recent.setCellWidget(row_idx, 5, action_widget)
 
-        # Student Analytics by Class & Course
-        from controllers.student_controller import StudentController
-        class_stats = StudentController.get_student_counts_by_class()
-        self.table_analytics.setRowCount(len(class_stats))
+            # Student Analytics by Class & Course
+            from controllers.student_controller import StudentController
+            class_stats = StudentController.get_student_counts_by_class()
+            self.table_analytics.setRowCount(len(class_stats))
 
-        for r_idx, stat in enumerate(class_stats):
-            self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat["class_name"]))
-            self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(f"{stat['student_count']} Students"))
+            for r_idx, stat in enumerate(class_stats):
+                self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat["class_name"]))
+                self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(f"{stat['student_count']} Students"))
+
+            # Recent Activity Widget (Last 20 Audit Events)
+            from controllers.settings_controller import SettingsController
+            audit_logs = SettingsController.get_audit_logs(limit=20)
+            self.table_recent_activity.setRowCount(len(audit_logs))
+
+            for idx, l in enumerate(audit_logs):
+                self.table_recent_activity.setItem(idx, 0, QTableWidgetItem(f"{l['date']} {l['time']}"))
+                self.table_recent_activity.setItem(idx, 1, QTableWidgetItem(l["user"]))
+                self.table_recent_activity.setItem(idx, 2, QTableWidgetItem(l["action"]))
+                self.table_recent_activity.setItem(idx, 3, QTableWidgetItem(l["details"]))
+
+            # Recently Opened Widget
+            from services.recently_opened_service import RecentlyOpenedService
+            recent_items = RecentlyOpenedService.get_recent_items(limit=10)
+            self.table_recently_opened.setRowCount(len(recent_items))
+
+            for idx, item in enumerate(recent_items):
+                self.table_recently_opened.setItem(idx, 0, QTableWidgetItem(item["category"]))
+                self.table_recently_opened.setItem(idx, 1, QTableWidgetItem(item["title"]))
+                self.table_recently_opened.setItem(idx, 2, QTableWidgetItem(item["timestamp"]))
+        except Exception:
+            pass
 
     def view_receipt(self, receipt):
+        from services.recently_opened_service import RecentlyOpenedService
+        RecentlyOpenedService.add_recent_item("Receipt", f"Receipt {receipt.receipt_no}", receipt.id, f"Amount: {format_currency(receipt.total_amount)}")
         dlg = ReceiptPreviewDialog(self, receipt)
         dlg.exec()

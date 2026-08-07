@@ -187,7 +187,8 @@ class SettingsController:
         username: Optional[str] = None,
         module: Optional[str] = None,
         action: Optional[str] = None,
-        search: Optional[str] = None
+        search: Optional[str] = None,
+        limit: Optional[int] = None
     ) -> List[Dict[str, Any]]:
         db = get_db()
         try:
@@ -208,7 +209,11 @@ class SettingsController:
                     (User.username.ilike(s))
                 )
 
-            records = query.order_by(AuditLog.timestamp.desc()).all()
+            query = query.order_by(AuditLog.timestamp.desc())
+            if limit and limit > 0:
+                query = query.limit(limit)
+
+            records = query.all()
             results = []
             for audit, uname in records:
                 dt_str = audit.timestamp.strftime("%Y-%m-%d") if audit.timestamp else ""
@@ -218,12 +223,13 @@ class SettingsController:
                     "date": dt_str,
                     "time": tm_str,
                     "timestamp": audit.timestamp,
-                    "user": uname or "System / Admin",
-                    "action": audit.action or "",
+                    "user_id": audit.user_id,
+                    "user": uname or "Administrator",
+                    "action": audit.action or "System Action",
                     "module": audit.module or "General",
                     "details": audit.details or "",
                     "status": audit.status or "Success",
-                    "machine_name": audit.machine_name or ""
+                    "ip_address": getattr(audit, "ip_address", getattr(audit, "machine_name", "Localhost")) or "Localhost"
                 })
 
             if date_from:
@@ -274,6 +280,9 @@ class SettingsController:
             "window_size": settings.value("window_size", "1280x800"),
             "sidebar_expanded": settings.value("sidebar_expanded", False, type=bool),
             "theme": settings.value("theme", "Professional Navy"),
+            "auto_backup_enabled": settings.value("auto_backup_enabled", True, type=bool),
+            "auto_backup_frequency": settings.value("auto_backup_frequency", "Daily"),
+            "backup_retention": settings.value("backup_retention", "10"),
             "auto_backup": settings.value("auto_backup", True, type=bool),
             "backup_frequency": settings.value("backup_frequency", "Daily"),
             "receipt_printer": settings.value("receipt_printer", "Default PDF Printer"),
@@ -287,6 +296,10 @@ class SettingsController:
         }
 
     @staticmethod
+    def get_app_preferences() -> Dict[str, Any]:
+        return SettingsController.get_preferences()
+
+    @staticmethod
     def save_preferences(prefs: Dict[str, Any]) -> Tuple[bool, str]:
         try:
             settings = QSettings("SmartSchool", "SchoolFeeManager")
@@ -297,4 +310,8 @@ class SettingsController:
         except Exception as e:
             logger.error(f"Error saving preferences: {e}", exc_info=True)
             return False, f"Failed to save preferences: {str(e)}"
+
+    @staticmethod
+    def save_app_preferences(prefs: Dict[str, Any]) -> Tuple[bool, str]:
+        return SettingsController.save_preferences(prefs)
 

@@ -5,6 +5,17 @@
 
 ## Semantic Version Release Progression
 
+### v1.9.0 — Data Management, Import/Export & Productivity Tools (Phase 9 Release)
+- **Release Date**: August 2026
+- **Data Management & Productivity Features**:
+  - **Student Bulk Import Wizard**: 3-step CSV and Excel (`.xlsx`) import wizard with sample templates, field validation, duplicate detection (admission no, roll no, mobile), row preview table, and downloadable CSV error logs.
+  - **Multi-Format Export Engine**: Student, Fee Head, and Receipt exports across CSV, Excel (`.xlsx`), and PDF formats with selection scopes (`Current Filter / Page`, `Selected Records`, `Entire Database`).
+  - **Enhanced Backup & Pre-Restore Validation**: Backup archives bundling DB, settings JSON, preferences, and logs; pre-restore zip inspection modal with timestamp, size, and validity preview; automatic pre-restore safety DB backup.
+  - **Auto-Backup & Retention Policy**: Scheduled auto-backup engine (Daily/Weekly/Monthly) with automated retention purging (5, 10, 20, Unlimited).
+  - **Database Maintenance Suite**: SQLite `VACUUM` & `ANALYZE` optimization, `REINDEX` database repair, and `PRAGMA integrity_check` verification.
+  - **Central Global Search (`Ctrl+K`)**: Header search bar and `Ctrl+K` shortcut overlay searching Students, Receipts, Fee Heads, Reports, Admission Nos, Receipt Nos, and Mobile Nos with 1-click navigation.
+  - **Dashboard Productivity Widgets**: Recent System Activity widget (last 20 audit events) and Recently Opened Items tracker.
+
 ### v1.8.0 — Professional Financial Reports & Analytics (Phase 8 Release)
 - **Release Date**: August 2026
 - **Financial Analytics & MIS Reporting Features**:

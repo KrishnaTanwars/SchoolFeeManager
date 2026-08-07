@@ -2,6 +2,38 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.9.0] - Phase 09 Data Management, Import/Export & Productivity Tools Release
+
+### 📥 Bulk Student Import & Data Validation Suite
+- **Interactive 3-Step Import Wizard**: Built `StudentImportDialog` supporting CSV and Excel (`.xlsx`) student file imports with drag & drop support, sample template downloads, and step-by-step progress guidance.
+- **Strict Row Validation**: Pre-import validation engine checking required fields (Admission No, Student Name, Father Name, Class, Mobile Number), 10-digit mobile regex, date formatting, and session checks.
+- **Duplicate Record Prevention**: Automatic duplicate detection for Admission Numbers, Roll Numbers, and Mobile Numbers against active database records and within the import file.
+- **Pre-Import Preview & Row Skipping**: Interactive QTableWidget displaying row status (`Valid`, `Duplicate`, `Invalid`), issue reasons, status filter toggles, and individual row import checkboxes.
+- **Downloadable Error Log**: 1-Click export of detailed CSV error logs (`Row Number`, `Column / Field`, `Reason`, `Suggested Fix`).
+
+### 📤 Multi-Format Export Engine & Data Management
+- **Student Master Exports**: Multi-format export options (`Current Filter`, `Selected Students`, `Entire Database`) to CSV, Excel (`.xlsx`), and PDF.
+- **Fee Head Exports**: 1-Click export of configured Fee Category Heads to CSV, Excel (`.xlsx`), and PDF.
+- **Receipt Ledger Exports**: Extended export selections (`Current Page`, `Current Filter`, `Selected Receipts`, `Entire Database`) to CSV, Excel (`.xlsx`), and PDF.
+
+### 📦 Enhanced Backup, Pre-Restore Inspection & Auto-Backup
+- **Comprehensive ZIP Backup**: Backup archives bundle database `school_fee.db`, school settings, application preferences, and system logs.
+- **Pre-Restore Backup Preview**: Restoration modal inspecting backup zip contents (timestamp, file size, database presence, settings presence) before prompting for user confirmation.
+- **Auto-Backup Scheduling & Retention**: Configurable auto-backup background service (Daily, Weekly, Monthly) with automated retention policy (keeping 5, 10, 20, or Unlimited backups).
+- **Automatic Pre-Restore Safety Snapshot**: Automatically creates a safety backup of the active database before completing any restore operation.
+
+### 🛠️ Database Maintenance & Diagnostic Tools
+- **⚡ Database Optimization**: SQLite `VACUUM` and `ANALYZE` execution to reclaim disk space and optimize index statistics.
+- **🔧 Database Repair**: SQLite `REINDEX` command to rebuild corrupted or stale database table indexes.
+- **🔍 Integrity Verification**: SQLite `PRAGMA integrity_check` execution displaying complete structural diagnostic results.
+
+### 🔍 Central Global Search & Productivity Widgets
+- **Global Search Overlay (`Ctrl+K`)**: Instant search bar and `Ctrl+K` shortcut searching across Students, Receipts, Fee Heads, Reports, Admission Nos, Receipt Nos, and Mobile Nos with 1-click navigation.
+- **Recent System Activity Widget**: Dashboard widget displaying the last 20 audit events with action type, timestamp, user, and description details.
+- **Recently Opened Items Tracker**: Dashboard widget tracking recently viewed Students, Receipts, and Reports for 1-click quick access.
+
+---
+
 ## [1.8.0] - Phase 08 Professional Financial Reports & Analytics Release
 
 ### 📊 Management Information System (MIS) Reports Center

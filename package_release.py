@@ -10,13 +10,13 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
-RELEASE_DIR = BASE_DIR / "release" / "v1.8.0"
-CLIENT_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_v1.8.0.zip"
-SOURCE_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_Source_v1.8.0.zip"
+RELEASE_DIR = BASE_DIR / "release" / "v1.9.0"
+CLIENT_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_v1.9.0.zip"
+SOURCE_ZIP_PATH = RELEASE_DIR / "SchoolFeeManager_Source_v1.9.0.zip"
 
 def create_client_package():
     print("============================================================")
-    print("Creating Clean Client Release Package (v1.8.0)...")
+    print("Creating Clean Client Release Package (v1.9.0)...")
     print("============================================================")
 
     if not DIST_DIR.exists():
@@ -48,7 +48,7 @@ def create_client_package():
     docs_to_copy = [
         "Version.txt", "License.txt", "README.md", "CHANGELOG.md",
         "PHASE_01_REPORT.md", "PHASE_01_RUNTIME_VALIDATION.md", "PHASE_02_REPORT.md", "PHASE_03_REPORT.md",
-        "PHASE_04_REPORT.md", "PHASE_05_REPORT.md", "PHASE_06_REPORT.md", "PHASE_07_REPORT.md", "PHASE_08_REPORT.md", "PACKAGING_REPORT.md",
+        "PHASE_04_REPORT.md", "PHASE_05_REPORT.md", "PHASE_06_REPORT.md", "PHASE_07_REPORT.md", "PHASE_08_REPORT.md", "PHASE_09_REPORT.md", "PAGINATION_UI_FIX_REPORT.md", "PACKAGING_REPORT.md",
         "INSTALLATION_GUIDE.md", "INSTALLATION_GUIDE.pdf",
         "USER_MANUAL.md", "USER_MANUAL.pdf"
     ]

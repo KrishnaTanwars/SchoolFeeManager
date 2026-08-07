@@ -287,44 +287,57 @@ class StudentView(QWidget):
                 QMessageBox.critical(self, "Error", f"Failed to save sample CSV: {msg}")
 
     def import_csv(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Select Students CSV File to Import", "", "CSV Files (*.csv)")
-        if path:
-            result = StudentController.import_students_from_csv(path)
-            if "error" in result:
-                QMessageBox.critical(self, "Import Error", result["error"])
-                return
-
-            succ = result["success_count"]
-            skip = result["skipped_count"]
-            fail = result["failed_count"]
-            tot = result["total_processed"]
-
-            msg = f"=== CSV STUDENT IMPORT SUMMARY ===\n\n"
-            msg += f"• Total Processed : {tot}\n"
-            msg += f"• Successfully Added : {succ}\n"
-            msg += f"• Skipped (Duplicates): {skip}\n"
-            msg += f"• Failed Rows        : {fail}\n"
-
-            if result["failed_rows"]:
-                msg += f"\nFailure Details:\n" + "\n".join(result["failed_rows"][:10])
-                if len(result["failed_rows"]) > 10:
-                    msg += f"\n...and {len(result['failed_rows']) - 10} more."
-
-            QMessageBox.information(self, "Import Completed", msg)
+        from dialogs.student_import_dialog import StudentImportDialog
+        dlg = StudentImportDialog(self)
+        if dlg.exec():
             self.populate_filters()
             self.load_students()
 
     def export_csv(self):
+        from PySide6.QtWidgets import QMenu
+        from PySide6.QtGui import QCursor
+
+        menu = QMenu(self)
+        act_filter_csv = menu.addAction("📥 Export Current Filtered List (CSV)")
+        act_filter_excel = menu.addAction("📊 Export Current Filtered List (Excel)")
+        act_filter_pdf = menu.addAction("📄 Export Current Filtered List (PDF)")
+        menu.addSeparator()
+        act_db_csv = menu.addAction("📥 Export Entire Database (CSV)")
+        act_db_excel = menu.addAction("📊 Export Entire Database (Excel)")
+        act_db_pdf = menu.addAction("📄 Export Entire Database (PDF)")
+
+        action = menu.exec(QCursor.pos())
+        if not action:
+            return
+
         headers = ["Admission No", "Roll No", "Student Name", "Class", "Section", "Father Name", "Mother Name", "Mobile", "Address", "Date of Admission", "Session", "Status"]
-        students = StudentController.get_all_students()
+
+        if action in (act_filter_csv, act_filter_excel, act_filter_pdf):
+            students = self.current_students
+            title = "Student Directory (Filtered)"
+        else:
+            students = StudentController.get_all_students(status_filter="All")
+            title = "Student Directory (Entire Database)"
+
         rows = [
             [s.admission_no, s.roll_no or "", s.name, s.class_name, s.section or "", s.father_name, s.mother_name or "", s.mobile, s.address or "", format_date(s.admission_date), s.academic_session, s.status]
             for s in students
         ]
-        path, _ = QFileDialog.getSaveFileName(self, "Save Student Records CSV", "", "CSV Files (*.csv)")
+
+        if action in (act_filter_csv, act_db_csv):
+            fmt = "csv"
+            filter_str = "CSV Files (*.csv)"
+        elif action in (act_filter_excel, act_db_excel):
+            fmt = "excel"
+            filter_str = "Excel Files (*.xlsx)"
+        else:
+            fmt = "pdf"
+            filter_str = "PDF Files (*.pdf)"
+
+        path, _ = QFileDialog.getSaveFileName(self, f"Save {title}", "", filter_str)
         if path:
-            success, msg = ExportService.export_to_csv(headers, rows, output_path=path)
+            success, msg = ExportService.export_data_by_format(title, headers, rows, fmt, filename_prefix="Students", output_path=path)
             if success:
-                QMessageBox.information(self, "Success", f"Exported {len(students)} student records to:\n{path}")
+                QMessageBox.information(self, "Export Successful", f"Exported {len(students)} student records to:\n{msg}")
             else:
                 QMessageBox.critical(self, "Export Error", msg)
