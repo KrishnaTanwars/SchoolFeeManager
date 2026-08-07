@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.5.3 — Complete Fee Collection Layout Redesign (Phase 5.3 Release)
+- **Release Date**: August 2026
+- **Redesign Features**:
+  - Restructured Fee Collection screen into a clean 2-column ERP layout matching reference design sketch.
+  - Left Column (65% width): Full-height Fee Heads Particulars Table (`table_fees` stretch=1).
+  - Right Column (35% width): Split vertically into Top Search/Profile Summary Panel (55% height) and Bottom Side-by-Side Calculation & Payment Details Panel (45% height).
+  - Prevented long bank name clipping (`State Bank of India (SBI)`) with expanding size policy and 260px popup width.
+  - Enforced 72px minimum autocomplete popup height for single-item results.
+  - Verified 100% responsive display at 1366x768 resolution with zero horizontal scrolling.
+
 ### v1.5.2 — Fee Collection Layout & Usability Refinement (Phase 5.2 Release)
 - **Release Date**: August 2026
 - **Refinements**:

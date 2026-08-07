@@ -125,12 +125,14 @@ class ReceiptView(QWidget):
         main_layout.addLayout(hdr)
 
         # =========================================================================
-        # TOP SECTION: Fee Heads Table (Left) & Student Search Sidebar (Right)
+        # MAIN 2-COLUMN CONTENT LAYOUT
         # =========================================================================
-        top_layout = QHBoxLayout()
-        top_layout.setSpacing(12)
+        main_content = QHBoxLayout()
+        main_content.setSpacing(12)
 
-        # TOP LEFT: Fee Heads Table
+        # =========================================================================
+        # LEFT COLUMN (65% Width): Full Height Fee Particulars Table
+        # =========================================================================
         fee_box = QGroupBox("1. Fee Heads Particulars")
         fee_box.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         fee_layout = QVBoxLayout(fee_box)
@@ -161,7 +163,7 @@ class ReceiptView(QWidget):
         fee_top_bar.addWidget(self.btn_deselect_all)
         fee_layout.addLayout(fee_top_bar)
 
-        # Fee Particulars Table with Fixed Column Widths
+        # Fee Particulars Table with Fixed Column Widths & Auto Vertical Expansion
         self.table_fees = QTableWidget()
         self.table_fees.setColumnCount(4)
         self.table_fees.setHorizontalHeaderLabels(["Select", "Fee Head Description", "Course", "Amount (₹)"])
@@ -174,13 +176,19 @@ class ReceiptView(QWidget):
         self.table_fees.setColumnWidth(2, 75)
         self.table_fees.setColumnWidth(3, 150)
         self.table_fees.verticalHeader().setDefaultSectionSize(30)
-        self.table_fees.setMinimumHeight(200)
 
-        fee_layout.addWidget(self.table_fees)
-        top_layout.addWidget(fee_box, stretch=65)
+        # Stretch table vertically to consume entire left column
+        fee_layout.addWidget(self.table_fees, stretch=1)
+        main_content.addWidget(fee_box, stretch=65)
 
-        # TOP RIGHT: Student Instant Autocomplete & Full Height Profile Sidebar
-        student_box = QGroupBox("2. Student Search & Sidebar Summary")
+        # =========================================================================
+        # RIGHT COLUMN (35% Width): Split Vertically into Top & Bottom Panels
+        # =========================================================================
+        right_column_layout = QVBoxLayout()
+        right_column_layout.setSpacing(10)
+
+        # TOP RIGHT PANEL (55% Height): Student Search & Profile Summary
+        student_box = QGroupBox("2. Student Search & Profile Summary")
         student_box.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         student_layout = QVBoxLayout(student_box)
         student_layout.setSpacing(8)
@@ -227,7 +235,7 @@ class ReceiptView(QWidget):
         self.popup_suggestions = StudentSearchPopup(self.txt_student_search, self)
         self.popup_suggestions.hide()
 
-        # Student Details Card (Zero-Clipping Responsive Layout filling Full Vertical Sidebar)
+        # Student Details Card (Zero-Clipping Responsive Layout filling Full Top Panel)
         self.card_student = QGroupBox("Selected Student Summary")
         self.card_student.setStyleSheet("""
             QGroupBox {
@@ -236,13 +244,13 @@ class ReceiptView(QWidget):
                 border: 1px solid #cbd5e1;
                 border-radius: 6px;
                 margin-top: 4px;
-                padding-top: 8px;
+                padding-top: 6px;
                 background-color: #f8fafc;
             }
         """)
         card_form = QFormLayout(self.card_student)
-        card_form.setContentsMargins(8, 8, 8, 8)
-        card_form.setSpacing(6)
+        card_form.setContentsMargins(8, 6, 8, 6)
+        card_form.setSpacing(4)
 
         self.lbl_adm_no = QLabel("-")
         self.lbl_name = QLabel("-")
@@ -273,22 +281,20 @@ class ReceiptView(QWidget):
         card_form.addRow("Outstanding Due:", self.lbl_prev_due)
 
         student_layout.addWidget(self.card_student, stretch=1)
-        top_layout.addWidget(student_box, stretch=35)
+        right_column_layout.addWidget(student_box, stretch=55)
 
-        main_layout.addLayout(top_layout, stretch=2)
+        # BOTTOM RIGHT PANEL (45% Height): Side-by-Side Calculation & Payment Details
+        bottom_right_widget = QWidget()
+        bottom_right_layout = QHBoxLayout(bottom_right_widget)
+        bottom_right_layout.setContentsMargins(0, 0, 0, 0)
+        bottom_right_layout.setSpacing(8)
 
-        # =========================================================================
-        # BOTTOM SECTION: Real-Time Calculations (Left) & Payment Details (Right)
-        # =========================================================================
-        bottom_layout = QHBoxLayout()
-        bottom_layout.setSpacing(12)
-
-        # BOTTOM LEFT: Real-Time Calculation Summary
-        totals_group = QGroupBox("3. Real-Time Calculation Summary")
+        # Bottom Sub-Panel 1: Real-Time Calculation Summary
+        totals_group = QGroupBox("3. Calculation Summary")
         totals_group.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         totals_form = QFormLayout(totals_group)
-        totals_form.setContentsMargins(10, 10, 10, 10)
-        totals_form.setSpacing(6)
+        totals_form.setContentsMargins(8, 8, 8, 8)
+        totals_form.setSpacing(4)
         totals_form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.lbl_subtotal = QLabel("₹ 0.00")
@@ -309,51 +315,51 @@ class ReceiptView(QWidget):
         self.spn_fine.setDecimals(2)
         self.spn_fine.setStyleSheet("font-size: 12px; font-weight: bold; padding: 2px 4px;")
         self.spn_fine.valueChanged.connect(self.recalculate_totals)
-        totals_form.addRow("Fine / Penalty (+):", self.spn_fine)
+        totals_form.addRow("Fine (+):", self.spn_fine)
 
         self.lbl_total = QLabel("₹ 0.00")
-        self.lbl_total.setStyleSheet("font-size: 14px; font-weight: bold; color: #1e3a8a;")
-        totals_form.addRow("Total Fee Payable:", self.lbl_total)
+        self.lbl_total.setStyleSheet("font-size: 13px; font-weight: bold; color: #1e3a8a;")
+        totals_form.addRow("Total Payable:", self.lbl_total)
 
         self.spn_paid_amount = QDoubleSpinBox()
         self.spn_paid_amount.setRange(0.0, 5000000.0)
         self.spn_paid_amount.setPrefix("₹ ")
         self.spn_paid_amount.setDecimals(2)
-        self.spn_paid_amount.setStyleSheet("font-size: 13px; font-weight: bold; color: #059669; padding: 2px 4px;")
+        self.spn_paid_amount.setStyleSheet("font-size: 12px; font-weight: bold; color: #059669; padding: 2px 4px;")
         self.spn_paid_amount.valueChanged.connect(self.on_paid_amount_edited)
         totals_form.addRow("<b>ACTUAL PAID:</b>", self.spn_paid_amount)
 
         self.lbl_due_amount = QLabel("₹ 0.00")
-        self.lbl_due_amount.setStyleSheet("font-size: 13px; font-weight: bold; color: #dc2626;")
+        self.lbl_due_amount.setStyleSheet("font-size: 12px; font-weight: bold; color: #dc2626;")
         totals_form.addRow("<b>Remaining Due:</b>", self.lbl_due_amount)
 
         self.lbl_words = QLabel("Zero Rupees Only")
-        self.lbl_words.setStyleSheet("font-size: 11px; font-weight: bold; color: #475569; font-style: italic;")
+        self.lbl_words.setStyleSheet("font-size: 10px; font-weight: bold; color: #475569; font-style: italic;")
         self.lbl_words.setWordWrap(True)
         totals_form.addRow("In Words:", self.lbl_words)
 
-        bottom_layout.addWidget(totals_group, stretch=1)
+        bottom_right_layout.addWidget(totals_group, stretch=1)
 
-        # BOTTOM RIGHT: Payment Details & Actions (Standardized Alignment & Expanding Bank Combo)
+        # Bottom Sub-Panel 2: Payment Details & Actions (Expanding Bank Combo)
         pay_group = QGroupBox("4. Payment Details & Actions")
         pay_group.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         pay_box = QVBoxLayout(pay_group)
-        pay_box.setContentsMargins(10, 10, 10, 10)
-        pay_box.setSpacing(6)
+        pay_box.setContentsMargins(8, 8, 8, 8)
+        pay_box.setSpacing(4)
 
         pay_form = QFormLayout()
         pay_form.setContentsMargins(0, 0, 0, 0)
-        pay_form.setSpacing(6)
+        pay_form.setSpacing(4)
         pay_form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         field_style = """
             QLineEdit, QComboBox, QDateEdit {
-                font-size: 12px;
-                padding: 3px 6px;
+                font-size: 11px;
+                padding: 2px 4px;
                 border: 1px solid #cbd5e1;
                 border-radius: 4px;
                 background-color: #ffffff;
-                height: 26px;
+                height: 24px;
             }
             QLineEdit:focus, QComboBox:focus, QDateEdit:focus {
                 border-color: #2563eb;
@@ -366,17 +372,17 @@ class ReceiptView(QWidget):
         self.cmb_pay_mode.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.cmb_pay_mode.addItems(["Cash", "UPI / QR", "Cheque", "Demand Draft (DD)", "Net Banking / NEFT", "Card"])
         self.cmb_pay_mode.currentIndexChanged.connect(self.update_payment_mode_fields)
-        pay_form.addRow("Payment Mode:", self.cmb_pay_mode)
+        pay_form.addRow("Mode:", self.cmb_pay_mode)
 
         self.txt_utr_no = QLineEdit()
         self.txt_utr_no.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.txt_utr_no.setPlaceholderText("12-digit UTR / Txn No")
-        self.lbl_utr_no = QLabel("UTR / Txn No:")
+        self.lbl_utr_no = QLabel("UTR / Txn:")
 
         self.txt_cheque_no = QLineEdit()
         self.txt_cheque_no.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.txt_cheque_no.setPlaceholderText("6-digit Cheque / DD No")
-        self.lbl_cheque_no = QLabel("Cheque / DD No:")
+        self.lbl_cheque_no = QLabel("Cheque / DD:")
 
         self.dt_cheque_date = QDateEdit()
         self.dt_cheque_date.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -400,7 +406,7 @@ class ReceiptView(QWidget):
         self.txt_ref_no = QLineEdit()
         self.txt_ref_no.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.txt_ref_no.setPlaceholderText("Optional reference no")
-        self.lbl_ref_no = QLabel("Reference No:")
+        self.lbl_ref_no = QLabel("Ref No:")
 
         pay_form.addRow(self.lbl_utr_no, self.txt_utr_no)
         pay_form.addRow(self.lbl_cheque_no, self.txt_cheque_no)
@@ -417,15 +423,15 @@ class ReceiptView(QWidget):
         pay_box.addLayout(pay_form)
 
         self.btn_generate = QPushButton("GENERATE & PRINT RECEIPT")
-        self.btn_generate.setFixedHeight(40)
+        self.btn_generate.setFixedHeight(36)
         self.btn_generate.setStyleSheet("""
             QPushButton {
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: bold;
                 background-color: #059669;
                 color: #ffffff;
                 border-radius: 6px;
-                padding: 6px 12px;
+                padding: 4px 10px;
             }
             QPushButton:hover {
                 background-color: #047857;
@@ -438,9 +444,12 @@ class ReceiptView(QWidget):
 
         pay_box.addWidget(self.btn_generate)
 
-        bottom_layout.addWidget(pay_group, stretch=1)
+        bottom_right_layout.addWidget(pay_group, stretch=1)
 
-        main_layout.addLayout(bottom_layout, stretch=1)
+        right_column_layout.addWidget(bottom_right_widget, stretch=45)
+
+        main_content.addLayout(right_column_layout, stretch=35)
+        main_layout.addLayout(main_content, stretch=1)
 
         self.update_payment_mode_fields()
         self.refresh_view()

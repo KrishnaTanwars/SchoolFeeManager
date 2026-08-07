@@ -2,6 +2,21 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.5.3] - Phase 05.3 Complete Fee Collection Layout Redesign Release
+
+### 🎨 2-Column Commercial ERP Layout Architecture
+- **LEFT COLUMN (65% Width)**: Dedicated full-height **Fee Heads Particulars** panel. The Fee Table (`table_fees`) auto-expands vertically (`stretch=1`) with Description stretching to maximum width and fixed Amount/Course columns.
+- **RIGHT COLUMN (35% Width)**: Split vertically into two structured panels:
+  - **Top Panel (~55% Height)**: `Student Search & Profile Summary` (Search line edit, clear button, non-activating autocomplete suggestions list, and selected student summary card).
+  - **Bottom Panel (~45% Height)**: Side-by-side split (`QHBoxLayout`) containing `Real-Time Calculation Summary` on Left and `Payment Details & Actions` on Right.
+
+### ⚙️ Usability & Component Refinements
+- **Expanding Bank Dropdown**: Bank combobox width auto-expands with 260px popup view width (`State Bank of India (SBI)`, `Punjab National Bank (PNB)`, `Bank of Maharashtra`, etc. visible without truncation).
+- **Single-Result Autocomplete Popup**: Minimum popup height of **72px** for 1-item search results without text clipping.
+- **Responsive 1366x768 Display**: Verified 100% responsive display with zero horizontal scrollbar across 1366x768, 1600x900, and 1920x1080.
+
+---
+
 ## [1.5.2] - Phase 05.2 Fee Collection Layout Refinement Release
 
 ### 📐 Layout Restructuring & Sidebar Alignment
