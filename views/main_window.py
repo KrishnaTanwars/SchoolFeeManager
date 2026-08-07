@@ -30,10 +30,8 @@ class MainWindow(QMainWindow):
         self.resize(1280, 800)
         self.setMinimumSize(1024, 680)
 
-        # Local User Preference Storage for Sidebar State
-        self.settings = QSettings("SmartSchool", "SchoolFeeManager")
-        # Default to COLLAPSED (False) on fresh launch
-        self.sidebar_expanded = self.settings.value("sidebar_expanded", False, type=bool)
+        # Always start sidebar COLLAPSED (False) on startup as required
+        self.sidebar_expanded = False
 
         self.setup_ui()
         self.setup_shortcuts()

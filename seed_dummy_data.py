@@ -1,6 +1,6 @@
 """
-Dummy Data Seeder for School Fee Management System v1.0.
-Populates realistic Students, Receipts, and Receipt Items for testing and demonstration.
+Dummy Data Seeder for School Fee Management System v2.0.
+Populates 100 realistic Students (UG & PG), Fee Heads, and 350+ Receipts across payment modes for testing.
 """
 
 import sys
@@ -21,37 +21,66 @@ from services.db_seed import seed_initial_data
 from utils.number_to_words import number_to_words_indian
 from utils.logger import logger
 
-STUDENT_DATA = [
-    ("ADM/2024/001", "101", "Aarav Sharma", "Rajesh Sharma", "Sunita Sharma", "Class 10", "A", "9876543210", "123 Green Park, New Delhi"),
-    ("ADM/2024/002", "102", "Ananya Verma", "Sanjay Verma", "Meena Verma", "Class 10", "B", "9811223344", "456 Vasant Kunj, New Delhi"),
-    ("ADM/2024/003", "103", "Rohan Gupta", "Amit Gupta", "Pooja Gupta", "Class 9", "A", "9988776655", "789 Lajpat Nagar, New Delhi"),
-    ("ADM/2024/004", "104", "Isha Patel", "Vikram Patel", "Rekha Patel", "Class 12", "Science", "9711002233", "12 Sector 14, Gurgaon"),
-    ("ADM/2024/005", "105", "Kabir Singh", "Harpreet Singh", "Simran Kaur", "Class 12", "Commerce", "9899112233", "34 Block B, Rohini, New Delhi"),
-    ("ADM/2024/006", "106", "Diya Kumar", "Ramesh Kumar", "Kavita Kumar", "Class 8", "A", "9818877665", "56 Greater Kailash, New Delhi"),
-    ("ADM/2024/007", "107", "Aditya Mishra", "Alok Mishra", "Sangeeta Mishra", "Class 11", "Science", "9871122334", "78 Sector 62, Noida"),
-    ("ADM/2024/008", "108", "Sanya Malhotra", "Vijay Malhotra", "Nisha Malhotra", "Class 11", "Arts", "9910011223", "90 Defence Colony, New Delhi"),
-    ("ADM/2024/009", "109", "Vihaan Joshi", "Pradeep Joshi", "Anita Joshi", "Class 7", "B", "9868877112", "23 Dwarka Sector 10, New Delhi"),
-    ("ADM/2024/010", "110", "Meera Nair", "Unnikrishnan Nair", "Radhika Nair", "Class 6", "A", "9717766554", "45 Mayur Vihar Phase 1, New Delhi"),
-    ("ADM/2024/011", "111", "Devansh Saxena", "Manish Saxena", "Renu Saxena", "Class 5", "A", "9810055443", "67 Preet Vihar, New Delhi"),
-    ("ADM/2024/012", "112", "Kavya Choudhary", "Surendra Choudhary", "Kamlesh Choudhary", "Class 4", "B", "9999888777", "89 Janakpuri, New Delhi"),
-    ("ADM/2024/013", "113", "Arjun Reddy", "Venkat Reddy", "Latha Reddy", "Class 3", "A", "9888777666", "101 Model Town, New Delhi"),
-    ("ADM/2024/014", "114", "Anvi Deshmukh", "Nitin Deshmukh", "Swati Deshmukh", "Class 2", "A", "9777666555", "202 Pitampura, New Delhi"),
-    ("ADM/2024/015", "115", "Reyansh Bhatia", "Gaurav Bhatia", "Neha Bhatia", "Class 1", "A", "9666555444", "303 Shalimar Bagh, New Delhi"),
+FIRST_NAMES = [
+    "Aarav", "Ananya", "Rohan", "Isha", "Kabir", "Diya", "Aditya", "Sanya", "Vihaan", "Meera",
+    "Devansh", "Kavya", "Arjun", "Anvi", "Reyansh", "Priya", "Rahul", "Neha", "Amit", "Pooja",
+    "Siddharth", "Riya", "Karan", "Shreya", "Nikhil", "Tanya", "Varun", "Simran", "Aakash", "Divya",
+    "Yash", "Sneha", "Manish", "Kritika", "Gaurav", "Deepika", "Pranav", "Bhavna", "Abhinav", "Payal",
+    "Rishabh", "Meenakshi", "Sameer", "Swati", "Tarun", "Rashmi", "Alok", "Komal", "Vikas", "Archana",
+    "Ayush", "Sonam", "Nitin", "Preeti", "Mayank", "Nisha", "Saurabh", "Rachna", "Deepak", "Anushka"
 ]
 
-PAYMENT_MODES = ["Cash", "UPI", "Cheque", "Demand Draft", "Net Banking"]
+LAST_NAMES = [
+    "Sharma", "Verma", "Gupta", "Patel", "Singh", "Kumar", "Mishra", "Malhotra", "Joshi", "Nair",
+    "Saxena", "Choudhary", "Reddy", "Deshmukh", "Bhatia", "Kulkarni", "Aggarwal", "Pandey", "Rao", "Iyer",
+    "Chawla", "Bhasin", "Trivedi", "Shukla", "Thakur", "Yadav", "Dutta", "Sinha", "Chauhan", "Kapoor"
+]
+
+COURSES_CLASSES = [
+    ("UG", "B.Pharmacy FY", "A"),
+    ("UG", "B.Pharmacy SY", "A"),
+    ("UG", "B.Pharmacy TY", "B"),
+    ("UG", "B.Pharmacy Final Year", "A"),
+    ("PG", "M.Pharmacy 1st Year", "A"),
+    ("PG", "M.Pharmacy 2nd Year", "A"),
+    ("UG", "B.Sc Computer Science", "A"),
+    ("PG", "M.Sc Information Tech", "A"),
+    ("UG", "B.Com Honours", "B"),
+    ("PG", "M.Com Finance", "A"),
+]
+
+CITIES_ADDRESSES = [
+    "123 Green Park, New Delhi", "456 Vasant Kunj, New Delhi", "789 Lajpat Nagar, New Delhi",
+    "12 Sector 14, Gurgaon", "34 Block B, Rohini, New Delhi", "56 Greater Kailash, New Delhi",
+    "78 Sector 62, Noida", "90 Defence Colony, New Delhi", "23 Dwarka Sector 10, New Delhi",
+    "45 Mayur Vihar Phase 1, New Delhi", "67 Preet Vihar, New Delhi", "89 Janakpuri, New Delhi",
+    "101 Model Town, New Delhi", "202 Pitampura, New Delhi", "303 Shalimar Bagh, New Delhi",
+    "15 FC Road, Pune", "88 MG Road, Bangalore", "42 Civil Lines, Jaipur", "99 FC Road, Indore"
+]
+
+PAYMENT_MODES = [
+    "Cash",
+    "UPI / QR",
+    "Cheque",
+    "Demand Draft (DD)",
+    "Net Banking / NEFT",
+    "Credit / Debit Card"
+]
+
 REMARKS_LIST = [
-    "Quarter 1 Fee Payment",
+    "Semester 1 Fee Payment",
     "Monthly Tuition + Transport Fee",
-    "Annual Charges + Development Fee",
+    "Annual Development + Lab Charges",
     "Tuition Fee Paid in Full",
-    "Partial Fee Payment (Second Installment)",
-    "Term Exam & Lab Charges Included"
+    "Second Installment Fee Payment",
+    "Term Exam & Library Charges Included",
+    "Scholarship Discount Applied",
+    "Advance Semester Payment"
 ]
 
 def seed_dummy_data():
     print("=" * 60)
-    print("Seeding Dummy Data into School Fee ERP...")
+    print("Seeding Realistic Demo Data into School Fee ERP...")
     print("=" * 60)
 
     init_db()
@@ -59,114 +88,143 @@ def seed_dummy_data():
 
     db = get_db()
     try:
-        # Check or retrieve Admin user
+        # Check or retrieve Admin and Operator users
         admin = db.query(User).filter(User.username == "admin").first()
-        admin_id = admin.id if admin else None
+        operator = db.query(User).filter(User.username == "operator").first()
+        user_ids = [u.id for u in [admin, operator] if u]
 
-        # Fetch active Fee Categories
+        # 1. Seed Fee Categories (UG & PG)
+        FeeCategoryData = [
+            ("Tuition Fee (UG)", "UG", 15000.0, "Standard semester tuition fee for undergraduate courses"),
+            ("Admission Fee (UG)", "UG", 3000.0, "One-time admission fee for UG registration"),
+            ("Examination Fee (UG)", "UG", 1500.0, "Semester examination fee"),
+            ("Laboratory Fee (UG)", "UG", 2500.0, "Practical laboratory usage and equipment fee"),
+            ("Transport Fee (UG)", "UG", 4000.0, "Bus and transport facility fee"),
+            ("Computer & IT Lab Fee (UG)", "UG", 2000.0, "Computer lab and internet access fee"),
+            ("Library Fee (UG)", "UG", 1000.0, "Library membership and book issue fee"),
+            ("Sports & Gymnasium Fee (UG)", "UG", 500.0, "Sports and gym facility maintenance"),
+            ("Tuition Fee (PG)", "PG", 25000.0, "Postgraduate advanced tuition fee"),
+            ("Admission Fee (PG)", "PG", 5000.0, "One-time PG registration and counseling fee"),
+            ("Examination & Thesis Fee (PG)", "PG", 3000.0, "PG examination and dissertation fee"),
+            ("Research Lab Fee (PG)", "PG", 6000.0, "Advanced research lab usage fee"),
+            ("Library & E-Journal Fee (PG)", "PG", 2000.0, "PG digital library and research journal subscription"),
+            ("Transport Fee (PG)", "PG", 5000.0, "PG transport facility fee"),
+            ("Late Fine", "UG", 200.0, "Penalty for late payment"),
+        ]
+        for name, crs, amt, desc in FeeCategoryData:
+            cat = db.query(FeeCategory).filter(FeeCategory.name == name, FeeCategory.course == crs).first()
+            if not cat:
+                cat = FeeCategory(name=name, course=crs, default_amount=amt, description=desc, is_active=True)
+                db.add(cat)
+        db.commit()
+
         categories = db.query(FeeCategory).filter(FeeCategory.is_active == True).all()
-        if not categories:
-            print("No fee categories found. Run seed_initial_data first.")
-            return
 
-        cat_dict = {c.name: c for c in categories}
+        # 2. Seed 100 Students
+        existing_count = db.query(Student).count()
+        target_students = 100
+        if existing_count < target_students:
+            needed = target_students - existing_count
+            print(f"Generating {needed} new students to reach {target_students} target...")
 
-        # 1. Seed Students
-        existing_students = db.query(Student).all()
-        student_objs = []
-        if len(existing_students) < len(STUDENT_DATA):
-            for adm_no, roll, name, father, mother, cls, sec, mob, addr in STUDENT_DATA:
+            random.seed(42)  # Deterministic seed for reproducible data
+            for i in range(existing_count + 1, target_students + 1):
+                adm_no = f"ADM/2026/{i:03d}"
+                roll_no = f"{100 + i}"
+                first_name = random.choice(FIRST_NAMES)
+                last_name = random.choice(LAST_NAMES)
+                name = f"{first_name} {last_name}"
+                father_name = f"{random.choice(FIRST_NAMES)} {last_name}"
+                mother_name = f"{random.choice(FIRST_NAMES)} {last_name}"
+                course_type, cls_name, sec_name = random.choice(COURSES_CLASSES)
+                mobile = f"9{random.randint(100000009, 999999999)}"
+                address = random.choice(CITIES_ADDRESSES)
+
                 st = db.query(Student).filter(Student.admission_no == adm_no).first()
                 if not st:
                     st = Student(
                         admission_no=adm_no,
-                        roll_no=roll,
+                        roll_no=roll_no,
                         name=name,
-                        father_name=father,
-                        mother_name=mother,
-                        class_name=cls,
-                        section=sec,
-                        mobile=mob,
-                        address=addr,
-                        admission_date=date(2024, 4, 1),
-                        academic_session="2024-2025",
+                        father_name=father_name,
+                        mother_name=mother_name,
+                        course=course_type,
+                        class_name=cls_name,
+                        section=sec_name,
+                        mobile=mobile,
+                        address=address,
+                        admission_date=date(2025, 6, 1) + timedelta(days=random.randint(0, 60)),
+                        academic_session="2025-2026",
                         status="Active"
                     )
                     db.add(st)
             db.commit()
-            print(f" Successfully seeded {len(STUDENT_DATA)} dummy students.")
+            print(f" Successfully populated {target_students} realistic students.")
 
         students = db.query(Student).all()
 
-        # 2. Seed Receipts
+        # 3. Seed 350+ Receipts
         existing_receipts_count = db.query(Receipt).count()
-        if existing_receipts_count < 15:
+        target_receipts = 350
+        if existing_receipts_count < target_receipts:
             today = date.today()
+            needed_receipts = target_receipts - existing_receipts_count
+            print(f"Generating {needed_receipts} new receipts to reach {target_receipts} target...")
+
             receipt_counter = existing_receipts_count + 1
 
-            # Dates spread out over the last 30 days including TODAY
-            dates_sample = [
-                today, today, today, # 3 receipts today for immediate KPI visibility!
-                today - timedelta(days=1),
-                today - timedelta(days=2),
-                today - timedelta(days=3),
-                today - timedelta(days=5),
-                today - timedelta(days=7),
-                today - timedelta(days=10),
-                today - timedelta(days=12),
-                today - timedelta(days=15),
-                today - timedelta(days=18),
-                today - timedelta(days=20),
-                today - timedelta(days=25),
-                today - timedelta(days=28),
-            ]
-
-            created_count = 0
-            for r_date in dates_sample:
+            for r_idx in range(needed_receipts):
+                # Distribute dates across last 90 days
+                days_ago = random.randint(0, 90)
+                r_date = today - timedelta(days=days_ago)
                 st = random.choice(students)
-                receipt_no = f"REC/2024/{receipt_counter:05d}"
+                receipt_no = f"REC/2026/{receipt_counter:05d}"
                 receipt_counter += 1
 
-                # Pick 2 to 4 fee heads
-                selected_cats = random.sample(categories, k=random.randint(2, 4))
+                # Filter categories matching student course or All
+                st_crs = st.course or "UG"
+                eligible_cats = [c for c in categories if c.course in (st_crs, "All")]
+                if not eligible_cats:
+                    eligible_cats = categories
+
+                selected_cats = random.sample(eligible_cats, k=min(len(eligible_cats), random.randint(2, 4)))
                 items_data = []
                 subtotal = 0.0
 
                 for c in selected_cats:
                     amt = c.default_amount
-                    if amt == 0:
-                        amt = 500.0
                     subtotal += amt
                     items_data.append((c.id, c.name, amt))
 
-                discount = random.choice([0.0, 0.0, 100.0, 200.0, 500.0])
-                fine = random.choice([0.0, 0.0, 0.0, 50.0, 100.0])
+                discount = random.choice([0.0, 0.0, 0.0, 200.0, 500.0, 1000.0])
+                fine = random.choice([0.0, 0.0, 0.0, 100.0, 250.0])
                 total_amt = max(0.0, subtotal - discount + fine)
 
-                # Partial payment sample logic (e.g. 20% of receipts have partial payments)
-                if random.random() < 0.25 and total_amt > 2000:
-                    paid_amt = round(total_amt * 0.75, -2) # e.g. pays 75%
+                # Partial payment sample logic (15% partial payments)
+                if random.random() < 0.15 and total_amt > 3000:
+                    paid_amt = float(int(total_amt * 0.7))
                     due_amt = total_amt - paid_amt
                 else:
                     paid_amt = total_amt
                     due_amt = 0.0
 
                 amount_words = number_to_words_indian(paid_amt)
-                pay_mode = random.choice(["Cash", "UPI / QR", "Cheque", "Demand Draft (DD)", "Net Banking / NEFT"])
+                pay_mode = random.choice(PAYMENT_MODES)
 
                 utr_num = f"UPI{random.randint(100000000000, 999999999999)}" if "UPI" in pay_mode or "Net" in pay_mode else ""
                 chq_num = f"{random.randint(100000, 999999)}" if "Cheque" in pay_mode or "DD" in pay_mode else ""
-                chq_date = r_date - timedelta(days=2) if chq_num else None
-                bank = random.choice(["State Bank of India (SBI)", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank (PNB)"]) if pay_mode != "Cash" else ""
+                chq_date = r_date - timedelta(days=random.randint(1, 5)) if chq_num else None
+                bank = random.choice(["State Bank of India", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank"]) if pay_mode != "Cash" else ""
 
-                ref_no = f"TXN{random.randint(10000000, 99999999)}" if pay_mode != "Cash" else ""
+                ref_no = f"TXN{random.randint(10000000, 99999999)}" if pay_mode not in ("Cash", "Cheque") else ""
                 remarks = random.choice(REMARKS_LIST)
+                user_id = random.choice(user_ids) if user_ids else None
 
                 receipt = Receipt(
                     receipt_no=receipt_no,
                     receipt_date=r_date,
                     student_id=st.id,
-                    academic_session="2024-2025",
+                    academic_session="2025-2026",
                     subtotal=subtotal,
                     discount_amount=discount,
                     fine_amount=fine,
@@ -182,8 +240,8 @@ def seed_dummy_data():
                     bank_name=bank,
                     payment_date=r_date,
                     remarks=remarks,
-                    created_by_user_id=admin_id,
-                    status="Paid"
+                    created_by_user_id=user_id,
+                    status="Paid" if due_amt == 0 else "Partial"
                 )
                 db.add(receipt)
                 db.flush()
@@ -197,19 +255,22 @@ def seed_dummy_data():
                     )
                     db.add(ritem)
 
-                created_count += 1
-
             db.commit()
-            print(f" Successfully seeded {created_count} realistic fee receipts across dates & payment modes.")
+            print(f" Successfully seeded {target_receipts} realistic fee receipts.")
+
+        final_st_count = db.query(Student).count()
+        final_rc_count = db.query(Receipt).count()
 
         print("=" * 60)
         print("DUMMY DATA SEEDING COMPLETE!")
-        print("Database updated: database/school_fee.db")
+        print(f"Total Students in Database: {final_st_count}")
+        print(f"Total Receipts in Database: {final_rc_count}")
+        print("Database file updated: database/school_fee.db")
         print("=" * 60)
 
     except Exception as e:
         db.rollback()
-        print(f"❌ Error seeding dummy data: {e}")
+        print(f" Error seeding dummy data: {e}")
         logger.error(f"Error seeding dummy data: {e}", exc_info=True)
     finally:
         db.close()

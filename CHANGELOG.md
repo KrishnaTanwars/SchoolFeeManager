@@ -2,6 +2,22 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.0.3] - Fee Table Layout, Auto-Collapse Sidebar & Demo Data Seeding
+
+### 💳 Fee Collection Table Layout & Amount Column Visibility
+- **Fixed Amount Column Width**: Set Column 3 ("Amount (₹)") minimum width to **165px** and Column 1 ("Fee Head Description") to `QHeaderView.Stretch`.
+- **Zero Text Clipping**: Guaranteed full visibility for large figures (e.g. `₹ 1,25,000.00`) and spinbox controls across all screen resolutions (`1366x768`, `1600x900`, `1920x1080`) and sidebar states (expanded/collapsed).
+
+### 📐 Sidebar Ergonomics
+- **Startup Auto-Collapse**: Sidebar now always starts in the **collapsed** (`False`) state on application startup.
+
+### 📊 Demo Data Population
+- **100 Realistic Students**: Populated database with 100 students across UG (B.Pharmacy FY/SY/TY/Final Year, B.Sc, B.Com) and PG (M.Pharmacy 1st/2nd Year, M.Sc, M.Com) with unique admission numbers, roll numbers, Indian names, 10-digit mobile numbers, and addresses.
+- **Complete Fee Heads**: Seeded comprehensive UG and PG fee heads (Tuition, Admission, Exam, Lab, Transport, Library, Sports, Fine).
+- **350 Realistic Receipts**: Populated 350 fee receipts spread over 90 days across Cash, UPI, Card, Cheque, Demand Draft, and Net Banking payment modes with discounts, fines, and Indian number-to-words.
+
+---
+
 ## [2.0.2] - Status Bar User Info Relocation
 
 ### 📌 ERP Layout & Status Bar Ergonomics

@@ -167,8 +167,10 @@ class ReceiptView(QWidget):
         self.table_fees = QTableWidget()
         self.table_fees.setColumnCount(4)
         self.table_fees.setHorizontalHeaderLabels(["Select", "Fee Head Description", "Course", "Amount (₹)"])
-        for col in range(4):
-            self.table_fees.horizontalHeader().setSectionResizeMode(col, QHeaderView.Interactive)
+        self.table_fees.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+        self.table_fees.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.table_fees.horizontalHeader().setSectionResizeMode(2, QHeaderView.Fixed)
+        self.table_fees.horizontalHeader().setSectionResizeMode(3, QHeaderView.Interactive)
         self.table_fees.verticalHeader().setDefaultSectionSize(30)
 
         # Stretch table vertically to consume entire left column
@@ -654,7 +656,7 @@ class ReceiptView(QWidget):
         header_font_metrics = self.table_fees.horizontalHeader().fontMetrics()
         padding = 22  # Consistent padding (15-25px range)
 
-        for col in range(self.table_fees.columnCount()):
+        for col in (0, 2, 3):
             # 1. Width of Column Header
             header_item = self.table_fees.horizontalHeaderItem(col)
             header_text = header_item.text() if header_item else ""
@@ -669,7 +671,7 @@ class ReceiptView(QWidget):
                         cell_w = 24
                     elif isinstance(cell_widget, QDoubleSpinBox):
                         val_str = f"₹ {cell_widget.value():,.2f}"
-                        cell_w = font_metrics.horizontalAdvance(val_str) + 30
+                        cell_w = font_metrics.horizontalAdvance(val_str) + 40
                     else:
                         cell_w = cell_widget.sizeHint().width()
                 else:
@@ -683,9 +685,13 @@ class ReceiptView(QWidget):
             # Final Column Width = MAX(Header Width, Longest Cell Width) + Padding
             final_width = max(header_w, max_cell_w) + padding
 
-            # Enforce minimum bounds for Select checkbox column
+            # Enforce minimum bounds for columns
             if col == 0:
                 final_width = max(final_width, 55)
+            elif col == 2:
+                final_width = max(final_width, 75)
+            elif col == 3:
+                final_width = max(final_width, 165)
 
             self.table_fees.setColumnWidth(col, final_width)
 
