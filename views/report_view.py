@@ -358,18 +358,52 @@ class ReportView(QWidget):
         self.cmb_page_size.currentTextChanged.connect(self.on_page_size_changed)
         toolbar_layout.addWidget(self.cmb_page_size)
 
+        nav_btn_style = """
+            QPushButton {
+                background-color: #ffffff;
+                color: #1e3a8a;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                padding: 6px 12px;
+                font-size: 12px;
+                font-weight: bold;
+                min-width: 80px;
+                min-height: 34px;
+                text-align: center;
+            }
+            QPushButton:hover {
+                background-color: #eff6ff;
+                color: #2563eb;
+                border-color: #3b82f6;
+            }
+            QPushButton:pressed {
+                background-color: #dbeafe;
+                color: #1d4ed8;
+            }
+            QPushButton:disabled {
+                background-color: #f8fafc;
+                color: #94a3b8;
+                border-color: #e2e8f0;
+            }
+        """
+
         # Page Nav Buttons
-        self.btn_first = QPushButton("⏮")
-        self.btn_prev = QPushButton("◀")
+        self.btn_first = QPushButton("<< First")
+        self.btn_prev = QPushButton("< Prev")
         self.lbl_page_info = QLabel("Page 1 of 1")
         self.lbl_page_info.setStyleSheet("font-weight: bold; color: #334155;")
-        self.btn_next = QPushButton("▶")
-        self.btn_last = QPushButton("⏭")
+        self.btn_next = QPushButton("Next >")
+        self.btn_last = QPushButton("Last >>")
 
         for b in [self.btn_first, self.btn_prev, self.btn_next, self.btn_last]:
-            b.setFixedSize(32, 32)
-            b.setProperty("class", "SecondaryBtn")
+            b.setMinimumSize(80, 34)
+            b.setStyleSheet(nav_btn_style)
             b.setCursor(Qt.PointingHandCursor)
+
+        self.btn_first.setToolTip("First Page")
+        self.btn_prev.setToolTip("Previous Page")
+        self.btn_next.setToolTip("Next Page")
+        self.btn_last.setToolTip("Last Page")
 
         self.btn_first.clicked.connect(lambda: self.go_to_page(1))
         self.btn_prev.clicked.connect(lambda: self.go_to_page(self.current_page - 1))

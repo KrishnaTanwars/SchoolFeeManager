@@ -456,52 +456,56 @@ class ReceiptHistoryView(QWidget):
 
         nav_btn_style = """
             QPushButton {
-                background-color: #f1f5f9;
+                background-color: #ffffff;
                 color: #1e3a8a;
                 border: 1px solid #cbd5e1;
                 border-radius: 6px;
-                font-size: 14px;
+                padding: 6px 12px;
+                font-size: 12px;
                 font-weight: bold;
+                min-width: 80px;
+                min-height: 34px;
+                text-align: center;
             }
             QPushButton:hover {
-                background-color: #e0f2fe;
-                color: #0284c7;
-                border-color: #7dd3fc;
+                background-color: #eff6ff;
+                color: #2563eb;
+                border-color: #3b82f6;
             }
             QPushButton:pressed {
-                background-color: #bae6fd;
-                color: #0369a1;
+                background-color: #dbeafe;
+                color: #1d4ed8;
             }
             QPushButton:disabled {
                 background-color: #f8fafc;
-                color: #cbd5e1;
+                color: #94a3b8;
                 border-color: #e2e8f0;
             }
         """
 
-        self.btn_first_page = QPushButton("⏮")
-        self.btn_first_page.setFixedSize(38, 32)
+        self.btn_first_page = QPushButton("<< First")
+        self.btn_first_page.setMinimumSize(80, 34)
         self.btn_first_page.setToolTip("First Page")
         self.btn_first_page.setStyleSheet(nav_btn_style)
         self.btn_first_page.setCursor(Qt.PointingHandCursor)
         self.btn_first_page.clicked.connect(self.go_first_page)
 
-        self.btn_prev_page = QPushButton("◀")
-        self.btn_prev_page.setFixedSize(38, 32)
+        self.btn_prev_page = QPushButton("< Prev")
+        self.btn_prev_page.setMinimumSize(80, 34)
         self.btn_prev_page.setToolTip("Previous Page")
         self.btn_prev_page.setStyleSheet(nav_btn_style)
         self.btn_prev_page.setCursor(Qt.PointingHandCursor)
         self.btn_prev_page.clicked.connect(self.go_prev_page)
 
-        self.btn_next_page = QPushButton("▶")
-        self.btn_next_page.setFixedSize(38, 32)
+        self.btn_next_page = QPushButton("Next >")
+        self.btn_next_page.setMinimumSize(80, 34)
         self.btn_next_page.setToolTip("Next Page")
         self.btn_next_page.setStyleSheet(nav_btn_style)
         self.btn_next_page.setCursor(Qt.PointingHandCursor)
         self.btn_next_page.clicked.connect(self.go_next_page)
 
-        self.btn_last_page = QPushButton("⏭")
-        self.btn_last_page.setFixedSize(38, 32)
+        self.btn_last_page = QPushButton("Last >>")
+        self.btn_last_page.setMinimumSize(80, 34)
         self.btn_last_page.setToolTip("Last Page")
         self.btn_last_page.setStyleSheet(nav_btn_style)
         self.btn_last_page.setCursor(Qt.PointingHandCursor)
