@@ -1,5 +1,1 @@
-School Fee Management System v1.5.0 (Enterprise Edition - Fee Collection Professionalization)
-Build Date: 2026-08-07
-Target OS: Windows 10/11 (x64)
-Python Runtime: 3.12 (Embedded)
-UI Framework: PySide6 (Qt for Python)
+v1.5.1

@@ -2,6 +2,22 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [1.5.1] - Phase 05 UI/UX Fixes & Live Search Release
+
+### ⚡ Student Search Autocomplete & Focus Fixes
+- **Non-Focus-Stealing Live Autocomplete**: Reconfigured search popup window flags (`Qt.ToolTip | Qt.FramelessWindowHint` + `WA_ShowWithoutActivating`) so search input box (`txt_student_search`) **permanently retains active keyboard focus**. Users can type `R`, `Ra`, `Rah`, `Rahu`, `Rahul` naturally without focus stealing or extra clicks.
+- **8-Field Comprehensive Matching**: Expanded instant search filtering across Admission Number, Student Name, Father Name, Mother Name, Mobile Number, Roll Number, Course, and Class.
+- **Popup Placement & Dimensioning**: Aligned popup width **exactly** to search box width, positioned directly below search box, with height capped at ~8 visible items with vertical scrollbar.
+- **Keyboard Navigation**: Smooth `Key_Down`, `Key_Up`, `Key_Enter`, `Key_Escape`, and mouse selection without stealing focus. Auto-hides popup when search text becomes empty.
+
+### 🎨 Table & Panel UI/UX Formatting
+- **Zero Amount Cropping**: Configured fixed width (150px) for Amount column with custom spinbox padding (`padding: 2px 4px`), guaranteeing values up to `₹1,50,000.00` and spinner arrows are 100% visible without overlap.
+- **Redesigned Payment Details Panel**: Standardized FormLayout alignment with 105px label widths, 32px input heights, 8px spacing, and full-width `Generate & Print Receipt` button.
+- **Real-Time Calculation Spacing**: Improved alignment for Subtotal, Discount, Fine, Total Payable, Actual Paid, Remaining Due, and auto-wrapping Amount in Words.
+- **1366x768 Target Resolution Responsiveness**: Verified 100% responsive display with zero horizontal scrolling or clipped labels across 1366x768, 1600x900, and 1920x1080 resolutions.
+
+---
+
 ## [1.5.0] - Phase 05 Fee Collection Professionalization Release
 
 ### 💳 Fee Collection & ERP Workflow Professionalization

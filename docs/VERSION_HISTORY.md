@@ -23,6 +23,16 @@
   - Full Audit Logging of all operational transactions.
   - Complete 26-document system baseline and 11-phase development roadmap.
 
+### v1.5.1 — Fee Collection UI & Live Search Maintenance (Phase 5.1 Bug Fix Release)
+- **Release Date**: August 2026
+- **Fixes**:
+  - Non-focus-stealing live student autocomplete (`Qt.ToolTip | Qt.FramelessWindowHint` + `WA_ShowWithoutActivating`). Search input permanently retains focus during typing (`R`, `Ra`, `Rah`, `Rahu`, `Rahul`).
+  - 8-Field multi-criteria matching: Admission No, Student Name, Father Name, Mother Name, Mobile No, Roll No, Course, Class.
+  - Popup width aligned **exactly** to search box, positioned directly below, capped at ~8 visible items with vertical scrollbar.
+  - Fixed Amount column width (150px) and spinbox padding (`padding: 2px 4px`) to prevent text clipping and spinner overlap up to `₹1,50,000.00`.
+  - Redesigned Payment Details panel with standardized label widths, input heights, and full-width Generate & Print Receipt button.
+  - Responsive layout verified at 1366x768 with zero horizontal scrolling.
+
 ### v1.5.0 — Fee Collection Professionalization (Phase 5 Release)
 - **Release Date**: August 2026
 - **Features**:
