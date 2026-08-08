@@ -76,12 +76,36 @@ class GlobalSearchDialog(QDialog):
                 color: #ffffff;
             }
         """)
+        self.list_results.itemClicked.connect(self.on_item_selected)
+        self.list_results.itemActivated.connect(self.on_item_selected)
         self.list_results.itemDoubleClicked.connect(self.on_item_selected)
 
         main_layout.addWidget(self.list_results)
 
         # Initial Search Load
         self.run_global_search()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.reject()
+        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            curr_item = self.list_results.currentItem()
+            if curr_item:
+                self.on_item_selected(curr_item)
+        elif event.key() == Qt.Key_Down:
+            if self.txt_query.hasFocus():
+                if self.list_results.count() > 0:
+                    self.list_results.setFocus()
+                    self.list_results.setCurrentRow(0)
+            else:
+                super().keyPressEvent(event)
+        elif event.key() == Qt.Key_Up:
+            if self.list_results.hasFocus() and self.list_results.currentRow() <= 0:
+                self.txt_query.setFocus()
+            else:
+                super().keyPressEvent(event)
+        else:
+            super().keyPressEvent(event)
 
     def run_global_search(self):
         query = self.txt_query.text().strip().lower()
@@ -97,6 +121,7 @@ class GlobalSearchDialog(QDialog):
                 sq = sq.filter(
                     (Student.name.ilike(pattern)) |
                     (Student.admission_no.ilike(pattern)) |
+                    (Student.roll_no.ilike(pattern)) |
                     (Student.mobile.ilike(pattern)) |
                     (Student.father_name.ilike(pattern)) |
                     (Student.class_name.ilike(pattern))
@@ -104,7 +129,7 @@ class GlobalSearchDialog(QDialog):
             students = sq.order_by(Student.name.asc()).limit(8).all()
 
             for s in students:
-                item_text = f"👤 Student: {s.name} | Adm No: {s.admission_no} | Class: {s.class_name} ({s.course or 'UG'}) | Mobile: {s.mobile}"
+                item_text = f"👤 Student: {s.name} | Adm No: {s.admission_no} | Roll: {s.roll_no or 'N/A'} | Class: {s.class_name} ({s.course or 'UG'}) | Mob: {s.mobile}"
                 data = {"type": "student", "id": s.id, "target_view": "students", "title": s.name}
                 
                 l_item = QListWidgetItem(item_text)
@@ -115,15 +140,19 @@ class GlobalSearchDialog(QDialog):
             rq = db.query(Receipt).filter(Receipt.status == "Paid")
             if query:
                 pattern = f"%{query}%"
-                rq = rq.filter(
+                rq = rq.join(Student).filter(
                     (Receipt.receipt_no.ilike(pattern)) |
-                    (Receipt.remarks.ilike(pattern))
+                    (Receipt.remarks.ilike(pattern)) |
+                    (Receipt.payment_mode.ilike(pattern)) |
+                    (Student.name.ilike(pattern)) |
+                    (Student.admission_no.ilike(pattern))
                 )
             receipts = rq.order_by(Receipt.receipt_date.desc()).limit(8).all()
 
             for r in receipts:
-                item_text = f"📜 Receipt: {r.receipt_no} | Date: {format_date(r.receipt_date)} | Paid: {format_currency(r.paid_amount or r.total_amount)} | Mode: {r.payment_mode}"
-                data = {"type": "receipt", "id": r.id, "receipt_no": r.receipt_no, "target_view": "receipt_history"}
+                st_name = r.student.name if r.student else "Student"
+                item_text = f"📜 Receipt: {r.receipt_no} | Student: {st_name} | Date: {format_date(r.receipt_date)} | Paid: {format_currency(r.paid_amount or r.total_amount)} | Mode: {r.payment_mode}"
+                data = {"type": "receipt", "id": r.id, "receipt_no": r.receipt_no, "target_view": "history"}
 
                 l_item = QListWidgetItem(item_text)
                 self.list_results.addItem(l_item)
@@ -140,8 +169,8 @@ class GlobalSearchDialog(QDialog):
             categories = fq.order_by(FeeCategory.name.asc()).limit(5).all()
 
             for c in categories:
-                item_text = f"🏷 Fee Head: {c.name} | Course: {c.course} | Amount: {format_currency(c.default_amount)}"
-                data = {"type": "fee_head", "id": c.id, "target_view": "settings"}
+                item_text = f"🏷 Fee Head: {c.name} | Course: {c.course} | Default Amount: {format_currency(c.default_amount)}"
+                data = {"type": "fee_head", "id": c.id, "target_view": "fees", "title": c.name}
 
                 l_item = QListWidgetItem(item_text)
                 self.list_results.addItem(l_item)
@@ -162,6 +191,13 @@ class GlobalSearchDialog(QDialog):
                     l_item = QListWidgetItem(item_text)
                     self.list_results.addItem(l_item)
                     self.results_data.append(data)
+
+            # Empty Results Fallback
+            if self.list_results.count() == 0:
+                empty_item = QListWidgetItem("⚠️ No matching records found.")
+                empty_item.setFlags(Qt.NoItemFlags)
+                empty_item.setForeground(Qt.gray)
+                self.list_results.addItem(empty_item)
 
         finally:
             db.close()

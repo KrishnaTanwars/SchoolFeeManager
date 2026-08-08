@@ -237,10 +237,29 @@ class ReceiptHistoryView(QWidget):
         r1_layout.setContentsMargins(0, 0, 0, 0)
         r1_layout.setSpacing(8)
 
+        # Styling for Filter Controls
+        ctrl_style = """
+            QComboBox, QLineEdit, QDateEdit {
+                background-color: #ffffff;
+                color: #0f172a;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox:hover, QLineEdit:hover, QDateEdit:hover {
+                border-color: #2563eb;
+            }
+        """
+
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(34)
         self.txt_search.setMinimumWidth(380)
         self.txt_search.setPlaceholderText("🔍 Live Search: Receipt No, Adm No, Student Name, Father, Mobile...")
+        self.txt_search.setStyleSheet(ctrl_style)
         self.txt_search.textChanged.connect(self.on_filter_changed)
 
         self.cmb_session = QComboBox()
@@ -248,6 +267,7 @@ class ReceiptHistoryView(QWidget):
         self.cmb_session.setMinimumWidth(130)
         self.cmb_session.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.cmb_session.view().setMinimumWidth(160)
+        self.cmb_session.setStyleSheet(ctrl_style)
         self.cmb_session.addItems(["Session: All", "2024-2025", "2025-2026", "2026-2027"])
         self.cmb_session.currentIndexChanged.connect(self.on_filter_changed)
 
@@ -256,6 +276,7 @@ class ReceiptHistoryView(QWidget):
         self.cmb_course.setMinimumWidth(110)
         self.cmb_course.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.cmb_course.view().setMinimumWidth(140)
+        self.cmb_course.setStyleSheet(ctrl_style)
         self.cmb_course.addItems(["Course: All", "UG", "PG", "Diploma", "School"])
         self.cmb_course.currentIndexChanged.connect(self.on_filter_changed)
 
@@ -264,6 +285,7 @@ class ReceiptHistoryView(QWidget):
         self.cmb_pay_mode.setMinimumWidth(150)
         self.cmb_pay_mode.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.cmb_pay_mode.view().setMinimumWidth(200)
+        self.cmb_pay_mode.setStyleSheet(ctrl_style)
         self.cmb_pay_mode.addItems(["Mode: All", "Cash", "UPI / QR", "Cheque", "Demand Draft (DD)", "Net Banking / NEFT", "Card"])
         self.cmb_pay_mode.currentIndexChanged.connect(self.on_filter_changed)
 
@@ -272,6 +294,7 @@ class ReceiptHistoryView(QWidget):
         self.cmb_status.setMinimumWidth(110)
         self.cmb_status.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.cmb_status.view().setMinimumWidth(140)
+        self.cmb_status.setStyleSheet(ctrl_style)
         self.cmb_status.addItems(["Status: All", "Paid", "Cancelled"])
         self.cmb_status.currentIndexChanged.connect(self.on_filter_changed)
 
@@ -295,6 +318,7 @@ class ReceiptHistoryView(QWidget):
         self.dt_from.setMinimumWidth(125)
         self.dt_from.setCalendarPopup(True)
         self.dt_from.setDisplayFormat("dd-MM-yyyy")
+        self.dt_from.setStyleSheet(ctrl_style)
         self.dt_from.setDate(QDate.currentDate().addDays(-90))
         self.dt_from.dateChanged.connect(self.on_filter_changed)
 
@@ -306,6 +330,7 @@ class ReceiptHistoryView(QWidget):
         self.dt_to.setMinimumWidth(125)
         self.dt_to.setCalendarPopup(True)
         self.dt_to.setDisplayFormat("dd-MM-yyyy")
+        self.dt_to.setStyleSheet(ctrl_style)
         self.dt_to.setDate(QDate.currentDate())
         self.dt_to.dateChanged.connect(self.on_filter_changed)
 
@@ -314,34 +339,74 @@ class ReceiptHistoryView(QWidget):
         r2_layout.addWidget(lbl_to)
         r2_layout.addWidget(self.dt_to)
 
+        lbl_presets = QLabel("Presets:")
+        lbl_presets.setStyleSheet("font-weight: bold; color: #475569; font-size: 11px; margin-left: 8px;")
+        r2_layout.addWidget(lbl_presets)
+
+        preset_style = """
+            QPushButton {
+                background-color: #f1f5f9;
+                color: #334155;
+                border: 1px solid #cbd5e1;
+                border-radius: 4px;
+                font-weight: 600;
+                font-size: 11px;
+                padding: 0 10px;
+            }
+            QPushButton:hover {
+                background-color: #e2e8f0;
+                color: #0f172a;
+                border-color: #94a3b8;
+            }
+        """
+
         btn_preset_today = QPushButton("Today")
         btn_preset_today.setFixedHeight(30)
+        btn_preset_today.setStyleSheet(preset_style)
         btn_preset_today.setCursor(Qt.PointingHandCursor)
         btn_preset_today.clicked.connect(lambda: self.apply_date_preset("today"))
 
         btn_preset_yesterday = QPushButton("Yesterday")
         btn_preset_yesterday.setFixedHeight(30)
+        btn_preset_yesterday.setStyleSheet(preset_style)
         btn_preset_yesterday.setCursor(Qt.PointingHandCursor)
         btn_preset_yesterday.clicked.connect(lambda: self.apply_date_preset("yesterday"))
 
         btn_preset_7d = QPushButton("Last 7 Days")
         btn_preset_7d.setFixedHeight(30)
+        btn_preset_7d.setStyleSheet(preset_style)
         btn_preset_7d.setCursor(Qt.PointingHandCursor)
         btn_preset_7d.clicked.connect(lambda: self.apply_date_preset("7days"))
 
         btn_preset_month = QPushButton("This Month")
         btn_preset_month.setFixedHeight(30)
+        btn_preset_month.setStyleSheet(preset_style)
         btn_preset_month.setCursor(Qt.PointingHandCursor)
         btn_preset_month.clicked.connect(lambda: self.apply_date_preset("month"))
 
         btn_preset_year = QPushButton("This Year")
         btn_preset_year.setFixedHeight(30)
+        btn_preset_year.setStyleSheet(preset_style)
         btn_preset_year.setCursor(Qt.PointingHandCursor)
         btn_preset_year.clicked.connect(lambda: self.apply_date_preset("year"))
 
         btn_preset_reset = QPushButton("↺ Reset Filters")
         btn_preset_reset.setFixedHeight(30)
-        btn_preset_reset.setStyleSheet("background-color: #f1f5f9; color: #0f172a; font-weight: bold; border-radius: 4px; padding: 0 10px;")
+        btn_preset_reset.setStyleSheet("""
+            QPushButton {
+                background-color: #eff6ff;
+                color: #1d4ed8;
+                border: 1px solid #93c5fd;
+                font-weight: bold;
+                border-radius: 4px;
+                padding: 0 12px;
+                font-size: 11px;
+            }
+            QPushButton:hover {
+                background-color: #dbeafe;
+                color: #1e40af;
+            }
+        """)
         btn_preset_reset.setCursor(Qt.PointingHandCursor)
         btn_preset_reset.clicked.connect(self.reset_filters)
 

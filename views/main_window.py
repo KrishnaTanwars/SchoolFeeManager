@@ -50,7 +50,8 @@ class MainWindow(QMainWindow):
         self.sidebar_frame.setObjectName("SidebarFrame")
         
         initial_width = 220 if self.sidebar_expanded else 60
-        self.sidebar_frame.setFixedWidth(initial_width)
+        self.sidebar_frame.setMinimumWidth(initial_width)
+        self.sidebar_frame.setMaximumWidth(initial_width)
 
         sidebar_layout = QVBoxLayout(self.sidebar_frame)
         sidebar_layout.setContentsMargins(6, 12, 6, 12)
@@ -274,7 +275,6 @@ class MainWindow(QMainWindow):
     def toggle_sidebar(self):
         """Toggle sidebar between expanded (220px) and collapsed (60px) state with smooth QPropertyAnimation."""
         self.sidebar_expanded = not self.sidebar_expanded
-        self.settings.setValue("sidebar_expanded", self.sidebar_expanded)
         self.update_sidebar_visuals(animated=True)
 
     def update_sidebar_visuals(self, animated: bool = True):
@@ -282,25 +282,32 @@ class MainWindow(QMainWindow):
         end_w = 220 if self.sidebar_expanded else 60
 
         if animated:
-            # Smooth QPropertyAnimation over 200 ms
-            self.anim_min = QPropertyAnimation(self.sidebar_frame, b"minimumWidth")
-            self.anim_min.setDuration(200)
-            self.anim_min.setStartValue(start_w)
-            self.anim_min.setEndValue(end_w)
-            self.anim_min.setEasingCurve(QEasingCurve.InOutQuad)
+            if hasattr(self, "anim_group") and self.anim_group is not None:
+                if self.anim_group.state() == QParallelAnimationGroup.Running:
+                    self.anim_group.stop()
 
-            self.anim_max = QPropertyAnimation(self.sidebar_frame, b"maximumWidth")
+            # Maintain lower bound during transition to avoid minimum > maximum layout conflicts
+            self.sidebar_frame.setMinimumWidth(60)
+
+            self.anim_max = QPropertyAnimation(self.sidebar_frame, b"maximumWidth", self)
             self.anim_max.setDuration(200)
             self.anim_max.setStartValue(start_w)
             self.anim_max.setEndValue(end_w)
             self.anim_max.setEasingCurve(QEasingCurve.InOutQuad)
 
-            self.anim_group = QParallelAnimationGroup()
-            self.anim_group.addAnimation(self.anim_min)
+            self.anim_group = QParallelAnimationGroup(self)
             self.anim_group.addAnimation(self.anim_max)
+
+            def on_anim_finished():
+                if hasattr(self, "sidebar_frame") and self.sidebar_frame:
+                    self.sidebar_frame.setMinimumWidth(end_w)
+                    self.sidebar_frame.setMaximumWidth(end_w)
+
+            self.anim_group.finished.connect(on_anim_finished)
             self.anim_group.start()
         else:
-            self.sidebar_frame.setFixedWidth(end_w)
+            self.sidebar_frame.setMinimumWidth(end_w)
+            self.sidebar_frame.setMaximumWidth(end_w)
 
         # Toggle Brand Title Container
         if self.sidebar_expanded:
@@ -398,6 +405,15 @@ class MainWindow(QMainWindow):
 
     def on_global_search_navigate(self, target_data: dict):
         t_view = target_data.get("target_view", "dashboard")
+
+        # Map target view aliases to actual view keys in self.views
+        if t_view in ("receipt_history", "history"):
+            t_view = "history"
+        elif t_view in ("fee_heads", "fees"):
+            t_view = "fees"
+        elif t_view in ("students", "student"):
+            t_view = "students"
+
         self.navigate_to(t_view)
 
         if t_view == "reports" and "report_key" in target_data:
@@ -410,10 +426,15 @@ class MainWindow(QMainWindow):
             if hasattr(student_view, "txt_search"):
                 student_view.txt_search.setText(target_data["title"])
 
-        elif t_view == "receipt_history" and target_data.get("receipt_no"):
+        elif t_view == "history" and target_data.get("receipt_no"):
             history_view = self.views.get("history")
             if hasattr(history_view, "txt_search"):
                 history_view.txt_search.setText(target_data["receipt_no"])
+
+        elif t_view == "fees" and target_data.get("title"):
+            fees_view = self.views.get("fees")
+            if hasattr(fees_view, "txt_search"):
+                fees_view.txt_search.setText(target_data["title"])
 
     def trigger_auto_backup(self):
         try:

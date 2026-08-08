@@ -63,6 +63,10 @@ class AuthController:
         return cls._current_user
 
     @classmethod
+    def is_authenticated(cls) -> bool:
+        return cls._current_user is not None
+
+    @classmethod
     def is_admin(cls) -> bool:
         return cls._current_user is not None and cls._current_user.role in ("Admin", "Administrator")
 
