@@ -32,6 +32,7 @@ logs/*.log
 
 # Distribution ZIP packages (keep repo clean)
 *.zip
+release/*/SchoolFeeManager/
 
 # Environments & IDEs
 .venv/
