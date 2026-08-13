@@ -20,6 +20,8 @@ QMainWindow, QDialog {
 #SidebarFrame {
     background-color: #0f172a;
     border-right: 1px solid #1e293b;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 #SidebarTitle {

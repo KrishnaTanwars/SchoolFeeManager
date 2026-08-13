@@ -4,10 +4,11 @@ Main Application Shell Window with Commercial Auto-Collapsible Sidebar Navigatio
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QFrame, QLabel,
-    QPushButton, QStackedWidget, QStatusBar, QMessageBox, QApplication
+    QPushButton, QStackedWidget, QStatusBar, QMessageBox, QApplication,
+    QGraphicsDropShadowEffect
 )
-from PySide6.QtCore import Qt, QSize, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QSettings
-from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtCore import Qt, QSize, QPropertyAnimation, QEasingCurve, QTimer, QRect
+from PySide6.QtGui import QKeySequence, QShortcut, QColor, QCursor
 
 from views.login_view import LoginView
 from views.dashboard_view import DashboardView
@@ -23,6 +24,25 @@ from controllers.settings_controller import SettingsController
 from config.app_config import APP_NAME, APP_VERSION
 from utils.helpers import format_date
 
+class OverlaySidebarFrame(QFrame):
+    """
+    Enterprise Floating Overlay Sidebar Panel.
+    Hovers on top of central views without triggering layout reflows or resizing main content.
+    """
+    def __init__(self, parent=None, main_window=None):
+        super().__init__(parent)
+        self.main_window = main_window
+
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        if self.main_window and hasattr(self.main_window, "on_sidebar_mouse_enter"):
+            self.main_window.on_sidebar_mouse_enter()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        if self.main_window and hasattr(self.main_window, "on_sidebar_mouse_leave"):
+            self.main_window.on_sidebar_mouse_leave()
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -30,34 +50,53 @@ class MainWindow(QMainWindow):
         self.resize(1280, 800)
         self.setMinimumSize(1024, 680)
 
-        # Always start sidebar COLLAPSED (False) on startup as required
+        # Always start sidebar COLLAPSED (False) and UNPINNED (False) on startup
         self.sidebar_expanded = False
+        self.is_pinned = False
+        self._ignore_initial_hover = True
+
+        # Mouse leave delay timer (200ms)
+        self.leave_timer = QTimer(self)
+        self.leave_timer.setSingleShot(True)
+        self.leave_timer.timeout.connect(self.on_leave_timer_timeout)
 
         self.setup_ui()
         self.setup_shortcuts()
         self.trigger_auto_backup()
 
     def setup_ui(self):
-        central_widget = QWidget()
+        central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
         self.main_layout = QHBoxLayout(central_widget)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
-        # ---------------- SIDEBAR FRAME ----------------
-        self.sidebar_frame = QFrame()
+        # ---------------- SIDEBAR BASE SPACER ----------------
+        # Fixed 60px base spacer in main layout to reserve exact space for collapsed sidebar.
+        # Right container starts at x=60 and NEVER resizes or shifts during sidebar hover.
+        self.sidebar_base = QWidget()
+        self.sidebar_base.setFixedWidth(60)
+        self.sidebar_base.setStyleSheet("background-color: #0f172a;")
+        self.main_layout.addWidget(self.sidebar_base)
+
+        # ---------------- OVERLAY SIDEBAR FRAME ----------------
+        # Floating Layer 2 widget parented directly to central_widget
+        self.sidebar_frame = OverlaySidebarFrame(parent=central_widget, main_window=self)
         self.sidebar_frame.setObjectName("SidebarFrame")
-        
-        initial_width = 220 if self.sidebar_expanded else 60
-        self.sidebar_frame.setMinimumWidth(initial_width)
-        self.sidebar_frame.setMaximumWidth(initial_width)
+
+        # Elevation Drop Shadow for Windows 11 style floating panel
+        self.shadow_effect = QGraphicsDropShadowEffect(self.sidebar_frame)
+        self.shadow_effect.setBlurRadius(20)
+        self.shadow_effect.setOffset(4, 0)
+        self.shadow_effect.setColor(QColor(0, 0, 0, 90))
+        self.sidebar_frame.setGraphicsEffect(self.shadow_effect)
 
         sidebar_layout = QVBoxLayout(self.sidebar_frame)
-        sidebar_layout.setContentsMargins(6, 12, 6, 12)
+        sidebar_layout.setContentsMargins(8, 12, 8, 12)
         sidebar_layout.setSpacing(6)
 
-        # App Brand & Toggle Header
+        # App Brand & Controls Header
         brand_layout = QHBoxLayout()
         brand_layout.setContentsMargins(0, 0, 0, 0)
         brand_layout.setSpacing(6)
@@ -81,6 +120,31 @@ class MainWindow(QMainWindow):
         self.btn_toggle.setCursor(Qt.PointingHandCursor)
         self.btn_toggle.clicked.connect(self.toggle_sidebar)
 
+        self.btn_pin = QPushButton("📍")
+        self.btn_pin.setFixedSize(36, 36)
+        self.btn_pin.setToolTip("Pin Sidebar (Stay Expanded)")
+        self.btn_pin.setCursor(Qt.PointingHandCursor)
+        self.btn_pin.setStyleSheet("""
+            QPushButton {
+                font-size: 14px;
+                background-color: #1e293b;
+                color: #94a3b8;
+                border: none;
+                border-radius: 6px;
+            }
+            QPushButton:hover {
+                background-color: #334155;
+                color: #38bdf8;
+            }
+            QPushButton:checked {
+                background-color: #1e3a8a;
+                color: #ffffff;
+                border: 1px solid #38bdf8;
+            }
+        """)
+        self.btn_pin.setCheckable(True)
+        self.btn_pin.clicked.connect(self.toggle_pin_mode)
+
         self.title_container = QWidget()
         title_v = QVBoxLayout(self.title_container)
         title_v.setContentsMargins(4, 0, 0, 0)
@@ -100,6 +164,7 @@ class MainWindow(QMainWindow):
         brand_layout.addWidget(self.btn_toggle)
         brand_layout.addWidget(self.title_container)
         brand_layout.addStretch()
+        brand_layout.addWidget(self.btn_pin)
 
         sidebar_layout.addLayout(brand_layout)
         sidebar_layout.addSpacing(10)
@@ -124,7 +189,7 @@ class MainWindow(QMainWindow):
             btn.setFixedHeight(38)
             btn.setToolTip(tooltip)
             btn.setCursor(Qt.PointingHandCursor)
-            btn.clicked.connect(lambda _, k=key: self.navigate_to(k))
+            btn.clicked.connect(lambda _, k=key: self.on_nav_button_clicked(k))
             sidebar_layout.addWidget(btn)
             self.nav_buttons[key] = btn
 
@@ -138,8 +203,6 @@ class MainWindow(QMainWindow):
         self.btn_logout.setCursor(Qt.PointingHandCursor)
         self.btn_logout.clicked.connect(self.logout)
         sidebar_layout.addWidget(self.btn_logout)
-
-        self.main_layout.addWidget(self.sidebar_frame)
 
         # Apply initial collapsed/expanded UI state
         self.update_sidebar_visuals(animated=False)
@@ -247,6 +310,7 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence("F5"), self, self.refresh_active_view)
 
     def show_login(self):
+        self.sidebar_base.hide()
         self.sidebar_frame.hide()
         self.header_frame.hide()
         self.lbl_school_header.hide()
@@ -266,54 +330,84 @@ class MainWindow(QMainWindow):
         if info:
             self.lbl_school_header.setText(f"<b>{info.school_name}</b> &nbsp;|&nbsp; Academic Session: <b>{info.current_session}</b>")
 
+        self.sidebar_base.show()
         self.sidebar_frame.show()
         self.header_frame.show()
         self.lbl_school_header.show()
         self.btn_global_search.show()
+        self.sidebar_frame.raise_()
         self.navigate_to("dashboard")
 
+        # Ensure collapsed state on startup and enable interactive hover
+        self.collapse_sidebar(animated=False)
+        self._hover_enabled = True
+
+    # ---------------- HOVER & OVERLAY MOUSE EVENTS ----------------
+    def on_sidebar_mouse_enter(self):
+        if not getattr(self, "_hover_enabled", False):
+            return
+        if QApplication.platformName() == "offscreen" and not getattr(self, "_force_hover_expand", False):
+            return
+        if hasattr(self, "leave_timer") and self.leave_timer.isActive():
+            self.leave_timer.stop()
+
+        if not self.is_pinned and not self.sidebar_expanded:
+            self.expand_sidebar(animated=True)
+
+    def on_sidebar_mouse_leave(self):
+        if not self.is_pinned and self.sidebar_expanded:
+            self.leave_timer.start(200)
+
+    def on_leave_timer_timeout(self):
+        if self.is_pinned:
+            return
+        global_pos = QCursor.pos()
+        local_pos = self.sidebar_frame.mapFromGlobal(global_pos)
+        if not self.sidebar_frame.rect().contains(local_pos):
+            self.collapse_sidebar(animated=True)
+
+    def toggle_pin_mode(self):
+        self.is_pinned = not self.is_pinned
+        self.btn_pin.setChecked(self.is_pinned)
+        if self.is_pinned:
+            self.btn_pin.setText("📌")
+            self.btn_pin.setToolTip("Unpin Sidebar (Hover Mode)")
+            if not self.sidebar_expanded:
+                self.expand_sidebar(animated=True)
+        else:
+            self.btn_pin.setText("📍")
+            self.btn_pin.setToolTip("Pin Sidebar (Stay Expanded)")
+            global_pos = QCursor.pos()
+            local_pos = self.sidebar_frame.mapFromGlobal(global_pos)
+            if not self.sidebar_frame.rect().contains(local_pos):
+                self.collapse_sidebar(animated=True)
+
     def toggle_sidebar(self):
-        """Toggle sidebar between expanded (220px) and collapsed (60px) state with smooth QPropertyAnimation."""
-        self.sidebar_expanded = not self.sidebar_expanded
-        self.update_sidebar_visuals(animated=True)
+        """Toggle sidebar expansion state directly."""
+        if self.sidebar_expanded:
+            self.collapse_sidebar(animated=True)
+        else:
+            self.expand_sidebar(animated=True)
+
+    def expand_sidebar(self, animated: bool = True):
+        self.sidebar_expanded = True
+        self.update_sidebar_visuals(animated=animated)
+
+    def collapse_sidebar(self, animated: bool = True):
+        self.sidebar_expanded = False
+        self.update_sidebar_visuals(animated=animated)
 
     def update_sidebar_visuals(self, animated: bool = True):
-        start_w = self.sidebar_frame.width()
-        end_w = 220 if self.sidebar_expanded else 60
+        target_w = 250 if self.sidebar_expanded else 60
+        parent_h = self.centralWidget().height() if self.centralWidget() else self.height()
 
-        if animated:
-            if hasattr(self, "anim_group") and self.anim_group is not None:
-                if self.anim_group.state() == QParallelAnimationGroup.Running:
-                    self.anim_group.stop()
-
-            # Maintain lower bound during transition to avoid minimum > maximum layout conflicts
-            self.sidebar_frame.setMinimumWidth(60)
-
-            self.anim_max = QPropertyAnimation(self.sidebar_frame, b"maximumWidth", self)
-            self.anim_max.setDuration(200)
-            self.anim_max.setStartValue(start_w)
-            self.anim_max.setEndValue(end_w)
-            self.anim_max.setEasingCurve(QEasingCurve.InOutQuad)
-
-            self.anim_group = QParallelAnimationGroup(self)
-            self.anim_group.addAnimation(self.anim_max)
-
-            def on_anim_finished():
-                if hasattr(self, "sidebar_frame") and self.sidebar_frame:
-                    self.sidebar_frame.setMinimumWidth(end_w)
-                    self.sidebar_frame.setMaximumWidth(end_w)
-
-            self.anim_group.finished.connect(on_anim_finished)
-            self.anim_group.start()
-        else:
-            self.sidebar_frame.setMinimumWidth(end_w)
-            self.sidebar_frame.setMaximumWidth(end_w)
-
-        # Toggle Brand Title Container
+        # Toggle Title Container & Pin Button Visibility
         if self.sidebar_expanded:
             self.title_container.show()
+            self.btn_pin.show()
         else:
             self.title_container.hide()
+            self.btn_pin.hide()
 
         # Update Navigation Button Text & Alignment
         for key, full_text, compact_text, tooltip in self.nav_items_data:
@@ -332,6 +426,51 @@ class MainWindow(QMainWindow):
         else:
             self.btn_logout.setText("🔒")
             self.btn_logout.setStyleSheet("text-align: center; padding-left: 0px; font-size: 16px;")
+
+        start_geom = self.sidebar_frame.geometry()
+        end_geom = QRect(0, 0, target_w, parent_h)
+
+        if animated:
+            if hasattr(self, "sidebar_anim") and self.sidebar_anim is not None:
+                if self.sidebar_anim.state() == QPropertyAnimation.Running:
+                    self.sidebar_anim.stop()
+
+            self.sidebar_anim = QPropertyAnimation(self.sidebar_frame, b"geometry", self)
+            self.sidebar_anim.setDuration(180)
+            self.sidebar_anim.setStartValue(start_geom)
+            self.sidebar_anim.setEndValue(end_geom)
+            self.sidebar_anim.setEasingCurve(QEasingCurve.OutCubic)
+
+            def on_anim_finished():
+                self.sidebar_frame.setGeometry(end_geom)
+                self.sidebar_frame.raise_()
+
+            self.sidebar_anim.finished.connect(on_anim_finished)
+            self.sidebar_anim.start()
+        else:
+            self.sidebar_frame.setGeometry(end_geom)
+            self.sidebar_frame.raise_()
+
+    def on_nav_button_clicked(self, key: str):
+        self.navigate_to(key)
+        if not self.is_pinned and self.sidebar_expanded:
+            self.collapse_sidebar(animated=True)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            if self.sidebar_expanded and not self.is_pinned:
+                self.collapse_sidebar(animated=True)
+                event.accept()
+                return
+        super().keyPressEvent(event)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "sidebar_frame") and self.sidebar_frame:
+            curr_w = 250 if self.sidebar_expanded else 60
+            parent_h = self.centralWidget().height() if self.centralWidget() else self.height()
+            self.sidebar_frame.setGeometry(0, 0, curr_w, parent_h)
+            self.sidebar_frame.raise_()
 
     def navigate_to(self, key: str):
         auto_add_student = False

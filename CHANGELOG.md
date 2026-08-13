@@ -2,6 +2,23 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.2.0] - Phase X Enterprise Overlay Sidebar Redesign
+
+### 🎨 Enterprise Overlay Sidebar Architecture
+- **Floating Overlay Panel (`Layer 2`)**: Refactored navigation sidebar to float directly over central views (`Layer 1`) as an overlay `QFrame` parented to `central_widget`.
+- **Zero Content Shifting or Resizing**: Main container (`right_container`) and central stacked views maintain fixed geometry (`left=60px`, `width=window_width-60px`), eliminating dashboard layout reflows, table column resizing, card jumps, and screen flickering.
+- **Mouse Hover Tracking & Exit Delay**: Integrated automatic hover expansion (`60px -> 250px`) with a `200ms` exit delay (`QTimer`) that re-verifies cursor position, preventing accidental collapse on brief cursor movements.
+- **Pin Mode Toggle**: Added top header pin button (`📌` / `📍`) to lock expansion permanently or return to hover mode.
+- **Keyboard Navigation & Accessibility**: Added `ESC` key shortcut to collapse unpinned overlay, and preserved `Ctrl+B` toggle shortcut.
+- **Windows 11 Floating Elevation**: Applied `QGraphicsDropShadowEffect` (blur radius 20, dark shadow) and rounded right border styling (`10px`).
+
+### 🧪 Automated & Release Verification
+- **Unit & Integration Test Suite**: Created `tests/test_phase_x_overlay_sidebar.py` verifying startup collapsed state, hover expansion, 200ms exit delay, pin locking, ESC collapse, navigation click collapse, and 100% layout position invariance.
+- **Visual Screenshots**: Automated capture of 7 high-resolution verification screenshots (`docs/screenshots/`).
+- **Release Packaging**: Packaged `SchoolFeeManager_v2.2.0.zip` and developer source packages under `release/v2.2.0/`.
+
+---
+
 ## [2.1.1] - Critical Crash Fix Patch (Global Search + Sidebar)
 
 ### 🐛 Critical Bug Fixes & Stability Hardening

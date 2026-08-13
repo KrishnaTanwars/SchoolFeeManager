@@ -55,6 +55,7 @@ def create_client_package():
     # Copy Release Documentation
     docs_to_copy = [
         "Version.txt", "License.txt", "README.md", "CHANGELOG.md",
+        "VERSION_HISTORY.md", "RELEASE_STATUS.md", "PHASE_X_OVERLAY_SIDEBAR_REPORT.md",
         "PROJECT_COMPLETION_REPORT.md", "CLIENT_HANDOVER.md", "KNOWN_LIMITATIONS.md",
         "RELEASE_NOTES_v2.0.0.md", "RELEASE_NOTES_v2.1.0.md",
         "LOGIN_UI_CLEANUP_REPORT.md", "STATUS_BAR_USER_LOCATION_REPORT.md", "UI_AND_DEMO_DATA_REPORT.md",
