@@ -2,6 +2,20 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.3.0] - Phase X Academic Structure Refactor (Semester & Year Based ERP)
+
+### 🎓 Academic ERP Refactor (Semester & Year Support)
+- **Dual Mode Academic Support**: Full support for both **School Mode** (Class, Section, Session) and **College Mode** (Course, Branch, Academic Year, Semester, Session) across all ERP views and workflows without code duplication or breaking existing school installations.
+- **Academic Master Models & Controller**: Added `Course`, `Branch`, `AcademicYear`, and `Semester` models (`models/academic.py`) and master data controller (`controllers/academic_controller.py`) with auto-seeding for B.Tech, MBA, BCA, BBA, MCA, and Class 10.
+- **Reusable `AcademicFilterWidget`**: Created single-line filter component with synchronized Course, Branch, Academic Year, Semester, and Session dropdowns (`components/academic_filter_widget.py`).
+- **Student Master & Profile**: Updated Student Master table, add/edit dialogs, profile details dialog, and search queries with Course, Branch, Academic Year, and Semester.
+- **Fee Heads & Applicable Matching Engine**: Fee categories support specific Course, Branch, Year, Semester, and Session targets with wildcard fallbacks (`FeeController.get_applicable_categories(student)`).
+- **Receipt Snapshots & Printable PDFs**: Receipts capture student Course, Branch, Academic Year, and Semester at payment time; printable PDF receipts feature full academic metadata.
+- **Receipt History Ledger & CSV Import/Export**: Integrated `AcademicFilterWidget` into Receipt History view, updated CSV sample generation, and bulk student import parser.
+- **Seeded Demo Data & Automated Tests**: Seeded 100 students and 350 fee receipts across B.Tech, MBA, BCA, BBA, MCA, Class 10 (`scripts/seed_academic_demo_data.py`); created automated unit test suite `tests/test_phase_x_academic_structure.py` passing 7/7 tests cleanly.
+
+---
+
 ## [2.2.0] - Phase X Enterprise Overlay Sidebar Redesign
 
 ### 🎨 Enterprise Overlay Sidebar Architecture
