@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QDate
 from controllers.student_controller import StudentController
 from controllers.settings_controller import SettingsController
+from controllers.academic_controller import AcademicController
 from utils.helpers import validate_indian_mobile, parse_date, format_date
 
 class StudentDialog(QDialog):
@@ -18,7 +19,7 @@ class StudentDialog(QDialog):
         super().__init__(parent)
         self.student = student
         self.setWindowTitle("Edit Student Details" if student else "Register New Student")
-        self.resize(550, 520)
+        self.resize(600, 620)
 
         self.setup_ui()
         if self.student:
@@ -27,13 +28,13 @@ class StudentDialog(QDialog):
     def setup_ui(self):
         main_layout = QVBoxLayout(self)
 
-        group = QGroupBox("Student Information Details")
+        group = QGroupBox("Student Information & Academic Structure")
         form_layout = QFormLayout(group)
         form_layout.setSpacing(10)
 
         # Admission Number
         self.txt_admission_no = QLineEdit()
-        self.txt_admission_no.setPlaceholderText("e.g. ADM/2024/001")
+        self.txt_admission_no.setPlaceholderText("e.g. ADM/2025/001")
         form_layout.addRow("Admission Number *:", self.txt_admission_no)
 
         # Roll Number
@@ -56,11 +57,35 @@ class StudentDialog(QDialog):
         self.txt_mother_name.setPlaceholderText("Mother's Name")
         form_layout.addRow("Mother's Name:", self.txt_mother_name)
 
+        # Course & Branch Layout
+        course_branch_layout = QHBoxLayout()
+        self.cmb_course = QComboBox()
+        self.cmb_course.setEditable(True)
+        self.cmb_course.addItems(AcademicController.get_courses())
+        self.cmb_branch = QComboBox()
+        self.cmb_branch.setEditable(True)
+        self.cmb_branch.addItems(AcademicController.get_branches())
+        course_branch_layout.addWidget(self.cmb_course, stretch=1)
+        course_branch_layout.addWidget(self.cmb_branch, stretch=1)
+        form_layout.addRow("Course & Branch:", course_branch_layout)
+
+        # Academic Year & Semester Layout
+        yr_sem_layout = QHBoxLayout()
+        self.cmb_year = QComboBox()
+        self.cmb_year.setEditable(True)
+        self.cmb_year.addItems(["None"] + AcademicController.get_years())
+        self.cmb_semester = QComboBox()
+        self.cmb_semester.setEditable(True)
+        self.cmb_semester.addItems(["None"] + AcademicController.get_semesters())
+        yr_sem_layout.addWidget(self.cmb_year, stretch=1)
+        yr_sem_layout.addWidget(self.cmb_semester, stretch=1)
+        form_layout.addRow("Year & Semester:", yr_sem_layout)
+
         # Class & Section Layout
         class_sec_layout = QHBoxLayout()
         self.cmb_class = QComboBox()
         self.cmb_class.setEditable(True)
-        self.cmb_class.addItems(["Class 1", "Class 2", "Class 3", "Class 4", "Class 5", "Class 6", "Class 7", "Class 8", "Class 9", "Class 10", "Class 11", "Class 12", "Nursery", "LKG", "UKG"])
+        self.cmb_class.addItems(["Class 10", "Class 1", "Class 2", "Class 3", "Class 4", "Class 5", "Class 6", "Class 7", "Class 8", "Class 9", "Class 11", "Class 12", "Nursery", "LKG", "UKG"])
         self.txt_section = QLineEdit()
         self.txt_section.setPlaceholderText("Section (A/B/C)")
         class_sec_layout.addWidget(self.cmb_class, stretch=2)
@@ -87,7 +112,7 @@ class StudentDialog(QDialog):
             for s in sessions:
                 self.cmb_session.addItem(s.session_name)
         else:
-            self.cmb_session.addItems(["2024-2025", "2025-2026"])
+            self.cmb_session.addItems(["2024-2025", "2025-2026", "2026-2027"])
         form_layout.addRow("Academic Session *:", self.cmb_session)
 
         # Status
@@ -97,7 +122,7 @@ class StudentDialog(QDialog):
 
         # Address
         self.txt_address = QTextEdit()
-        self.txt_address.setMaximumHeight(60)
+        self.txt_address.setMaximumHeight(50)
         form_layout.addRow("Residential Address:", self.txt_address)
 
         main_layout.addWidget(group)
@@ -124,6 +149,14 @@ class StudentDialog(QDialog):
         self.txt_name.setText(s.name)
         self.txt_father_name.setText(s.father_name)
         self.txt_mother_name.setText(s.mother_name or "")
+        if s.course:
+            self.cmb_course.setCurrentText(s.course)
+        if s.branch:
+            self.cmb_branch.setCurrentText(s.branch)
+        if s.year:
+            self.cmb_year.setCurrentText(s.year)
+        if s.semester:
+            self.cmb_semester.setCurrentText(s.semester)
         self.cmb_class.setCurrentText(s.class_name)
         self.txt_section.setText(s.section or "")
         self.txt_mobile.setText(s.mobile)
@@ -163,12 +196,19 @@ class StudentDialog(QDialog):
         qdate = self.dt_admission.date()
         admission_date = date(qdate.year(), qdate.month(), qdate.day())
 
+        yr = self.cmb_year.currentText().strip()
+        sem = self.cmb_semester.currentText().strip()
+
         data = {
             "admission_no": adm_no,
             "roll_no": self.txt_roll_no.text().strip(),
             "name": name,
             "father_name": father_name,
             "mother_name": self.txt_mother_name.text().strip(),
+            "course": self.cmb_course.currentText().strip(),
+            "branch": self.cmb_branch.currentText().strip(),
+            "year": "" if yr == "None" else yr,
+            "semester": "" if sem == "None" else sem,
             "class_name": class_name,
             "section": self.txt_section.text().strip(),
             "mobile": mobile,

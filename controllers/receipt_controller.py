@@ -88,6 +88,10 @@ class ReceiptController:
                 receipt_date=receipt_date or date.today(),
                 student_id=student_id,
                 academic_session=academic_session,
+                course=student.course,
+                branch=getattr(student, "branch", None),
+                academic_year=getattr(student, "year", None),
+                semester=getattr(student, "semester", None),
                 subtotal=subtotal,
                 discount_amount=discount_amount,
                 fine_amount=fine_amount,
@@ -255,7 +259,10 @@ class ReceiptController:
         pay_mode_filter: str = "All",
         status_filter: str = "All",
         page: int = 1,
-        page_size: int = 25
+        page_size: int = 25,
+        branch_filter: str = "All",
+        year_filter: str = "All",
+        semester_filter: str = "All"
     ) -> Tuple[List[Receipt], int, int, Dict[str, float]]:
         """
         High-performance SQL paginated receipt ledger query.
@@ -269,7 +276,16 @@ class ReceiptController:
                 query = query.filter(Receipt.academic_session == session_filter)
 
             if course_filter != "All":
-                query = query.filter(Student.course == course_filter)
+                query = query.filter(or_(Receipt.course == course_filter, Student.course == course_filter))
+
+            if branch_filter != "All":
+                query = query.filter(or_(Receipt.branch == branch_filter, Student.branch == branch_filter))
+
+            if year_filter != "All":
+                query = query.filter(or_(Receipt.academic_year == year_filter, Student.year == year_filter))
+
+            if semester_filter != "All":
+                query = query.filter(or_(Receipt.semester == semester_filter, Student.semester == semester_filter))
 
             if class_filter != "All":
                 query = query.filter(Student.class_name == class_filter)

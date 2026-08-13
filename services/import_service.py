@@ -24,14 +24,14 @@ class ImportService:
     def generate_sample_csv(output_path: Optional[str] = None) -> Tuple[bool, str]:
         """Generates sample CSV student import template."""
         headers = [
-            "Admission Number", "Roll Number", "Student Name", "Class", "Section",
-            "Course", "Father Name", "Mother Name", "Mobile Number", "Address",
-            "Admission Date", "Academic Session", "Status"
+            "Admission Number", "Roll Number", "Student Name", "Course", "Branch",
+            "Academic Year", "Semester", "Class", "Section", "Father Name",
+            "Mother Name", "Mobile Number", "Address", "Admission Date", "Academic Session", "Status"
         ]
         rows = [
-            ["ADM/2024/101", "101", "Aarav Sharma", "Class 10", "A", "UG", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2024-04-01", "2024-2025", "Active"],
-            ["ADM/2024/102", "102", "Ananya Verma", "Class 12", "B", "PG", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2024-04-01", "2024-2025", "Active"],
-            ["ADM/2024/103", "103", "Rohan Gupta", "Class 9", "A", "UG", "Amit Gupta", "Ritu Gupta", "9988776655", "789 Malviya Nagar, New Delhi", "2024-04-01", "2024-2025", "Active"]
+            ["ADM/2025/101", "101", "Aarav Sharma", "B.Tech", "Computer Science", "2nd Year", "Semester 3", "Degree College", "A", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2025-06-01", "2025-2026", "Active"],
+            ["ADM/2025/102", "102", "Ananya Verma", "MBA", "Finance", "1st Year", "Semester 1", "Degree College", "B", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2025-06-01", "2025-2026", "Active"],
+            ["ADM/2025/103", "103", "Rohan Gupta", "BCA", "Computer Applications", "1st Year", "Semester 1", "Degree College", "A", "Amit Gupta", "Ritu Gupta", "9988776655", "789 Malviya Nagar, New Delhi", "2025-06-01", "2025-2026", "Active"]
         ]
         if not output_path:
             output_path = str(EXPORTS_DIR / "sample_student_import.csv")
@@ -42,14 +42,14 @@ class ImportService:
     def generate_sample_excel(output_path: Optional[str] = None) -> Tuple[bool, str]:
         """Generates sample Excel student import template."""
         headers = [
-            "Admission Number", "Roll Number", "Student Name", "Class", "Section",
-            "Course", "Father Name", "Mother Name", "Mobile Number", "Address",
-            "Admission Date", "Academic Session", "Status"
+            "Admission Number", "Roll Number", "Student Name", "Course", "Branch",
+            "Academic Year", "Semester", "Class", "Section", "Father Name",
+            "Mother Name", "Mobile Number", "Address", "Admission Date", "Academic Session", "Status"
         ]
         rows = [
-            ["ADM/2024/101", "101", "Aarav Sharma", "Class 10", "A", "UG", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2024-04-01", "2024-2025", "Active"],
-            ["ADM/2024/102", "102", "Ananya Verma", "Class 12", "B", "PG", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2024-04-01", "2024-2025", "Active"],
-            ["ADM/2024/103", "103", "Rohan Gupta", "Class 9", "A", "UG", "Amit Gupta", "Ritu Gupta", "9988776655", "789 Malviya Nagar, New Delhi", "2024-04-01", "2024-2025", "Active"]
+            ["ADM/2025/101", "101", "Aarav Sharma", "B.Tech", "Computer Science", "2nd Year", "Semester 3", "Degree College", "A", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2025-06-01", "2025-2026", "Active"],
+            ["ADM/2025/102", "102", "Ananya Verma", "MBA", "Finance", "1st Year", "Semester 1", "Degree College", "B", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2025-06-01", "2025-2026", "Active"],
+            ["ADM/2025/103", "103", "Rohan Gupta", "BCA", "Computer Applications", "1st Year", "Semester 1", "Degree College", "A", "Amit Gupta", "Ritu Gupta", "9988776655", "789 Malviya Nagar, New Delhi", "2025-06-01", "2025-2026", "Active"]
         ]
         if not output_path:
             output_path = str(EXPORTS_DIR / "sample_student_import.xlsx")
@@ -148,15 +148,18 @@ class ImportService:
                 adm_no = row.get("Admission Number") or row.get("Admission No") or row.get("Adm No") or ""
                 roll_no = row.get("Roll Number") or row.get("Roll No") or ""
                 name = row.get("Student Name") or row.get("Name") or ""
-                cls_name = row.get("Class") or row.get("Class Name") or ""
+                cls_name = row.get("Class") or row.get("Class Name") or "Degree College"
                 sec = row.get("Section") or "A"
-                crs = row.get("Course") or "UG"
+                crs = row.get("Course") or "General"
+                branch = row.get("Branch") or row.get("Department") or ""
+                year = row.get("Academic Year") or row.get("Year") or ""
+                sem = row.get("Semester") or ""
                 father_name = row.get("Father Name") or ""
                 mother_name = row.get("Mother Name") or ""
                 mobile = row.get("Mobile Number") or row.get("Mobile") or row.get("Phone") or ""
                 address = row.get("Address") or ""
                 adm_date_str = row.get("Admission Date") or row.get("Date Of Admission") or ""
-                session = row.get("Academic Session") or row.get("Session") or "2024-2025"
+                session = row.get("Academic Session") or row.get("Session") or "2025-2026"
                 status = row.get("Status") or "Active"
 
                 issues = []
@@ -173,9 +176,6 @@ class ImportService:
                 if not father_name.strip():
                     issues.append("Missing Father Name")
                     suggested_fixes.append("Enter father's name")
-                if not cls_name.strip():
-                    issues.append("Missing Class Name")
-                    suggested_fixes.append("Specify class name")
                 if not mobile.strip():
                     issues.append("Missing Mobile Number")
                     suggested_fixes.append("Provide 10-digit mobile number")
@@ -251,13 +251,16 @@ class ImportService:
                     "name": name.strip(),
                     "class_name": cls_name.strip(),
                     "section": sec.strip() or "A",
-                    "course": crs.strip().upper() if crs.strip().upper() in ("UG", "PG") else "UG",
+                    "course": crs.strip(),
+                    "branch": branch.strip(),
+                    "year": year.strip(),
+                    "semester": sem.strip(),
                     "father_name": father_name.strip(),
                     "mother_name": mother_name.strip(),
                     "mobile": clean_mobile or mobile.strip(),
                     "address": address.strip(),
                     "admission_date": parsed_adm_date,
-                    "academic_session": session.strip() or "2024-2025",
+                    "academic_session": session.strip() or "2025-2026",
                     "status": "Active" if status.strip().lower() != "inactive" else "Inactive",
                     "validation_status": status_code,
                     "issues": "; ".join(issues) if issues else "OK",
@@ -298,7 +301,10 @@ class ImportService:
                     name=item["name"],
                     class_name=item["class_name"],
                     section=item["section"],
-                    course=item["course"],
+                    course=item.get("course", "General"),
+                    branch=item.get("branch", ""),
+                    year=item.get("year", ""),
+                    semester=item.get("semester", ""),
                     father_name=item["father_name"],
                     mother_name=item["mother_name"],
                     mobile=item["mobile"],

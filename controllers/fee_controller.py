@@ -41,42 +41,87 @@ class FeeController:
             db.close()
 
     @staticmethod
+    def get_applicable_categories(student: Any) -> List[FeeCategory]:
+        """
+        Returns active Fee Heads applicable to the given student based on:
+        Course, Branch, Academic Year, Semester, and Academic Session.
+        Falls back to all active fee heads if student parameters are unassigned.
+        """
+        db = get_db()
+        try:
+            query = db.query(FeeCategory).filter(FeeCategory.is_active == True)
+            cats = query.all()
+
+            matched = []
+            st_course = getattr(student, "course", None) or "All"
+            st_branch = getattr(student, "branch", None) or "All"
+            st_year = getattr(student, "year", None) or "All"
+            st_sem = getattr(student, "semester", None) or "All"
+            st_session = getattr(student, "academic_session", None) or "All"
+
+            for c in cats:
+                # Check course match
+                if c.course not in ("All", "UG", "PG") and st_course != "All" and c.course.lower() != st_course.lower():
+                    continue
+                # Check branch match
+                if c.branch != "All" and st_branch != "All" and c.branch.lower() != st_branch.lower():
+                    continue
+                # Check year match
+                if c.academic_year != "All" and st_year != "All" and c.academic_year.lower() != st_year.lower():
+                    continue
+                # Check semester match
+                if c.semester != "All" and st_sem != "All" and c.semester.lower() != st_sem.lower():
+                    continue
+                # Check session match
+                if c.academic_session != "All" and st_session != "All" and c.academic_session.lower() != st_session.lower():
+                    continue
+                matched.append(c)
+
+            for c in matched:
+                db.expunge(c)
+            return matched if matched else cats
+        finally:
+            db.close()
+
+    @staticmethod
     def create_category(data: Any, *args, **kwargs) -> Tuple[bool, str]:
         """
         Creates fee category. Supports dict or legacy positional args.
-        data dict keys: name, course, default_amount, description, is_active
+        data dict keys: name, course, branch, academic_year, semester, academic_session, default_amount, description, is_active
         """
         db = get_db()
         try:
             if isinstance(data, dict):
                 name = data.get("name", "").strip()
-                course = data.get("course", "UG").strip().upper()
+                course = data.get("course", "All").strip()
+                branch = data.get("branch", "All").strip()
+                academic_year = data.get("academic_year", "All").strip()
+                semester = data.get("semester", "All").strip()
+                academic_session = data.get("academic_session", "All").strip()
                 default_amount = float(data.get("default_amount", 0.0))
                 description = data.get("description", "").strip()
                 is_active = bool(data.get("is_active", True))
             else:
                 name = str(data).strip()
-                course = str(args[0]).strip().upper() if args else "UG"
+                course = str(args[0]).strip() if args else "All"
+                branch = "All"
+                academic_year = "All"
+                semester = "All"
+                academic_session = "All"
                 default_amount = float(args[1]) if len(args) > 1 else (float(kwargs.get("default_amount", 0.0)))
                 description = kwargs.get("description", "").strip()
                 is_active = kwargs.get("is_active", True)
 
             if not name:
                 return False, "Description / Fee Head Name is required."
-            if course not in ("UG", "PG"):
-                course = "UG"
-
-            # Check duplicate within the same course
-            existing = db.query(FeeCategory).filter(
-                FeeCategory.name.ilike(name),
-                FeeCategory.course == course
-            ).first()
-            if existing:
-                return False, f"Fee Head '{name}' already exists under {course} course."
 
             cat = FeeCategory(
                 name=name,
-                course=course,
+                course=course if course else "All",
+                branch=branch if branch else "All",
+                academic_year=academic_year if academic_year else "All",
+                semester=semester if semester else "All",
+                academic_session=academic_session if academic_session else "All",
                 default_amount=max(0.0, default_amount),
                 is_active=is_active,
                 description=description
@@ -85,7 +130,7 @@ class FeeController:
 
             user = AuthController.get_current_user()
             user_id = user.id if user else None
-            audit = AuditLog(user_id=user_id, action="CREATE_FEE_CATEGORY", details=f"Added {course} fee head: {name}")
+            audit = AuditLog(user_id=user_id, action="CREATE_FEE_CATEGORY", details=f"Added fee head: {name} ({course})")
             db.add(audit)
 
             db.commit()

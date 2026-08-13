@@ -19,6 +19,9 @@ class Student(Base):
     class_name = Column(String(50), nullable=False, index=True)
     section = Column(String(20), nullable=True)
     course = Column(String(100), nullable=True, index=True)
+    branch = Column(String(100), nullable=True, index=True)
+    year = Column(String(50), nullable=True, index=True) # 1st Year, 2nd Year, etc.
+    semester = Column(String(50), nullable=True, index=True) # Semester 1, Semester 2, etc.
     mobile = Column(String(15), nullable=False, index=True)
     address = Column(Text, nullable=True)
     admission_date = Column(Date, default=date.today, nullable=False)

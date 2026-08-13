@@ -11,7 +11,11 @@ class FeeCategory(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(150), nullable=False, index=True)
-    course = Column(String(20), nullable=False, default="UG", index=True) # UG / PG
+    course = Column(String(100), nullable=False, default="All", index=True) # Course name or 'All'
+    branch = Column(String(100), nullable=False, default="All", index=True) # Branch name or 'All'
+    academic_year = Column(String(50), nullable=False, default="All", index=True) # Year or 'All'
+    semester = Column(String(50), nullable=False, default="All", index=True) # Semester or 'All'
+    academic_session = Column(String(20), nullable=False, default="All", index=True) # Session or 'All'
     default_amount = Column(Float, default=0.0, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     description = Column(String(255), nullable=True)

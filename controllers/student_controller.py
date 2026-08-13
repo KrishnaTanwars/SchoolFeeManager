@@ -17,7 +17,11 @@ class StudentController:
         class_filter: str = "All",
         section_filter: str = "All",
         session_filter: str = "All",
-        status_filter: str = "Active"
+        status_filter: str = "Active",
+        course_filter: str = "All",
+        branch_filter: str = "All",
+        year_filter: str = "All",
+        semester_filter: str = "All"
     ) -> List[Student]:
         db = get_db()
         try:
@@ -35,6 +39,18 @@ class StudentController:
             if session_filter and session_filter != "All":
                 query = query.filter(Student.academic_session == session_filter)
 
+            if course_filter and course_filter != "All":
+                query = query.filter(Student.course == course_filter)
+
+            if branch_filter and branch_filter != "All":
+                query = query.filter(Student.branch == branch_filter)
+
+            if year_filter and year_filter != "All":
+                query = query.filter(Student.year == year_filter)
+
+            if semester_filter and semester_filter != "All":
+                query = query.filter(Student.semester == semester_filter)
+
             if search_query:
                 pattern = f"%{search_query.strip()}%"
                 query = query.filter(
@@ -47,6 +63,9 @@ class StudentController:
                         Student.mobile.ilike(pattern),
                         Student.class_name.ilike(pattern),
                         Student.course.ilike(pattern),
+                        Student.branch.ilike(pattern),
+                        Student.year.ilike(pattern),
+                        Student.semester.ilike(pattern),
                         Student.section.ilike(pattern)
                     )
                 )
@@ -103,6 +122,9 @@ class StudentController:
                 class_name=data.get("class_name", "").strip(),
                 section=data.get("section", "").strip(),
                 course=data.get("course", "").strip(),
+                branch=data.get("branch", "").strip(),
+                year=data.get("year", "").strip(),
+                semester=data.get("semester", "").strip(),
                 mobile=data.get("mobile", "").strip(),
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),
@@ -145,6 +167,10 @@ class StudentController:
             student.mother_name = data.get("mother_name", "").strip()
             student.class_name = data.get("class_name", "").strip()
             student.section = data.get("section", "").strip()
+            student.course = data.get("course", "").strip()
+            student.branch = data.get("branch", "").strip()
+            student.year = data.get("year", "").strip()
+            student.semester = data.get("semester", "").strip()
             student.mobile = data.get("mobile", "").strip()
             student.address = data.get("address", "").strip()
             student.admission_date = data.get("admission_date")

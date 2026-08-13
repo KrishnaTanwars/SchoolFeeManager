@@ -590,21 +590,22 @@ class ReceiptView(QWidget):
         self.lbl_course_badge.setText("Fee Heads Filter: <b>ALL</b>")
         self.load_fee_heads()
 
-    # ---------------- COURSE-BASED FEE HEAD FILTERING ----------------
+    # ---------------- COURSE & SEMESTER BASED FEE HEAD FILTERING ----------------
     def load_fee_heads_for_student(self, student):
-        st_course = str(student.course or "").strip().upper()
-        if "PG" in st_course or "POST" in st_course or "M.SC" in st_course or "M.A" in st_course or "M.COM" in st_course:
-            self.current_course_filter = "PG"
-        elif "UG" in st_course or "UNDER" in st_course or "B.SC" in st_course or "B.A" in st_course or "B.COM" in st_course or "B.CA" in st_course:
-            self.current_course_filter = "UG"
-        else:
-            self.current_course_filter = "All"
-
-        self.lbl_course_badge.setText(f"Fee Heads Filter: <b>{self.current_course_filter}</b>")
+        st_course = str(student.course or "").strip()
+        st_sem = str(getattr(student, "semester", "") or "").strip()
+        badge_text = st_course if st_course else "All"
+        if st_sem:
+            badge_text += f" ({st_sem})"
+        self.lbl_course_badge.setText(f"Fee Heads Filter: <b>{badge_text}</b>")
         self.load_fee_heads()
 
     def load_fee_heads(self):
-        categories = FeeController.get_all_categories(active_only=True, course_filter=self.current_course_filter)
+        if self.selected_student:
+            categories = FeeController.get_applicable_categories(self.selected_student)
+        else:
+            categories = FeeController.get_all_categories(active_only=True, course_filter=self.current_course_filter)
+        
         self.table_fees.setRowCount(len(categories))
 
         for row_idx, cat in enumerate(categories):

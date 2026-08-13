@@ -124,12 +124,20 @@ class GlobalSearchDialog(QDialog):
                     (Student.roll_no.ilike(pattern)) |
                     (Student.mobile.ilike(pattern)) |
                     (Student.father_name.ilike(pattern)) |
-                    (Student.class_name.ilike(pattern))
+                    (Student.class_name.ilike(pattern)) |
+                    (Student.course.ilike(pattern)) |
+                    (Student.branch.ilike(pattern)) |
+                    (Student.semester.ilike(pattern))
                 )
             students = sq.order_by(Student.name.asc()).limit(8).all()
 
             for s in students:
-                item_text = f"👤 Student: {s.name} | Adm No: {s.admission_no} | Roll: {s.roll_no or 'N/A'} | Class: {s.class_name} ({s.course or 'UG'}) | Mob: {s.mobile}"
+                c_info = f"{s.course or 'General'}"
+                if getattr(s, "branch", None):
+                    c_info += f" ({s.branch})"
+                if getattr(s, "semester", None):
+                    c_info += f" - {s.semester}"
+                item_text = f"👤 Student: {s.name} | Adm No: {s.admission_no} | {c_info} | Mob: {s.mobile}"
                 data = {"type": "student", "id": s.id, "target_view": "students", "title": s.name}
                 
                 l_item = QListWidgetItem(item_text)

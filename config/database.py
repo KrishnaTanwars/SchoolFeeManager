@@ -69,28 +69,40 @@ def run_migrations():
                 cursor.execute("ALTER TABLE receipts ADD COLUMN bank_name VARCHAR(100);")
             if "payment_date" not in receipt_cols:
                 cursor.execute("ALTER TABLE receipts ADD COLUMN payment_date DATE;")
+            if "course" not in receipt_cols:
+                cursor.execute("ALTER TABLE receipts ADD COLUMN course VARCHAR(100);")
+            if "branch" not in receipt_cols:
+                cursor.execute("ALTER TABLE receipts ADD COLUMN branch VARCHAR(100);")
+            if "academic_year" not in receipt_cols:
+                cursor.execute("ALTER TABLE receipts ADD COLUMN academic_year VARCHAR(50);")
+            if "semester" not in receipt_cols:
+                cursor.execute("ALTER TABLE receipts ADD COLUMN semester VARCHAR(50);")
 
             # Check students columns
             cursor.execute("PRAGMA table_info(students);")
             student_cols = {row[1] for row in cursor.fetchall()}
             if "course" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN course VARCHAR(100);")
-
-            # Check audit_logs columns
-            cursor.execute("PRAGMA table_info(audit_logs);")
-            audit_cols = {row[1] for row in cursor.fetchall()}
-            if "module" not in audit_cols:
-                cursor.execute("ALTER TABLE audit_logs ADD COLUMN module VARCHAR(50);")
-            if "status" not in audit_cols:
-                cursor.execute("ALTER TABLE audit_logs ADD COLUMN status VARCHAR(20) DEFAULT 'Success';")
-            if "machine_name" not in audit_cols:
-                cursor.execute("ALTER TABLE audit_logs ADD COLUMN machine_name VARCHAR(100);")
+            if "branch" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN branch VARCHAR(100);")
+            if "year" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN year VARCHAR(50);")
+            if "semester" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN semester VARCHAR(50);")
 
             # Check fee_categories columns and indexes
             cursor.execute("PRAGMA table_info(fee_categories);")
             fee_cat_cols = {row[1] for row in cursor.fetchall()}
             if "course" not in fee_cat_cols:
-                cursor.execute("ALTER TABLE fee_categories ADD COLUMN course VARCHAR(20) DEFAULT 'UG';")
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN course VARCHAR(100) DEFAULT 'All';")
+            if "branch" not in fee_cat_cols:
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN branch VARCHAR(100) DEFAULT 'All';")
+            if "academic_year" not in fee_cat_cols:
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN academic_year VARCHAR(50) DEFAULT 'All';")
+            if "semester" not in fee_cat_cols:
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN semester VARCHAR(50) DEFAULT 'All';")
+            if "academic_session" not in fee_cat_cols:
+                cursor.execute("ALTER TABLE fee_categories ADD COLUMN academic_session VARCHAR(20) DEFAULT 'All';")
             if "created_at" not in fee_cat_cols:
                 cursor.execute("ALTER TABLE fee_categories ADD COLUMN created_at DATETIME;")
 
@@ -170,6 +182,7 @@ def run_migrations():
 def init_db():
     """Imports all models and initializes database tables."""
     from models.base import Base
+    import models.academic
     import models.student
     import models.fee_category
     import models.receipt

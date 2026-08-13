@@ -13,7 +13,7 @@ from dialogs.student_dialog import StudentDialog
 from dialogs.student_ledger_dialog import StudentFeeLedgerDialog
 from services.export_service import ExportService
 from utils.helpers import format_date
-
+from components.academic_filter_widget import AcademicFilterWidget
 from dialogs.student_details_dialog import StudentDetailsDialog
 
 class StudentView(QWidget):
@@ -24,11 +24,11 @@ class StudentView(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(15, 15, 15, 15)
-        layout.setSpacing(12)
+        layout.setSpacing(10)
 
         # Header Title Banner
         hdr_layout = QHBoxLayout()
-        title_lbl = QLabel("Student Directory")
+        title_lbl = QLabel("Student Directory & Academic Structure")
         title_lbl.setStyleSheet("font-size: 20px; font-weight: 800; color: #1e3a8a;")
         hdr_layout.addWidget(title_lbl)
         hdr_layout.addStretch()
@@ -59,29 +59,19 @@ class StudentView(QWidget):
         hdr_layout.addWidget(self.btn_add_student)
         layout.addLayout(hdr_layout)
 
+        # Integrated Academic Filter Widget
+        self.academic_filter = AcademicFilterWidget(self, show_all_option=True, include_session=True)
+        self.academic_filter.filters_changed.connect(self.load_students)
+        layout.addWidget(self.academic_filter)
+
         # Filter & Search Controls Bar
         filter_layout = QHBoxLayout()
         filter_layout.setSpacing(8)
 
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(36)
-        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Father Name, Course, Class, Mobile...")
+        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Course, Branch, Semester, Class, Mobile...")
         self.txt_search.textChanged.connect(self.load_students)
-
-        self.cmb_class_filter = QComboBox()
-        self.cmb_class_filter.setFixedHeight(36)
-        self.cmb_class_filter.addItem("All Classes", "All")
-        self.cmb_class_filter.currentIndexChanged.connect(self.load_students)
-
-        self.cmb_section_filter = QComboBox()
-        self.cmb_section_filter.setFixedHeight(36)
-        self.cmb_section_filter.addItem("All Sections", "All")
-        self.cmb_section_filter.currentIndexChanged.connect(self.load_students)
-
-        self.cmb_session_filter = QComboBox()
-        self.cmb_session_filter.setFixedHeight(36)
-        self.cmb_session_filter.addItem("All Sessions", "All")
-        self.cmb_session_filter.currentIndexChanged.connect(self.load_students)
 
         self.cmb_status_filter = QComboBox()
         self.cmb_status_filter.setFixedHeight(36)
@@ -89,33 +79,27 @@ class StudentView(QWidget):
         self.cmb_status_filter.currentIndexChanged.connect(self.load_students)
 
         filter_layout.addWidget(self.txt_search, stretch=4)
-        filter_layout.addWidget(self.cmb_class_filter, stretch=1)
-        filter_layout.addWidget(self.cmb_section_filter, stretch=1)
-        filter_layout.addWidget(self.cmb_session_filter, stretch=1)
         filter_layout.addWidget(self.cmb_status_filter, stretch=1)
-
         layout.addLayout(filter_layout)
 
-        # Clean 8-Column ERP Student Table
+        # ERP Student Table
         self.table = QTableWidget()
         self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels([
-            "Admission No.", "Student Name", "Father Name", "Class / Sec",
-            "Academic Session", "Course", "Status", "Actions"
+            "Admission No.", "Student Name", "Course / Branch", "Year / Semester",
+            "Class / Sec", "Session", "Status", "Actions"
         ])
         
-        # Word Wrap & Header Styling
         self.table.setWordWrap(True)
         header = self.table.horizontalHeader()
         header.setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         
-        # Column Resize Allocation: Zero horizontal scrolling, fits 1366x768 perfectly
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Admission No.
         header.setSectionResizeMode(1, QHeaderView.Stretch)          # Student Name
-        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Father Name
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents) # Class / Sec
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Academic Session
-        header.setSectionResizeMode(5, QHeaderView.Stretch)          # Course
+        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Course / Branch
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents) # Year / Semester
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Class / Sec
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Session
         header.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Status
         header.setSectionResizeMode(7, QHeaderView.Fixed)           # Actions
         self.table.setColumnWidth(7, 160)
@@ -131,45 +115,25 @@ class StudentView(QWidget):
         self.load_students()
 
     def populate_filters(self):
-        self.cmb_class_filter.blockSignals(True)
-        self.cmb_class_filter.clear()
-        self.cmb_class_filter.addItem("All Classes", "All")
-        classes = StudentController.get_distinct_classes()
-        for c in classes:
-            self.cmb_class_filter.addItem(c, c)
-        self.cmb_class_filter.blockSignals(False)
-
-        self.cmb_section_filter.blockSignals(True)
-        self.cmb_section_filter.clear()
-        self.cmb_section_filter.addItem("All Sections", "All")
-        sections = StudentController.get_distinct_sections()
-        for sec in sections:
-            self.cmb_section_filter.addItem(f"Sec {sec}", sec)
-        self.cmb_section_filter.blockSignals(False)
-
-        self.cmb_session_filter.blockSignals(True)
-        self.cmb_session_filter.clear()
-        self.cmb_session_filter.addItem("All Sessions", "All")
-        sessions = StudentController.get_distinct_sessions()
-        for s in sessions:
-            self.cmb_session_filter.addItem(s, s)
-        self.cmb_session_filter.blockSignals(False)
+        pass
 
     def load_students(self):
         search = self.txt_search.text().strip()
-        class_val = self.cmb_class_filter.currentData() or "All"
-        section_val = self.cmb_section_filter.currentData() or "All"
-        session_val = self.cmb_session_filter.currentData() or "All"
+        academic_filters = self.academic_filter.get_filter_values()
         status_idx = self.cmb_status_filter.currentIndex()
 
         status = "Active" if status_idx == 0 else ("All" if status_idx == 1 else "Inactive")
 
         self.current_students = StudentController.get_all_students(
             search_query=search if search else "",
-            class_filter=class_val,
-            section_filter=section_val,
-            session_filter=session_val,
-            status_filter=status
+            class_filter="All",
+            section_filter="All",
+            session_filter=academic_filters.get("session") or "All",
+            status_filter=status,
+            course_filter=academic_filters.get("course") or "All",
+            branch_filter=academic_filters.get("branch") or "All",
+            year_filter=academic_filters.get("year") or "All",
+            semester_filter=academic_filters.get("semester") or "All"
         )
 
         self.table.setRowCount(len(self.current_students))
@@ -179,10 +143,22 @@ class StudentView(QWidget):
             item_adm.setData(Qt.UserRole, s)
             self.table.setItem(row_idx, 0, item_adm)
             self.table.setItem(row_idx, 1, QTableWidgetItem(s.name))
-            self.table.setItem(row_idx, 2, QTableWidgetItem(s.father_name))
-            self.table.setItem(row_idx, 3, QTableWidgetItem(f"{s.class_name} ({s.section or 'A'})"))
-            self.table.setItem(row_idx, 4, QTableWidgetItem(s.academic_session))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(getattr(s, "course", None) or "General"))
+            
+            course_branch = s.course or "General"
+            if getattr(s, "branch", None):
+                course_branch += f" ({s.branch})"
+            self.table.setItem(row_idx, 2, QTableWidgetItem(course_branch))
+
+            yr_sem_parts = []
+            if getattr(s, "year", None):
+                yr_sem_parts.append(s.year)
+            if getattr(s, "semester", None):
+                yr_sem_parts.append(s.semester)
+            yr_sem_str = " - ".join(yr_sem_parts) if yr_sem_parts else "N/A"
+            self.table.setItem(row_idx, 3, QTableWidgetItem(yr_sem_str))
+
+            self.table.setItem(row_idx, 4, QTableWidgetItem(f"{s.class_name} ({s.section or 'A'})"))
+            self.table.setItem(row_idx, 5, QTableWidgetItem(s.academic_session))
             self.table.setItem(row_idx, 6, QTableWidgetItem(s.status))
 
             # Compact Icon Actions Container (👁️, 💰, ✏️, 🗑️)

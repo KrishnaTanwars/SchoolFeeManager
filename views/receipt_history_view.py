@@ -25,6 +25,7 @@ from services.pdf_service import PDFService
 from services.security_service import SecurityService
 from utils.helpers import format_currency, format_date
 from utils.logger import logger
+from components.academic_filter_widget import AcademicFilterWidget
 
 
 class DeleteReasonDialog(QDialog):
@@ -231,6 +232,11 @@ class ReceiptHistoryView(QWidget):
         filter_v = QVBoxLayout(filter_box)
         filter_v.setContentsMargins(8, 6, 8, 6)
         filter_v.setSpacing(6)
+
+        # Academic Filter Bar
+        self.academic_filter = AcademicFilterWidget(self, show_all_option=True, include_session=True)
+        self.academic_filter.filters_changed.connect(self.on_filter_changed)
+        filter_v.addWidget(self.academic_filter)
 
         # Row 1: Live Search + Dropdown Controls
         r1_layout = QHBoxLayout()
@@ -706,12 +712,13 @@ class ReceiptHistoryView(QWidget):
 
         # Build Filter Options
         search = self.txt_search.text().strip()
+        academic_filters = self.academic_filter.get_filter_values()
         
-        sess_txt = self.cmb_session.currentText()
-        session_filter = sess_txt.replace("Session: ", "").strip()
-
-        crs_txt = self.cmb_course.currentText()
-        course_filter = crs_txt.replace("Course: ", "").strip()
+        session_filter = academic_filters.get("session") or "All"
+        course_filter = academic_filters.get("course") or "All"
+        branch_filter = academic_filters.get("branch") or "All"
+        year_filter = academic_filters.get("year") or "All"
+        semester_filter = academic_filters.get("semester") or "All"
 
         mode_txt = self.cmb_pay_mode.currentText()
         pay_mode_filter = mode_txt.replace("Mode: ", "").strip()
@@ -735,7 +742,10 @@ class ReceiptHistoryView(QWidget):
             pay_mode_filter=pay_mode_filter,
             status_filter=status_filter,
             page=self.current_page,
-            page_size=self.page_size
+            page_size=self.page_size,
+            branch_filter=branch_filter,
+            year_filter=year_filter,
+            semester_filter=semester_filter
         )
 
         self.card_filtered.lbl_val.setText(format_currency(summary["total_amount"]))

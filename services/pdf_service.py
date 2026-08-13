@@ -139,6 +139,11 @@ class PDFService:
 
         # Student & Receipt Details Table
         student = receipt.student
+        course_str = getattr(receipt, "course", None) or getattr(student, "course", None) or "General"
+        branch_str = getattr(receipt, "branch", None) or getattr(student, "branch", None) or "General"
+        year_str = getattr(receipt, "academic_year", None) or getattr(student, "year", None) or "N/A"
+        sem_str = getattr(receipt, "semester", None) or getattr(student, "semester", None) or "N/A"
+
         student_info_data = [
             [
                 Paragraph("<b>Receipt No:</b>", label_bold), Paragraph(receipt.receipt_no, label_val),
@@ -150,6 +155,10 @@ class PDFService:
             ],
             [
                 Paragraph("<b>Student Name:</b>", label_bold), Paragraph(student.name, label_val),
+                Paragraph("<b>Course / Branch:</b>", label_bold), Paragraph(f"{course_str} ({branch_str})", label_val)
+            ],
+            [
+                Paragraph("<b>Year / Semester:</b>", label_bold), Paragraph(f"{year_str} / {sem_str}", label_val),
                 Paragraph("<b>Class / Sec:</b>", label_bold), Paragraph(f"{student.class_name} ({student.section or 'A'})", label_val)
             ],
             [

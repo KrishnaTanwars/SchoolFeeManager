@@ -1,21 +1,23 @@
 # Release Status — EduLedger ERP
 
 ## Current Release Summary
-- **Current System Version**: `v2.2.0`
-- **Release Phase**: Phase X — Professional Overlay Hover Sidebar (Enterprise ERP Navigation Redesign)
+- **Current System Version**: `v2.3.0`
+- **Release Phase**: Phase X — Academic Structure Refactor (Semester & Year Based ERP)
 - **Target OS Platform**: Windows 10 / Windows 11 (64-bit)
 - **Deployment Status**: **PRODUCTION READY**
 
 ---
 
 ## Active Phase Accomplishments
-- **Floating Overlay Sidebar (`Layer 2`)**: Refactored left navigation sidebar into an overlay QFrame childed to `central_widget`.
-- **Zero Central Content Shifting**: Main container `right_container` and stacked views (`DashboardView`, `ReceiptView`, `StudentView`, `ReceiptHistoryView`, `ReportView`, `SettingsView`) maintain fixed positions and widths (`x=60`, `width=window_width-60`), eliminating layout reflows, table resizing, and UI flicker.
-- **Mouse Hover Tracking & Delays**: Implemented 200ms exit delay (`QTimer`) with mouse coordinate re-validation to prevent accidental collapse on brief cursor movements.
-- **Pin Mode Toggle**: Added header pin button (`📌` / `📍`) allowing users to lock the sidebar in permanently expanded mode or return to hover mode.
-- **Keyboard Support**: Full `ESC` key support to collapse unpinned sidebar, along with `Ctrl+B` toggle shortcut.
-- **Windows 11 Elevation Aesthetics**: Applied `QGraphicsDropShadowEffect` (blur radius 20, offset (4, 0)) and rounded right border styling for modern enterprise UI appearance.
-- **Automated Verification & Packaging**: Passed all automated headless unit tests (`100% success`), captured 7 visual verification screenshots, built standalone executable (`SchoolFeeManager.exe`), and generated clean release ZIP archives (`release/v2.2.0/`).
+- **Dual Mode Academic ERP Engine**: Unified architecture for both **School Mode** (Class, Section, Session) and **College Mode** (Course, Branch, Academic Year, Semester, Session) across all modules.
+- **Academic Masters & Controller**: Added Course, Branch, Academic Year, and Semester database models and controllers with automated seeding for B.Tech, MBA, BCA, BBA, MCA, and Class 10.
+- **Reusable `AcademicFilterWidget`**: Created single-line filter component with synchronized dropdowns for Course, Branch, Academic Year, Semester, and Academic Session.
+- **Student Master & Profile Cards**: Updated Student directory table, add/edit form dialogs, profile details dialog, and search filters.
+- **Fee Heads & Applicable Matching Engine**: Fee category targeting by Course, Branch, Year, Semester, and Session with wildcard fallbacks.
+- **Receipt Snapshots & Printable PDFs**: Receipts capture student Course, Branch, Academic Year, and Semester; printable PDF receipts display complete academic metadata.
+- **Receipt History & Bulk Import/Export**: Integrated `AcademicFilterWidget` into Receipt History, updated CSV sample generation, and student import parser.
+- **Seeded Demo Data & Testing**: Seeded 100 students and 350 fee receipts; passed 7/7 automated unit tests in `tests/test_phase_x_academic_structure.py` and 100% full project regression suite.
+- **Standalone Build & Packaging**: Compiled executable (`dist/SchoolFeeManager/SchoolFeeManager.exe`) and created release package (`release/v2.3.0/`).
 
 ---
 
