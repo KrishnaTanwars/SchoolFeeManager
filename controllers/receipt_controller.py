@@ -133,13 +133,28 @@ class ReceiptController:
             )
             db.add(audit)
 
-            # Eagerly load relationship attributes in memory BEFORE commit
-            _ = student.name
-            _ = receipt.student.name
+            # Eagerly load all relationship attributes into memory BEFORE db.close()
+            if receipt.student:
+                _ = receipt.student.id
+                _ = receipt.student.admission_no
+                _ = receipt.student.name
+                _ = receipt.student.father_name
+                _ = receipt.student.mother_name
+                _ = receipt.student.course
+                _ = receipt.student.branch
+                _ = receipt.student.year
+                _ = receipt.student.semester
+                _ = receipt.student.class_name
+                _ = receipt.student.section
+                _ = receipt.student.mobile
+                _ = receipt.student.academic_session
+                _ = receipt.student.status
             for r_item in receipt.items:
                 _ = r_item.category_name
+                _ = r_item.amount
 
             db.commit()
+            db.expunge_all()
 
             logger.info(f"Generated Receipt {receipt_no} (ID: {receipt.id}) - Paid: Rs. {calc_paid}, Due: Rs. {calc_due}")
             return True, f"Receipt {receipt_no} generated successfully.", receipt
@@ -183,10 +198,25 @@ class ReceiptController:
         db = get_db()
         try:
             r = db.query(Receipt).options(joinedload(Receipt.student), joinedload(Receipt.items)).filter(Receipt.id == receipt_id).first()
-            if r:
+            if r and r.student:
+                _ = r.student.id
+                _ = r.student.admission_no
                 _ = r.student.name
+                _ = r.student.father_name
+                _ = r.student.mother_name
+                _ = r.student.course
+                _ = r.student.branch
+                _ = r.student.year
+                _ = r.student.semester
+                _ = r.student.class_name
+                _ = r.student.section
+                _ = r.student.mobile
+                _ = r.student.academic_session
+                _ = r.student.status
                 for item in r.items:
                     _ = item.category_name
+                    _ = item.amount
+                db.expunge_all()
             return r
         finally:
             db.close()
