@@ -113,6 +113,7 @@ class StudentController:
             if existing:
                 return False, f"Admission Number '{admission_no}' is already registered."
 
+            from services.session_service import session_manager
             student = Student(
                 admission_no=admission_no,
                 roll_no=data.get("roll_no", "").strip(),
@@ -128,7 +129,7 @@ class StudentController:
                 mobile=data.get("mobile", "").strip(),
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),
-                academic_session=data.get("academic_session", "2024-2025"),
+                academic_session=data.get("academic_session", "").strip() or session_manager.get_active_session(),
                 status="Active"
             )
             db.add(student)
@@ -318,7 +319,7 @@ class StudentController:
                 if not headers:
                     return {"error": "CSV file is empty."}
 
-                # Normalize headers
+                from services.session_service import session_manager
                 hdr_map = {}
                 for idx, h in enumerate(headers):
                     clean_h = h.strip().lower().replace(" ", "_").replace("'", "")
@@ -390,7 +391,7 @@ class StudentController:
                             mobile=mobile or "0000000000",
                             address=address,
                             admission_date=adm_date,
-                            academic_session=session_val or "2024-2025",
+                            academic_session=session_val or session_manager.get_active_session(),
                             status=status_val if status_val in ("Active", "Inactive") else "Active"
                         )
                         db.add(st)

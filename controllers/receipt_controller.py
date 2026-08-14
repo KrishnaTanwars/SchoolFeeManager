@@ -55,6 +55,10 @@ class ReceiptController:
     ) -> Tuple[bool, str, Optional[Receipt]]:
         db = get_db()
         try:
+            if not academic_session:
+                from services.session_service import session_manager
+                academic_session = session_manager.get_active_session()
+
             student = db.query(Student).filter(Student.id == student_id).first()
             if not student:
                 return False, "Student not found.", None
@@ -149,7 +153,8 @@ class ReceiptController:
     @staticmethod
     def collect_fee(student_id: int, items: List[Dict[str, Any]], payment_mode: str = "Cash", **kwargs) -> Tuple[Optional[Receipt], str]:
         """Legacy helper alias for create_receipt used in Phase 2 test suite."""
-        academic_session = kwargs.get("academic_session", "2024-2025")
+        from services.session_service import session_manager
+        academic_session = kwargs.get("academic_session") or session_manager.get_active_session()
         discount = kwargs.get("discount_amount", 0.0)
         fine = kwargs.get("fine_amount", 0.0)
         ok, msg, rec = ReceiptController.create_receipt(

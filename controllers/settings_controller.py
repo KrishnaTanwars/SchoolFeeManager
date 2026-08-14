@@ -84,35 +84,14 @@ class SettingsController:
             db.close()
 
     @staticmethod
+    def get_current_session() -> str:
+        from services.session_service import session_manager
+        return session_manager.get_active_session()
+
+    @staticmethod
     def set_current_session(session_name: str) -> Tuple[bool, str]:
-        db = get_db()
-        try:
-            sessions = db.query(AcademicSession).all()
-            found = False
-            for s in sessions:
-                if s.session_name == session_name:
-                    s.is_current = True
-                    found = True
-                else:
-                    s.is_current = False
-
-            if not found:
-                new_s = AcademicSession(session_name=session_name, is_current=True)
-                db.add(new_s)
-
-            info = db.query(SchoolInformation).first()
-            if info:
-                info.current_session = session_name
-
-            db.commit()
-            logger.info(f"Switched current academic session to: {session_name}")
-            return True, f"Switched to session '{session_name}'."
-        except Exception as e:
-            db.rollback()
-            logger.error(f"Error setting current session: {e}", exc_info=True)
-            return False, f"Database error: {str(e)}"
-        finally:
-            db.close()
+        from services.session_service import session_manager
+        return session_manager.set_active_session(session_name)
 
     @staticmethod
     def get_database_stats() -> Dict[str, Any]:

@@ -317,8 +317,43 @@ class MainWindow(QMainWindow):
         """)
         self.status_bar.addPermanentWidget(self.lbl_status_user)
 
+        # Connect Session Manager Signal for Real-Time Academic Session Header Sync
+        from services.session_service import session_manager
+        session_manager.session_changed.connect(self.on_active_session_changed)
+
         # Start at Login
         self.show_login()
+
+    def update_header_label(self, active_session: str = None):
+        if not active_session:
+            from services.session_service import session_manager
+            active_session = session_manager.get_active_session()
+        info = SettingsController.get_school_info()
+        school_name = info.school_name if info else "DPS International School"
+        self.lbl_school_header.setText(f"<b>{school_name}</b> &nbsp;|&nbsp; Academic Session: <b>{active_session}</b>")
+
+    def on_active_session_changed(self, new_session: str):
+        self.update_header_label(new_session)
+        # Synchronize and refresh all stacked views dynamically
+        for key, view in self.views.items():
+            try:
+                if hasattr(view, "refresh_dashboard"):
+                    view.refresh_dashboard()
+                elif hasattr(view, "refresh_view"):
+                    view.refresh_view()
+                elif hasattr(view, "load_students"):
+                    view.load_students()
+                elif hasattr(view, "load_categories"):
+                    view.load_categories()
+                elif hasattr(view, "load_receipts"):
+                    view.load_receipts()
+                elif hasattr(view, "load_sessions"):
+                    view.load_sessions()
+                if hasattr(view, "load_filter_options"):
+                    view.load_filter_options()
+            except Exception as e:
+                pass
+        self.status_bar.showMessage(f"Active Academic Session updated to {new_session}")
 
     def setup_shortcuts(self):
         QShortcut(QKeySequence("Ctrl+B"), self, self.toggle_sidebar)
@@ -343,9 +378,7 @@ class MainWindow(QMainWindow):
             self.lbl_status_user.setText(f"Logged in as: <b>{user.full_name}</b> ({role_display})")
             self.lbl_status_user.show()
         
-        info = SettingsController.get_school_info()
-        if info:
-            self.lbl_school_header.setText(f"<b>{info.school_name}</b> &nbsp;|&nbsp; Academic Session: <b>{info.current_session}</b>")
+        self.update_header_label()
 
         self.sidebar_base.show()
         self.sidebar_frame.show()

@@ -865,8 +865,8 @@ class ReceiptView(QWidget):
             QMessageBox.warning(self, "Validation Error", "Discount, Fine, and Paid Amount cannot be negative.")
             return
 
-        session_info = SettingsController.get_school_info()
-        current_session = session_info.current_session if session_info else "2024-2025"
+        from services.session_service import session_manager
+        current_session = session_manager.get_active_session()
 
         q_cq_date = self.dt_cheque_date.date()
         cq_date = date(q_cq_date.year(), q_cq_date.month(), q_cq_date.day())

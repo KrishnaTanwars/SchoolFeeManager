@@ -135,6 +135,12 @@ class AcademicFilterWidget(QFrame):
         self.cmb_semester.currentTextChanged.connect(self.on_filter_changed)
         if self.include_session:
             self.cmb_session.currentTextChanged.connect(self.on_filter_changed)
+            from services.session_service import session_manager
+            session_manager.session_changed.connect(self.on_session_changed_signal)
+
+    def on_session_changed_signal(self, new_session: str):
+        if self.include_session:
+            self.populate_options()
 
     def on_filter_changed(self):
         filters = self.get_filter_values()

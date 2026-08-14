@@ -107,12 +107,15 @@ class StudentDialog(QDialog):
 
         # Academic Session
         self.cmb_session = QComboBox()
+        from services.session_service import session_manager
+        active_sess = session_manager.get_active_session()
         sessions = SettingsController.get_academic_sessions()
-        if sessions:
-            for s in sessions:
-                self.cmb_session.addItem(s.session_name)
-        else:
-            self.cmb_session.addItems(["2024-2025", "2025-2026", "2026-2027"])
+        session_list = [s.session_name for s in sessions] if sessions else ["2024-2025", "2025-2026", "2026-2027"]
+        if active_sess not in session_list:
+            session_list.insert(0, active_sess)
+        self.cmb_session.addItems(session_list)
+        if not self.student:
+            self.cmb_session.setCurrentText(active_sess)
         form_layout.addRow("Academic Session *:", self.cmb_session)
 
         # Status
