@@ -237,6 +237,54 @@ class StudentController:
             db.close()
 
     @staticmethod
+    def delete_students_bulk(student_ids: List[int]) -> tuple[bool, str, int]:
+        """
+        Deletes multiple students in a single database transaction.
+        Returns (success: bool, message: str, deleted_count: int).
+        """
+        if not student_ids:
+            return False, "No student IDs provided for bulk deletion.", 0
+
+        db = get_db()
+        try:
+            students = db.query(Student).filter(Student.id.in_(student_ids)).all()
+            if not students:
+                return False, "No matching student records found.", 0
+
+            count = len(students)
+            names_summary = ", ".join([f"'{s.name}' ({s.admission_no})" for s in students[:5]])
+            if count > 5:
+                names_summary += f" and {count - 5} more"
+
+            for s in students:
+                db.delete(s)
+            db.commit()
+
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Students Deleted",
+                module="Student Master",
+                details=f"Deleted {count} students: {names_summary}",
+                status="Success"
+            )
+
+            logger.info(f"Bulk deleted {count} students.")
+            return True, f"Successfully deleted {count} student record(s).", count
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error bulk deleting students: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Student Delete Failed",
+                module="Student Master",
+                details=f"Failed to bulk delete {len(student_ids)} students: {str(e)}",
+                status="Failed"
+            )
+            return False, f"Cannot delete one or more selected students (they may have associated receipt records). {str(e)}", 0
+        finally:
+            db.close()
+
+    @staticmethod
     def get_distinct_classes() -> List[str]:
         db = get_db()
         try:
