@@ -38,9 +38,9 @@ class AcademicFilterWidget(QFrame):
                 color: #334155;
             }
             QComboBox {
-                min-width: 110px;
+                min-width: 80px;
                 max-width: 160px;
-                padding: 4px 8px;
+                padding: 4px 6px;
                 border: 1px solid #cbd5e1;
                 border-radius: 4px;
                 background-color: #ffffff;

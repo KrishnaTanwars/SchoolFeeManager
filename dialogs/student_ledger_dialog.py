@@ -6,35 +6,49 @@ Displays total lifetime fee paid till date, outstanding due, and receipt list fo
 from typing import Optional
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QTableWidget, QTableWidgetItem, QHeaderView, QGroupBox, QWidget, QFrame
+    QTableWidget, QTableWidgetItem, QHeaderView, QGroupBox, QWidget, QFrame,
+    QScrollArea
 )
 from PySide6.QtCore import Qt
 from models.student import Student
 from controllers.receipt_controller import ReceiptController
 from dialogs.receipt_preview_dialog import ReceiptPreviewDialog
 from utils.helpers import format_currency, format_date
+from utils.table_delegate import apply_responsive_table_formatting
 
 class StudentFeeLedgerDialog(QDialog):
     def __init__(self, parent=None, student: Optional[Student] = None):
         super().__init__(parent)
         self.student = student
         self.setWindowTitle(f"Student Fee Payment History - {student.name if student else 'Ledger'}")
+        self.setMinimumSize(550, 450)
         self.resize(750, 520)
         self.setup_ui()
 
     def setup_ui(self):
-        layout = QVBoxLayout(self)
+        dialog_vbox = QVBoxLayout(self)
+        dialog_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(12)
 
         if not self.student:
             layout.addWidget(QLabel("No student selected."))
+            scroll.setWidget(container)
+            dialog_vbox.addWidget(scroll)
             return
 
         summary = ReceiptController.get_student_fee_summary(self.student.id)
 
         # Header Title
         title_lbl = QLabel(f"Fee Payment Summary & History for: <b>{self.student.name}</b>")
+        title_lbl.setWordWrap(True)
         title_lbl.setStyleSheet("font-size: 16px; color: #1e3a8a; font-weight: bold;")
         layout.addWidget(title_lbl)
 
@@ -48,8 +62,10 @@ class StudentFeeLedgerDialog(QDialog):
         v_paid = QVBoxLayout(card_paid)
         v_paid.setContentsMargins(8, 6, 8, 6)
         lbl_p_title = QLabel("TOTAL FEE PAID TILL DATE")
+        lbl_p_title.setWordWrap(True)
         lbl_p_title.setStyleSheet("font-size: 11px; font-weight: bold; color: #166534;")
         lbl_p_val = QLabel(format_currency(summary['total_paid']))
+        lbl_p_val.setWordWrap(True)
         lbl_p_val.setStyleSheet("font-size: 20px; font-weight: bold; color: #15803d;")
         v_paid.addWidget(lbl_p_title)
         v_paid.addWidget(lbl_p_val)
@@ -60,8 +76,10 @@ class StudentFeeLedgerDialog(QDialog):
         v_due = QVBoxLayout(card_due)
         v_due.setContentsMargins(8, 6, 8, 6)
         lbl_d_title = QLabel("CURRENT OUTSTANDING DUE")
+        lbl_d_title.setWordWrap(True)
         lbl_d_title.setStyleSheet("font-size: 11px; font-weight: bold; color: #991b1b;")
         lbl_d_val = QLabel(format_currency(summary['latest_due']))
+        lbl_d_val.setWordWrap(True)
         lbl_d_val.setStyleSheet("font-size: 20px; font-weight: bold; color: #b91c1c;")
         v_due.addWidget(lbl_d_title)
         v_due.addWidget(lbl_d_val)
@@ -72,8 +90,10 @@ class StudentFeeLedgerDialog(QDialog):
         v_cnt = QVBoxLayout(card_cnt)
         v_cnt.setContentsMargins(8, 6, 8, 6)
         lbl_c_title = QLabel("TOTAL RECEIPTS ISSUED")
+        lbl_c_title.setWordWrap(True)
         lbl_c_title.setStyleSheet("font-size: 11px; font-weight: bold; color: #075985;")
         lbl_c_val = QLabel(f"{summary['receipts_count']} Receipts")
+        lbl_c_val.setWordWrap(True)
         lbl_c_val.setStyleSheet("font-size: 20px; font-weight: bold; color: #0369a1;")
         v_cnt.addWidget(lbl_c_title)
         v_cnt.addWidget(lbl_c_val)
@@ -98,8 +118,8 @@ class StudentFeeLedgerDialog(QDialog):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
         header.setSectionResizeMode(6, QHeaderView.Fixed)
         table.setColumnWidth(6, 120)
-        table.verticalHeader().setDefaultSectionSize(36)
         table.setAlternatingRowColors(True)
+        apply_responsive_table_formatting(table)
 
         receipts = summary['receipts']
         table.setRowCount(len(receipts))
@@ -151,6 +171,9 @@ class StudentFeeLedgerDialog(QDialog):
         btn_close.setStyleSheet("background-color: #64748b; color: white; font-weight: bold; border-radius: 5px;")
         btn_close.clicked.connect(self.accept)
         layout.addWidget(btn_close, alignment=Qt.AlignRight)
+
+        scroll.setWidget(container)
+        dialog_vbox.addWidget(scroll)
 
     def view_receipt(self, receipt):
         dlg = ReceiptPreviewDialog(self, receipt)

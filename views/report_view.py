@@ -23,6 +23,7 @@ from services.export_service import ExportService
 from services.print_service import PrintService
 from utils.helpers import format_currency, format_date
 from utils.logger import logger
+from utils.table_delegate import apply_responsive_table_formatting
 
 
 class ReportCategoryCard(QFrame):
@@ -334,6 +335,7 @@ class ReportView(QWidget):
         self.card_5 = QLabel("Metric 5: <b>0</b>")
 
         for card in [self.card_1, self.card_2, self.card_3, self.card_4, self.card_5]:
+            card.setWordWrap(True)
             card.setStyleSheet("background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-size: 12px; color: #1e3a8a;")
             self.summary_container.addWidget(card)
 
@@ -422,7 +424,7 @@ class ReportView(QWidget):
         self.table = QTableWidget()
         self.table.setAlternatingRowColors(True)
         self.table.setSortingEnabled(True)
-        self.table.verticalHeader().setDefaultSectionSize(34)
+        apply_responsive_table_formatting(self.table)
         self.table.setStyleSheet("""
             QTableWidget {
                 background-color: #ffffff;
@@ -631,15 +633,16 @@ class ReportView(QWidget):
             self.card_5.hide()
 
     def render_daily_report(self, rep):
-        headers = ["Receipt No", "Date", "Student Name", "Class", "Mode", "Subtotal", "Discount", "Fine", "Paid Amount"]
+        headers = ["Receipt No", "Date", "Student Name", "Course / Branch", "Payment Mode", "Subtotal", "Discount", "Fine", "Total Collected"]
         self.raw_headers = headers
         self.raw_rows = []
         for r in rep["receipts"]:
+            crs_br = f"{r.student.course or 'General'}" + (f" ({r.student.branch})" if (r.student and getattr(r.student, "branch", None)) else "") if r.student else "N/A"
             self.raw_rows.append([
                 r.receipt_no,
                 format_date(r.receipt_date),
                 r.student.name if r.student else "N/A",
-                r.student.class_name if r.student else "N/A",
+                crs_br,
                 r.payment_mode or "Cash",
                 f"{r.subtotal:,.2f}",
                 f"{r.discount_amount:,.2f}",
@@ -679,15 +682,16 @@ class ReportView(QWidget):
         )
 
     def render_date_range_report(self, rep):
-        headers = ["Receipt No", "Date", "Student Name", "Class", "Payment Mode", "Subtotal", "Discount", "Fine", "Total Collected"]
+        headers = ["Receipt No", "Date", "Student Name", "Course / Branch", "Payment Mode", "Subtotal", "Discount", "Fine", "Total Collected"]
         self.raw_headers = headers
         self.raw_rows = []
         for r in rep["receipts"]:
+            crs_br = f"{r.student.course or 'General'}" + (f" ({r.student.branch})" if (r.student and getattr(r.student, "branch", None)) else "") if r.student else "N/A"
             self.raw_rows.append([
                 r.receipt_no,
                 format_date(r.receipt_date),
                 r.student.name if r.student else "N/A",
-                r.student.class_name if r.student else "N/A",
+                crs_br,
                 r.payment_mode or "Cash",
                 f"{r.subtotal:,.2f}",
                 f"{r.discount_amount:,.2f}",
@@ -704,7 +708,7 @@ class ReportView(QWidget):
         )
 
     def render_class_wise_report(self, rep):
-        headers = ["Class Name", "Students", "Receipts", "Collection (₹)", "Outstanding (₹)", "Discount (₹)", "Fine (₹)", "Grand Total (₹)"]
+        headers = ["Course Name", "Students", "Receipts", "Collection (₹)", "Outstanding (₹)", "Discount (₹)", "Fine (₹)", "Grand Total (₹)"]
         self.raw_headers = headers
         self.raw_rows = []
         for r in rep["rows"]:

@@ -6,7 +6,8 @@ from typing import Optional, Dict, Any
 from datetime import date
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
-    QDateEdit, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout
+    QDateEdit, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout,
+    QScrollArea, QFrame
 )
 from PySide6.QtCore import Qt, QDate
 from controllers.student_controller import StudentController
@@ -19,6 +20,7 @@ class StudentDialog(QDialog):
         super().__init__(parent)
         self.student = student
         self.setWindowTitle("Edit Student Details" if student else "Register New Student")
+        self.setMinimumSize(520, 480)
         self.resize(600, 620)
 
         self.setup_ui()
@@ -26,7 +28,16 @@ class StudentDialog(QDialog):
             self.load_student_data()
 
     def setup_ui(self):
-        main_layout = QVBoxLayout(self)
+        dialog_vbox = QVBoxLayout(self)
+        dialog_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        main_layout = QVBoxLayout(container)
+        main_layout.setContentsMargins(15, 15, 15, 15)
 
         group = QGroupBox("Student Information & Academic Structure")
         form_layout = QFormLayout(group)
@@ -81,17 +92,6 @@ class StudentDialog(QDialog):
         yr_sem_layout.addWidget(self.cmb_semester, stretch=1)
         form_layout.addRow("Year & Semester:", yr_sem_layout)
 
-        # Class & Section Layout
-        class_sec_layout = QHBoxLayout()
-        self.cmb_class = QComboBox()
-        self.cmb_class.setEditable(True)
-        self.cmb_class.addItems(["Class 10", "Class 1", "Class 2", "Class 3", "Class 4", "Class 5", "Class 6", "Class 7", "Class 8", "Class 9", "Class 11", "Class 12", "Nursery", "LKG", "UKG"])
-        self.txt_section = QLineEdit()
-        self.txt_section.setPlaceholderText("Section (A/B/C)")
-        class_sec_layout.addWidget(self.cmb_class, stretch=2)
-        class_sec_layout.addWidget(self.txt_section, stretch=1)
-        form_layout.addRow("Class & Section *:", class_sec_layout)
-
         # Mobile Number
         self.txt_mobile = QLineEdit()
         self.txt_mobile.setPlaceholderText("10-Digit Mobile Number (e.g. 9876543210)")
@@ -142,6 +142,9 @@ class StudentDialog(QDialog):
         btn_layout.addWidget(self.btn_save)
         main_layout.addLayout(btn_layout)
 
+        scroll.setWidget(container)
+        dialog_vbox.addWidget(scroll)
+
     def load_student_data(self):
         s = self.student
         self.txt_admission_no.setText(s.admission_no)
@@ -157,8 +160,6 @@ class StudentDialog(QDialog):
             self.cmb_year.setCurrentText(s.year)
         if s.semester:
             self.cmb_semester.setCurrentText(s.semester)
-        self.cmb_class.setCurrentText(s.class_name)
-        self.txt_section.setText(s.section or "")
         self.txt_mobile.setText(s.mobile)
         if s.admission_date:
             self.dt_admission.setDate(QDate(s.admission_date.year, s.admission_date.month, s.admission_date.day))
@@ -170,7 +171,7 @@ class StudentDialog(QDialog):
         adm_no = self.txt_admission_no.text().strip()
         name = self.txt_name.text().strip()
         father_name = self.txt_father_name.text().strip()
-        class_name = self.cmb_class.currentText().strip()
+        course_name = self.cmb_course.currentText().strip()
         mobile = self.txt_mobile.text().strip()
 
         if not adm_no:
@@ -185,8 +186,9 @@ class StudentDialog(QDialog):
             QMessageBox.warning(self, "Validation Error", "Father's Name is required.")
             self.txt_father_name.setFocus()
             return
-        if not class_name:
-            QMessageBox.warning(self, "Validation Error", "Class is required.")
+        if not course_name:
+            QMessageBox.warning(self, "Validation Error", "Course is required.")
+            self.cmb_course.setFocus()
             return
         if not validate_indian_mobile(mobile):
             QMessageBox.warning(self, "Validation Error", "Please enter a valid 10-digit Indian Mobile Number.")
@@ -205,12 +207,12 @@ class StudentDialog(QDialog):
             "name": name,
             "father_name": father_name,
             "mother_name": self.txt_mother_name.text().strip(),
-            "course": self.cmb_course.currentText().strip(),
+            "course": course_name,
             "branch": self.cmb_branch.currentText().strip(),
             "year": "" if yr == "None" else yr,
             "semester": "" if sem == "None" else sem,
-            "class_name": class_name,
-            "section": self.txt_section.text().strip(),
+            "class_name": course_name,
+            "section": "",
             "mobile": mobile,
             "address": self.txt_address.toPlainText().strip(),
             "admission_date": admission_date,

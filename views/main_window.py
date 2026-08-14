@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QPushButton, QStackedWidget, QStatusBar, QMessageBox, QApplication,
     QGraphicsDropShadowEffect
 )
-from PySide6.QtCore import Qt, QSize, QPropertyAnimation, QEasingCurve, QTimer, QRect
+from PySide6.QtCore import Qt, QSize, QPropertyAnimation, QEasingCurve, QTimer, QRect, QSettings
 from PySide6.QtGui import QKeySequence, QShortcut, QColor, QCursor
 
 from views.login_view import LoginView
@@ -47,8 +47,19 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(f"EduLedger ERP v{APP_VERSION} - Enterprise Production Edition")
+        self.setMinimumSize(800, 600)
         self.resize(1280, 800)
-        self.setMinimumSize(1024, 680)
+
+        # Restore window geometry and state from QSettings if available
+        settings = QSettings("EduLedger", "SchoolFeeManager")
+        geom = settings.value("geometry")
+        state = settings.value("windowState")
+        if geom:
+            self.restoreGeometry(geom)
+        else:
+            self.showMaximized()
+        if state:
+            self.restoreState(state)
 
         # Always start sidebar COLLAPSED (False) and UNPINNED (False) on startup
         self.sidebar_expanded = False
@@ -63,6 +74,12 @@ class MainWindow(QMainWindow):
         self.setup_ui()
         self.setup_shortcuts()
         self.trigger_auto_backup()
+
+    def closeEvent(self, event):
+        settings = QSettings("EduLedger", "SchoolFeeManager")
+        settings.setValue("geometry", self.saveGeometry())
+        settings.setValue("windowState", self.saveState())
+        super().closeEvent(event)
 
     def setup_ui(self):
         central_widget = QWidget(self)

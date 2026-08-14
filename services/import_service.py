@@ -21,40 +21,81 @@ from utils.logger import logger
 
 class ImportService:
     @staticmethod
+    def _get_100_sample_indian_rows() -> List[List[str]]:
+        first_names = [
+            "Aarav", "Ananya", "Rohan", "Priya", "Aditya", "Ishaan", "Kavya", "Siddharth",
+            "Pooja", "Manish", "Divya", "Vikas", "Sneha", "Karan", "Tanvi", "Abhishek",
+            "Megha", "Rishabh", "Saurabh", "Swati", "Gaurav", "Nisha", "Nikhil", "Archana",
+            "Tarun", "Payal", "Varun", "Simran", "Akash", "Shweta", "Nitin", "Preeti"
+        ]
+        last_names = [
+            "Sharma", "Verma", "Gupta", "Singh", "Kumar", "Patel", "Joshi", "Mehta",
+            "Chawla", "Bhatia", "Malhotra", "Agarwal", "Rao", "Nair", "Saxena", "Deshmukh",
+            "Reddy", "Mishra", "Trivedi", "Pandey", "Kapoor", "Choudhury", "Mukherjee", "Yadav"
+        ]
+        courses_data = [
+            ("B.Tech", "Computer Science", "2nd Year", "Semester 3"),
+            ("B.Tech", "Information Technology", "3rd Year", "Semester 5"),
+            ("B.Tech", "Mechanical Engineering", "1st Year", "Semester 1"),
+            ("B.Tech", "Electrical Engineering", "4th Year", "Semester 7"),
+            ("MBA", "Finance", "1st Year", "Semester 1"),
+            ("MBA", "Marketing", "2nd Year", "Semester 3"),
+            ("BCA", "Computer Applications", "1st Year", "Semester 1"),
+            ("BCA", "Computer Applications", "2nd Year", "Semester 3"),
+            ("BBA", "Business Administration", "1st Year", "Semester 1"),
+            ("MCA", "Software Systems", "2nd Year", "Semester 3")
+        ]
+        cities = [
+            "123 Green Park, New Delhi", "456 Vasant Kunj, New Delhi", "789 Malviya Nagar, New Delhi",
+            "102 Hill Road, Bandra West, Mumbai", "A-501 Hiranandani, Powai, Mumbai",
+            "88 Koramangala 4th Block, Bengaluru", "12th Main, Indiranagar, Bengaluru",
+            "Flat 405, Viman Nagar, Pune", "C-84 Malviya Nagar, Jaipur", "Vipul Khand, Gomti Nagar, Lucknow"
+        ]
+
+        rows = []
+        for i in range(1, 101):
+            fn = first_names[(i - 1) % len(first_names)]
+            ln = last_names[(i * 3) % len(last_names)]
+            st_name = f"{fn} {ln}"
+            f_name = f"{first_names[(i * 5) % len(first_names)]} {ln}"
+            m_name = f"{first_names[(i * 7) % len(first_names)]} {ln}"
+            crs, br, yr, sem = courses_data[(i - 1) % len(courses_data)]
+            adm_no = f"ADM/2025/{1000 + i:04d}"
+            roll_no = f"{100 + i}"
+            mob = f"987{i:07d}"
+            addr = cities[(i - 1) % len(cities)]
+            adm_date = f"2025-06-{(i % 28) + 1:02d}"
+            sess = "2025-2026"
+            rows.append([adm_no, roll_no, st_name, crs, br, yr, sem, f_name, m_name, mob, addr, adm_date, sess, "Active"])
+        return rows
+
+    @staticmethod
     def generate_sample_csv(output_path: Optional[str] = None) -> Tuple[bool, str]:
-        """Generates sample CSV student import template."""
+        """Generates sample CSV student import template with 100 Indian college student rows."""
         headers = [
             "Admission Number", "Roll Number", "Student Name", "Course", "Branch",
-            "Academic Year", "Semester", "Class", "Section", "Father Name",
+            "Academic Year", "Semester", "Father Name",
             "Mother Name", "Mobile Number", "Address", "Admission Date", "Academic Session", "Status"
         ]
-        rows = [
-            ["ADM/2025/101", "101", "Aarav Sharma", "B.Tech", "Computer Science", "2nd Year", "Semester 3", "Degree College", "A", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2025-06-01", "2025-2026", "Active"],
-            ["ADM/2025/102", "102", "Ananya Verma", "MBA", "Finance", "1st Year", "Semester 1", "Degree College", "B", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2025-06-01", "2025-2026", "Active"],
-            ["ADM/2025/103", "103", "Rohan Gupta", "BCA", "Computer Applications", "1st Year", "Semester 1", "Degree College", "A", "Amit Gupta", "Ritu Gupta", "9988776655", "789 Malviya Nagar, New Delhi", "2025-06-01", "2025-2026", "Active"]
-        ]
+        rows = ImportService._get_100_sample_indian_rows()
         if not output_path:
             output_path = str(EXPORTS_DIR / "sample_student_import.csv")
 
-        return ExportService.export_to_csv(headers, rows, filename_prefix="Sample_Students", output_path=output_path)
+        return ExportService.export_to_csv(headers, rows, filename_prefix="Sample_Students_100", output_path=output_path)
 
     @staticmethod
     def generate_sample_excel(output_path: Optional[str] = None) -> Tuple[bool, str]:
-        """Generates sample Excel student import template."""
+        """Generates sample Excel student import template with 100 Indian college student rows."""
         headers = [
             "Admission Number", "Roll Number", "Student Name", "Course", "Branch",
-            "Academic Year", "Semester", "Class", "Section", "Father Name",
+            "Academic Year", "Semester", "Father Name",
             "Mother Name", "Mobile Number", "Address", "Admission Date", "Academic Session", "Status"
         ]
-        rows = [
-            ["ADM/2025/101", "101", "Aarav Sharma", "B.Tech", "Computer Science", "2nd Year", "Semester 3", "Degree College", "A", "Rajesh Sharma", "Sunita Sharma", "9876543210", "123 Green Park, New Delhi", "2025-06-01", "2025-2026", "Active"],
-            ["ADM/2025/102", "102", "Ananya Verma", "MBA", "Finance", "1st Year", "Semester 1", "Degree College", "B", "Sanjay Verma", "Meena Verma", "9811223344", "456 Vasant Kunj, New Delhi", "2025-06-01", "2025-2026", "Active"],
-            ["ADM/2025/103", "103", "Rohan Gupta", "BCA", "Computer Applications", "1st Year", "Semester 1", "Degree College", "A", "Amit Gupta", "Ritu Gupta", "9988776655", "789 Malviya Nagar, New Delhi", "2025-06-01", "2025-2026", "Active"]
-        ]
+        rows = ImportService._get_100_sample_indian_rows()
         if not output_path:
             output_path = str(EXPORTS_DIR / "sample_student_import.xlsx")
 
-        return ExportService.export_to_excel(headers, rows, filename_prefix="Sample_Students", output_path=output_path)
+        return ExportService.export_to_excel(headers, rows, filename_prefix="Sample_Students_100", output_path=output_path)
 
     @staticmethod
     def read_students_file(file_path: str) -> Tuple[bool, List[str], List[Dict[str, Any]], str]:
@@ -299,8 +340,8 @@ class ImportService:
                     admission_no=item["admission_no"],
                     roll_no=item["roll_no"],
                     name=item["name"],
-                    class_name=item["class_name"],
-                    section=item["section"],
+                    class_name=item.get("course") or item.get("class_name") or "",
+                    section=item.get("section", ""),
                     course=item.get("course", "General"),
                     branch=item.get("branch", ""),
                     year=item.get("year", ""),

@@ -13,6 +13,7 @@ from dialogs.student_dialog import StudentDialog
 from dialogs.student_ledger_dialog import StudentFeeLedgerDialog
 from services.export_service import ExportService
 from utils.helpers import format_date
+from utils.table_delegate import apply_responsive_table_formatting
 from components.academic_filter_widget import AcademicFilterWidget
 from dialogs.student_details_dialog import StudentDetailsDialog
 
@@ -70,7 +71,7 @@ class StudentView(QWidget):
 
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(36)
-        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Course, Branch, Semester, Class, Mobile...")
+        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Course, Branch, Semester, Mobile...")
         self.txt_search.textChanged.connect(self.load_students)
 
         self.cmb_status_filter = QComboBox()
@@ -84,10 +85,10 @@ class StudentView(QWidget):
 
         # ERP Student Table
         self.table = QTableWidget()
-        self.table.setColumnCount(8)
+        self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels([
             "Admission No.", "Student Name", "Course / Branch", "Year / Semester",
-            "Class / Sec", "Session", "Status", "Actions"
+            "Session", "Status", "Actions"
         ])
         
         self.table.setWordWrap(True)
@@ -98,16 +99,15 @@ class StudentView(QWidget):
         header.setSectionResizeMode(1, QHeaderView.Stretch)          # Student Name
         header.setSectionResizeMode(2, QHeaderView.Stretch)          # Course / Branch
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents) # Year / Semester
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Class / Sec
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Session
-        header.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Status
-        header.setSectionResizeMode(7, QHeaderView.Fixed)           # Actions
-        self.table.setColumnWidth(7, 160)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Session
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Status
+        header.setSectionResizeMode(6, QHeaderView.Fixed)           # Actions
+        self.table.setColumnWidth(6, 160)
 
-        self.table.verticalHeader().setDefaultSectionSize(42)
         self.table.setAlternatingRowColors(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.itemDoubleClicked.connect(self.on_row_double_clicked)
+        apply_responsive_table_formatting(self.table)
 
         layout.addWidget(self.table)
 
@@ -157,9 +157,8 @@ class StudentView(QWidget):
             yr_sem_str = " - ".join(yr_sem_parts) if yr_sem_parts else "N/A"
             self.table.setItem(row_idx, 3, QTableWidgetItem(yr_sem_str))
 
-            self.table.setItem(row_idx, 4, QTableWidgetItem(f"{s.class_name} ({s.section or 'A'})"))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(s.academic_session))
-            self.table.setItem(row_idx, 6, QTableWidgetItem(s.status))
+            self.table.setItem(row_idx, 4, QTableWidgetItem(s.academic_session))
+            self.table.setItem(row_idx, 5, QTableWidgetItem(s.status))
 
             # Compact Icon Actions Container (👁️, 💰, ✏️, 🗑️)
             action_widget = QWidget()
@@ -199,7 +198,7 @@ class StudentView(QWidget):
             act_layout.addWidget(btn_ledger)
             act_layout.addWidget(btn_edit)
             act_layout.addWidget(btn_del)
-            self.table.setCellWidget(row_idx, 7, action_widget)
+            self.table.setCellWidget(row_idx, 6, action_widget)
 
     def on_row_double_clicked(self, item):
         row = item.row()

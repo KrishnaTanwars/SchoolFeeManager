@@ -10,7 +10,7 @@ assets_path = Path('assets').resolve()
 
 datas = [
     (str(assets_path), 'assets'),
-] + collect_data_files('reportlab') + collect_data_files('PySide6')
+] + collect_data_files('reportlab')
 
 hiddenimports = [
     'PySide6.QtCore',
@@ -24,7 +24,7 @@ hiddenimports = [
     'reportlab.lib.pagesizes',
     'reportlab.platypus',
     'reportlab.lib.colors',
-] + collect_submodules('PySide6') + collect_submodules('shiboken6') + collect_submodules('reportlab') + collect_submodules('sqlalchemy')
+] + collect_submodules('shiboken6') + collect_submodules('reportlab') + collect_submodules('sqlalchemy')
 
 a = Analysis(
     ['main.py'],
@@ -35,7 +35,14 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['tkinter', 'matplotlib', 'PIL._tkinter_finder'],
+    excludes=[
+        'tkinter', 'matplotlib', 'PIL._tkinter_finder',
+        'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.Qt3D', 'PySide6.QtWebEngine',
+        'PySide6.QtSensors', 'PySide6.QtPositioning', 'PySide6.QtBluetooth',
+        'PySide6.QtNfc', 'PySide6.QtSerialPort', 'PySide6.QtMultimedia',
+        'PySide6.QtSpatialAudio', 'PySide6.QtPdf', 'PySide6.QtWebSockets',
+        'PySide6.QtTextToSpeech', 'PySide6.QtDesigner', 'PySide6.QtHelp'
+    ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -59,6 +66,8 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=str(assets_path / 'icons' / 'app_icon.ico'),
+    version='file_version_info.txt',
 )
 
 coll = COLLECT(

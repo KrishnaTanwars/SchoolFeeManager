@@ -119,7 +119,7 @@ class StudentController:
                 name=data.get("name", "").strip(),
                 father_name=data.get("father_name", "").strip(),
                 mother_name=data.get("mother_name", "").strip(),
-                class_name=data.get("class_name", "").strip(),
+                class_name=data.get("class_name", "").strip() or data.get("course", "").strip(),
                 section=data.get("section", "").strip(),
                 course=data.get("course", "").strip(),
                 branch=data.get("branch", "").strip(),
@@ -165,7 +165,7 @@ class StudentController:
             student.name = data.get("name", "").strip()
             student.father_name = data.get("father_name", "").strip()
             student.mother_name = data.get("mother_name", "").strip()
-            student.class_name = data.get("class_name", "").strip()
+            student.class_name = data.get("class_name", "").strip() or data.get("course", "").strip()
             student.section = data.get("section", "").strip()
             student.course = data.get("course", "").strip()
             student.branch = data.get("branch", "").strip()

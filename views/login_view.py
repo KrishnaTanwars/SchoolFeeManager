@@ -4,7 +4,7 @@ Login View Widget for Admin / Operator Authentication with Responsive Card Dimen
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QFrame, QMessageBox
+    QFrame, QMessageBox, QScrollArea
 )
 from PySide6.QtCore import Qt, Signal
 from controllers.auth_controller import AuthController
@@ -18,12 +18,21 @@ class LoginView(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        main_layout = QVBoxLayout(self)
+        main_vbox = QVBoxLayout(self)
+        main_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        main_layout = QVBoxLayout(container)
         main_layout.setAlignment(Qt.AlignCenter)
 
-        # Center Card Frame with ample height to prevent bottom text clipping
+        # Center Card Frame with flexible dimensions to prevent clipping
         card = QFrame()
-        card.setFixedSize(430, 480)
+        card.setMinimumSize(360, 420)
+        card.setMaximumWidth(450)
         card.setStyleSheet("""
             QFrame {
                 background-color: #ffffff;
@@ -38,10 +47,12 @@ class LoginView(QWidget):
 
         # App Logo / Icon Header
         title = QLabel("School Fee Manager")
+        title.setWordWrap(True)
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("font-size: 22px; font-weight: 800; color: #1e3a8a; border: none;")
 
         subtitle = QLabel(f"Enterprise ERP System v{APP_VERSION}")
+        subtitle.setWordWrap(True)
         subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setStyleSheet("font-size: 12px; font-weight: 600; color: #64748b; border: none;")
 
@@ -51,6 +62,7 @@ class LoginView(QWidget):
 
         # Username Input
         lbl_user = QLabel("Username:")
+        lbl_user.setWordWrap(True)
         lbl_user.setStyleSheet("font-weight: 700; color: #334155; border: none;")
         self.txt_username = QLineEdit()
         self.txt_username.setFixedHeight(38)
@@ -59,6 +71,7 @@ class LoginView(QWidget):
 
         # Password Input
         lbl_pass = QLabel("Password:")
+        lbl_pass.setWordWrap(True)
         lbl_pass.setStyleSheet("font-weight: 700; color: #334155; border: none;")
         self.txt_password = QLineEdit()
         self.txt_password.setFixedHeight(38)
@@ -83,11 +96,15 @@ class LoginView(QWidget):
 
         # Credentials Hint
         hint = QLabel("Default Credentials:<br/>Admin: <b>admin / admin123</b><br/>Operator: <b>operator / operator123</b>")
+        hint.setWordWrap(True)
         hint.setAlignment(Qt.AlignCenter)
         hint.setStyleSheet("font-size: 11px; color: #64748b; border: none; padding-top: 8px; line-height: 1.4;")
         card_layout.addWidget(hint)
 
         main_layout.addWidget(card)
+
+        scroll.setWidget(container)
+        main_vbox.addWidget(scroll)
 
     def handle_login(self):
         username = self.txt_username.text().strip()

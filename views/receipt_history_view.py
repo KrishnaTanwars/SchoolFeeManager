@@ -25,6 +25,7 @@ from services.pdf_service import PDFService
 from services.security_service import SecurityService
 from utils.helpers import format_currency, format_date
 from utils.logger import logger
+from utils.table_delegate import apply_responsive_table_formatting
 from components.academic_filter_widget import AcademicFilterWidget
 
 
@@ -438,7 +439,7 @@ class ReceiptHistoryView(QWidget):
 
         self.table.setHorizontalHeaderLabels([
             "", "Receipt No", "Date", "Admission No", "Student Name",
-            "Course", "Class", "Payment Mode", "Amount (₹)", "Status", "Actions"
+            "Course", "Year / Semester", "Payment Mode", "Amount (₹)", "Status", "Actions"
         ])
 
         header = self.table.horizontalHeader()
@@ -464,8 +465,8 @@ class ReceiptHistoryView(QWidget):
         self.table.setColumnWidth(9, 85)
         self.table.setColumnWidth(10, 90)
 
-        self.table.verticalHeader().setDefaultSectionSize(42)
         self.table.setAlternatingRowColors(True)
+        apply_responsive_table_formatting(self.table)
         self.table.setStyleSheet("""
             QTableWidget {
                 background-color: #ffffff;
@@ -611,9 +612,11 @@ class ReceiptHistoryView(QWidget):
         vbox.setSpacing(2)
 
         lbl_t = QLabel(title)
+        lbl_t.setWordWrap(True)
         lbl_t.setStyleSheet("color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;")
 
         lbl_v = QLabel(initial_value)
+        lbl_v.setWordWrap(True)
         lbl_v.setStyleSheet(f"color: {color}; font-size: 17px; font-weight: 800;")
 
         vbox.addWidget(lbl_t)
@@ -779,7 +782,8 @@ class ReceiptHistoryView(QWidget):
             self.table.setItem(row_idx, 3, QTableWidgetItem(r.student.admission_no if r.student else "N/A"))
             self.table.setItem(row_idx, 4, QTableWidgetItem(r.student.name if r.student else "N/A"))
             self.table.setItem(row_idx, 5, QTableWidgetItem(r.student.course if r.student else "N/A"))
-            self.table.setItem(row_idx, 6, QTableWidgetItem(f"{r.student.class_name} ({r.student.section or 'A'})" if r.student else "N/A"))
+            yr_sem = f"{r.student.year or ''} / {r.student.semester or ''}".strip(" /") if r.student else "N/A"
+            self.table.setItem(row_idx, 6, QTableWidgetItem(yr_sem or "N/A"))
             self.table.setItem(row_idx, 7, QTableWidgetItem(r.payment_mode))
 
             amt_item = QTableWidgetItem(format_currency(r.total_amount))

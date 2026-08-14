@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
     QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QDoubleSpinBox,
     QGroupBox, QFormLayout, QMessageBox, QCheckBox, QTextEdit, QListWidget,
-    QListWidgetItem, QFrame, QDateEdit, QSizePolicy
+    QListWidgetItem, QFrame, QDateEdit, QSizePolicy, QScrollArea
 )
 from PySide6.QtCore import Qt, QDate, QPoint, QEvent
 from PySide6.QtGui import QKeySequence, QFont, QColor, QShortcut
@@ -21,6 +21,7 @@ from controllers.settings_controller import SettingsController
 from dialogs.receipt_preview_dialog import ReceiptPreviewDialog
 from utils.helpers import format_currency, format_date
 from utils.number_to_words import number_to_words_indian
+from utils.table_delegate import apply_responsive_table_formatting
 
 COMMON_INDIAN_BANKS = [
     "State Bank of India (SBI)",
@@ -106,7 +107,15 @@ class ReceiptView(QWidget):
         self.setup_keyboard_shortcuts()
 
     def setup_ui(self):
-        main_layout = QVBoxLayout(self)
+        main_vbox = QVBoxLayout(self)
+        main_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        main_layout = QVBoxLayout(container)
         main_layout.setSpacing(10)
         main_layout.setContentsMargins(12, 10, 12, 10)
 
@@ -171,7 +180,7 @@ class ReceiptView(QWidget):
         self.table_fees.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.table_fees.horizontalHeader().setSectionResizeMode(2, QHeaderView.Fixed)
         self.table_fees.horizontalHeader().setSectionResizeMode(3, QHeaderView.Interactive)
-        self.table_fees.verticalHeader().setDefaultSectionSize(30)
+        apply_responsive_table_formatting(self.table_fees)
 
         # Stretch table vertically to consume entire left column
         fee_layout.addWidget(self.table_fees, stretch=1)
@@ -251,7 +260,7 @@ class ReceiptView(QWidget):
         self.lbl_adm_no = QLabel("-")
         self.lbl_name = QLabel("-")
         self.lbl_course = QLabel("-")
-        self.lbl_class = QLabel("-")
+        self.lbl_yr_sem = QLabel("-")
         self.lbl_father = QLabel("-")
         self.lbl_mobile = QLabel("-")
         self.lbl_session = QLabel("-")
@@ -261,14 +270,14 @@ class ReceiptView(QWidget):
         self.lbl_prev_due = QLabel("₹ 0.00")
         self.lbl_prev_due.setStyleSheet("font-weight: bold; color: #dc2626; font-size: 12px;")
 
-        for lbl in [self.lbl_adm_no, self.lbl_name, self.lbl_course, self.lbl_class, self.lbl_father, self.lbl_mobile, self.lbl_session, self.lbl_status]:
+        for lbl in [self.lbl_adm_no, self.lbl_name, self.lbl_course, self.lbl_yr_sem, self.lbl_father, self.lbl_mobile, self.lbl_session, self.lbl_status]:
             lbl.setStyleSheet("font-weight: bold; color: #0f172a; font-size: 12px;")
             lbl.setWordWrap(True)
 
         card_form.addRow("Admission No:", self.lbl_adm_no)
         card_form.addRow("Student Name:", self.lbl_name)
-        card_form.addRow("Course:", self.lbl_course)
-        card_form.addRow("Class & Sec:", self.lbl_class)
+        card_form.addRow("Course / Branch:", self.lbl_course)
+        card_form.addRow("Year & Semester:", self.lbl_yr_sem)
         card_form.addRow("Father's Name:", self.lbl_father)
         card_form.addRow("Mobile No:", self.lbl_mobile)
         card_form.addRow("Session:", self.lbl_session)
@@ -447,6 +456,9 @@ class ReceiptView(QWidget):
         main_content.addLayout(right_column_layout, stretch=35)
         main_layout.addLayout(main_content, stretch=1)
 
+        scroll.setWidget(container)
+        main_vbox.addWidget(scroll)
+
         self.update_payment_mode_fields()
         self.refresh_view()
 
@@ -480,7 +492,9 @@ class ReceiptView(QWidget):
             self.popup_suggestions.addItem(item)
         else:
             for s in students:
-                disp = f"{s.admission_no}  |  {s.name}  |  {s.course or 'UG'}  |  {s.class_name} ({s.section or 'A'})  |  Father: {s.father_name}"
+                crs_br = f"{s.course or 'UG'}" + (f" ({s.branch})" if getattr(s, "branch", None) else "")
+                yr_sem = f"{s.year or ''} - {s.semester or ''}".strip(" -") or "N/A"
+                disp = f"{s.admission_no}  |  {s.name}  |  {crs_br}  |  {yr_sem}  |  Father: {s.father_name}"
                 item = QListWidgetItem(disp)
                 item.setData(Qt.UserRole, s)
                 self.popup_suggestions.addItem(item)
@@ -547,8 +561,10 @@ class ReceiptView(QWidget):
     def update_student_card(self, s):
         self.lbl_adm_no.setText(s.admission_no)
         self.lbl_name.setText(s.name)
-        self.lbl_course.setText(s.course or "UG")
-        self.lbl_class.setText(f"{s.class_name} ({s.section or 'A'})")
+        crs_br = f"{s.course or 'UG'}" + (f" ({s.branch})" if getattr(s, "branch", None) else "")
+        self.lbl_course.setText(crs_br)
+        yr_sem = f"{s.year or ''} - {s.semester or ''}".strip(" -") or "N/A"
+        self.lbl_yr_sem.setText(yr_sem)
         self.lbl_father.setText(s.father_name)
         self.lbl_mobile.setText(s.mobile)
         self.lbl_session.setText(s.academic_session)

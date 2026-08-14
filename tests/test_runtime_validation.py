@@ -144,10 +144,14 @@ class TestRuntimeValidationPhase1(unittest.TestCase):
             })
             st = StudentController.get_student_by_admission_no("TEST/ADM/V11/001")
 
+        cats = FeeController.get_all_categories()
+        fee_cat_id = cats[0].id if cats else 1
+        cat_name = cats[0].name if cats else "Tuition Fee"
+
         rec_ok, _, receipt = ReceiptController.create_receipt(
             student_id=st.id,
             academic_session="2024-2025",
-            items=[{"fee_category_id": 1, "category_name": "Tuition Fee", "amount": 1500.0}],
+            items=[{"fee_category_id": fee_cat_id, "category_name": cat_name, "amount": 1500.0}],
             paid_amount=1500.0,
             payment_mode="Cash"
         )

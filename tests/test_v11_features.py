@@ -63,8 +63,14 @@ class TestVersion11Features(unittest.TestCase):
 
         self.assertIsNotNone(st)
 
+        cats = FeeController.get_all_categories()
+        cid1 = cats[0].id if len(cats) > 0 else 1
+        cname1 = cats[0].name if len(cats) > 0 else "Tuition Fee"
+        cid2 = cats[1].id if len(cats) > 1 else cid1
+        cname2 = cats[1].name if len(cats) > 1 else cname1
+
         # 2. Issue receipt with Total = 12500, Paid = 10000, Due = 2500
-        items = [{"fee_category_id": 1, "category_name": "Tuition Fee", "amount": 12500.0}]
+        items = [{"fee_category_id": cid1, "category_name": cname1, "amount": 12500.0}]
         rec_success, msg, receipt = ReceiptController.create_receipt(
             student_id=st.id,
             academic_session="2024-2025",
@@ -104,7 +110,11 @@ class TestVersion11Features(unittest.TestCase):
             st = StudentController.get_student_by_admission_no("TEST/ADM/V11/001")
         self.assertIsNotNone(st)
 
-        items = [{"fee_category_id": 2, "category_name": "Development Fee", "amount": 2000.0}]
+        cats = FeeController.get_all_categories()
+        cid = cats[0].id if cats else 1
+        cname = cats[0].name if cats else "Development Fee"
+
+        items = [{"fee_category_id": cid, "category_name": cname, "amount": 2000.0}]
         cq_dt = date(2026, 7, 20)
         rec_success, _, receipt = ReceiptController.create_receipt(
             student_id=st.id,

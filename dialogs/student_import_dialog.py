@@ -10,18 +10,20 @@ from typing import List, Dict, Any, Optional
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTableWidget,
     QTableWidgetItem, QHeaderView, QMessageBox, QFileDialog, QStackedWidget,
-    QGroupBox, QCheckBox, QComboBox, QFrame
+    QGroupBox, QCheckBox, QComboBox, QFrame, QWidget
 )
 from PySide6.QtCore import Qt
 
 from services.import_service import ImportService
 from utils.logger import logger
+from utils.table_delegate import apply_responsive_table_formatting
 
 
 class StudentImportDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Bulk Student Import & Validation Wizard")
+        self.setMinimumSize(700, 500)
         self.resize(1000, 680)
 
         self.file_path = ""
@@ -101,32 +103,28 @@ class StudentImportDialog(QDialog):
         v_drop.addWidget(lbl_icon)
         v_drop.addWidget(self.lbl_file_status)
         v_drop.addWidget(self.btn_browse, alignment=Qt.AlignCenter)
+        drop_box.setLayout(v_drop)
 
         layout.addWidget(drop_box)
 
         # Sample Templates Box
-        tmpl_box = QGroupBox("Download Official Import Templates")
-        tmpl_layout = QHBoxLayout(tmpl_box)
-        tmpl_layout.setContentsMargins(14, 14, 14, 14)
+        tmpl_box = QGroupBox("Download Sample Templates")
+        h_tmpl = QHBoxLayout(tmpl_box)
+        h_tmpl.setContentsMargins(16, 12, 16, 12)
+        h_tmpl.setSpacing(12)
 
-        lbl_tmpl_info = QLabel("Download a pre-formatted template with sample records and correct field column headers:")
-        lbl_tmpl_info.setStyleSheet("font-size: 12px; color: #334155;")
+        self.btn_tmpl_csv = QPushButton("📄  Download Sample CSV Template")
+        self.btn_tmpl_csv.setProperty("class", "SecondaryBtn")
+        self.btn_tmpl_csv.clicked.connect(self.download_sample_csv)
 
-        self.btn_sample_csv = QPushButton("📥  Sample CSV Template")
-        self.btn_sample_csv.setFixedHeight(34)
-        self.btn_sample_csv.setProperty("class", "SecondaryBtn")
-        self.btn_sample_csv.clicked.connect(self.download_sample_csv)
+        self.btn_tmpl_excel = QPushButton("📊  Download Sample Excel Template")
+        self.btn_tmpl_excel.setProperty("class", "SecondaryBtn")
+        self.btn_tmpl_excel.clicked.connect(self.download_sample_excel)
 
-        self.btn_sample_excel = QPushButton("📊  Sample Excel Template")
-        self.btn_sample_excel.setFixedHeight(34)
-        self.btn_sample_excel.setProperty("class", "SecondaryBtn")
-        self.btn_sample_excel.clicked.connect(self.download_sample_excel)
-
-        tmpl_layout.addWidget(lbl_tmpl_info, stretch=1)
-        tmpl_layout.addWidget(self.btn_sample_csv)
-        tmpl_layout.addWidget(self.btn_sample_excel)
-
+        h_tmpl.addWidget(self.btn_tmpl_csv)
+        h_tmpl.addWidget(self.btn_tmpl_excel)
         layout.addWidget(tmpl_box)
+
         layout.addStretch()
 
         # Step 1 Footer
@@ -206,6 +204,7 @@ class StudentImportDialog(QDialog):
         self.table_preview.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         self.table_preview.horizontalHeader().setSectionResizeMode(9, QHeaderView.Stretch)
         self.table_preview.setAlternatingRowColors(True)
+        apply_responsive_table_formatting(self.table_preview)
 
         layout.addWidget(self.table_preview)
 

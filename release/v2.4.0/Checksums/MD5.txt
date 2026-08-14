@@ -1,0 +1,3 @@
+acab423eab1c370a1ff21a49fe004353  SchoolFeeERP_Setup_v2.4.0.exe
+89128867a6b0ea8f3182fb913bab67a9  SchoolFeeERP_Portable_v2.4.0.zip
+88ed5d4f16a44658626dbd8175f395c8  SchoolFeeERP_Source_v2.4.0.zip

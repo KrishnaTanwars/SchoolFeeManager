@@ -5,7 +5,8 @@ Add / Edit Fee Category Dialog.
 from typing import Optional
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QDoubleSpinBox,
-    QCheckBox, QComboBox, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout
+    QCheckBox, QComboBox, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout,
+    QScrollArea, QWidget, QFrame
 )
 from controllers.fee_controller import FeeController
 
@@ -14,6 +15,7 @@ class FeeCategoryDialog(QDialog):
         super().__init__(parent)
         self.category = category
         self.setWindowTitle("Edit Fee Head" if category else "Add New Fee Head")
+        self.setMinimumSize(420, 360)
         self.resize(480, 380)
 
         self.setup_ui()
@@ -21,7 +23,16 @@ class FeeCategoryDialog(QDialog):
             self.load_data()
 
     def setup_ui(self):
-        layout = QVBoxLayout(self)
+        dialog_vbox = QVBoxLayout(self)
+        dialog_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(15, 15, 15, 15)
 
         group = QGroupBox("Fee Head Details")
         form = QFormLayout(group)
@@ -72,6 +83,9 @@ class FeeCategoryDialog(QDialog):
         btn_layout.addWidget(self.btn_cancel)
         btn_layout.addWidget(self.btn_save)
         layout.addLayout(btn_layout)
+
+        scroll.setWidget(container)
+        dialog_vbox.addWidget(scroll)
 
     def load_data(self):
         c = self.category

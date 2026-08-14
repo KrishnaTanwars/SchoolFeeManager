@@ -114,10 +114,16 @@ class TestFullApplicationWorkflows(unittest.TestCase):
         student = StudentController.get_student_by_admission_no(adm_no)
         self.assertIsNotNone(student)
 
+        cats = FeeController.get_all_categories()
+        cid1 = cats[0].id if len(cats) > 0 else 1
+        cname1 = cats[0].name if len(cats) > 0 else "Tuition Fee"
+        cid2 = cats[1].id if len(cats) > 1 else cid1
+        cname2 = cats[1].name if len(cats) > 1 else cname1
+
         # Create Receipt
         fee_items = [
-            {"fee_category_id": 1, "category_name": "Tuition Fee", "amount": 2500.0},
-            {"fee_category_id": 2, "category_name": "Computer Fee", "amount": 500.0}
+            {"fee_category_id": cid1, "category_name": cname1, "amount": 2500.0},
+            {"fee_category_id": cid2, "category_name": cname2, "amount": 500.0}
         ]
 
         success, msg, receipt = ReceiptController.create_receipt(

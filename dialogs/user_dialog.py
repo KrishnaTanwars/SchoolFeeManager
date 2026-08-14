@@ -4,7 +4,7 @@ Add / Edit System User Account Dialog.
 
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
-    QPushButton, QMessageBox, QGroupBox, QFormLayout
+    QPushButton, QMessageBox, QGroupBox, QFormLayout, QScrollArea, QWidget, QFrame
 )
 from PySide6.QtCore import Qt
 from controllers.auth_controller import AuthController
@@ -20,11 +20,20 @@ class UserDialog(QDialog):
         else:
             self.setWindowTitle("Add New System User Account")
 
-        self.setMinimumWidth(420)
+        self.setMinimumSize(400, 320)
         self.setup_ui()
 
     def setup_ui(self):
-        layout = QVBoxLayout(self)
+        dialog_vbox = QVBoxLayout(self)
+        dialog_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(12)
 
         group = QGroupBox("User Account Details")
@@ -83,6 +92,9 @@ class UserDialog(QDialog):
         btn_layout.addWidget(self.btn_cancel)
         btn_layout.addWidget(self.btn_save)
         layout.addLayout(btn_layout)
+
+        scroll.setWidget(container)
+        dialog_vbox.addWidget(scroll)
 
     def save_user(self):
         username = self.txt_username.text().strip()

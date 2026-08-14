@@ -22,6 +22,7 @@ class GlobalSearchDialog(QDialog):
     def __init__(self, parent=None, on_navigate_callback=None):
         super().__init__(parent)
         self.setWindowTitle("EduLedger Global Search (Ctrl+K)")
+        self.setMinimumSize(500, 360)
         self.resize(700, 480)
         self.on_navigate_callback = on_navigate_callback
         self.results_data = []

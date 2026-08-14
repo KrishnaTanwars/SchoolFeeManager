@@ -16,7 +16,7 @@ class Student(Base):
     name = Column(String(100), nullable=False, index=True)
     father_name = Column(String(100), nullable=False)
     mother_name = Column(String(100), nullable=True)
-    class_name = Column(String(50), nullable=False, index=True)
+    class_name = Column(String(50), nullable=True, default="", index=True)
     section = Column(String(20), nullable=True)
     course = Column(String(100), nullable=True, index=True)
     branch = Column(String(100), nullable=True, index=True)

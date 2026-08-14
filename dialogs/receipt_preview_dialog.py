@@ -21,6 +21,7 @@ class ReceiptPreviewDialog(QDialog):
         self.receipt = receipt
         self.pdf_path = pdf_path
         self.setWindowTitle(f"Receipt Details & Actions - {receipt.receipt_no if receipt else 'Document'}")
+        self.setMinimumSize(480, 400)
         self.resize(650, 520)
 
         # Ensure PDF is generated
@@ -51,8 +52,8 @@ Receipt Number : {self.receipt.receipt_no}
 Date           : {self.receipt.receipt_date.strftime('%d-%m-%Y')}
 Student Name   : {self.receipt.student.name}
 Admission No   : {self.receipt.student.admission_no}
-Course         : {self.receipt.student.course or 'UG'}
-Class & Sec    : {self.receipt.student.class_name} ({self.receipt.student.section or 'A'})
+Course & Branch: {self.receipt.student.course or 'General'}{f" ({self.receipt.student.branch})" if getattr(self.receipt.student, 'branch', None) else ""}
+Year / Sem     : {getattr(self.receipt.student, 'year', None) or 'N/A'} / {getattr(self.receipt.student, 'semester', None) or 'N/A'}
 Father's Name  : {self.receipt.student.father_name}
 Academic Session: {self.receipt.academic_session}
 Status         : {self.receipt.status}
@@ -62,14 +63,17 @@ ITEMS INCLUDED:
             for item in self.receipt.items:
                 summary_txt += f" - {item.category_name:<30}: ₹ {item.amount:,.2f}\n"
 
+            summary_txt += f"----------------------------------------------------\n"
+            if self.receipt.discount_amount > 0:
+                summary_txt += f"Discount       : - ₹ {self.receipt.discount_amount:,.2f}\n"
+            if self.receipt.fine_amount > 0:
+                summary_txt += f"Fine / Penalty : + ₹ {self.receipt.fine_amount:,.2f}\n"
+            summary_txt += f"Total Paid Amount: ₹ {paid_amt:,.2f}\n"
+            if due_amt > 0:
+                summary_txt += f"Outstanding Due  : ₹ {due_amt:,.2f}\n"
+            else:
+                summary_txt += f"Outstanding Due  : ₹ 0.00 (PAID IN FULL)\n"
             summary_txt += f"""----------------------------------------------------
-Subtotal       : ₹ {self.receipt.subtotal:,.2f}
-Discount       : ₹ {self.receipt.discount_amount:,.2f}
-Fine           : ₹ {self.receipt.fine_amount:,.2f}
-Total Fee      : ₹ {self.receipt.total_amount:,.2f}
-PAID AMOUNT    : ₹ {paid_amt:,.2f}
-OUTSTANDING DUE: ₹ {due_amt:,.2f}
-----------------------------------------------------
 Amount in Words: {self.receipt.amount_in_words}
 ----------------------------------------------------
 PAYMENT DETAILS:

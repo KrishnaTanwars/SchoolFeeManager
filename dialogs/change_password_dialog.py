@@ -21,7 +21,8 @@ class ChangePasswordDialog(QDialog):
         else:
             self.setWindowTitle("Change My Password")
 
-        self.setFixedSize(400, 260 if is_admin_reset else 300)
+        self.setMinimumSize(360, 240)
+        self.resize(400, 260 if is_admin_reset else 300)
         self.setup_ui()
 
     def setup_ui(self):

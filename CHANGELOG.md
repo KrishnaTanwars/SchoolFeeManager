@@ -2,6 +2,24 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.4.0] - Final Production Release (License Key Activation & Responsive Screen Scaling)
+
+### 🔐 Secure License Key Activation (Inno Setup Installer Guard)
+- **Mandatory Installer Activation Page**: Added a custom `License Activation` page to the Inno Setup Windows installer (`installer.iss`) positioned immediately after destination folder selection (`wpSelectDir`).
+- **Zero File Extraction Guard**: Installation, file extraction, directory creation, AppData setup, and shortcut creation are strictly blocked until a valid license key is entered and validated.
+- **SHA-256 Hash & Checksum Signature Validation**: Implemented `ValidateLicenseKey` in Pascal Script (`[Code]`) using secure hash comparison and modular checksum verification without storing plain-text keys in installer scripts.
+- **Support Key Formats**: Built-in support for standard product keys (e.g. `EDU-ABCD-1234-EFGH-5678`, `ERP-2026-XXXX-XXXX-XXXX`).
+- **User Ergonomics & Error Messaging**: Formatted unmasked key entry textbox with full paste support, manual "Validate License" button, green success confirmation message ("License verified successfully. Preparing installation..."), and red error messaging ("License Key cannot be empty." / "Invalid License Key. Please contact the software provider.").
+- **Graceful Cancellation & Back Navigation**: Preserved standard Back button navigation and graceful setup cancellation.
+
+### 📐 Adaptive Display Scaling & Responsive UI Overhaul
+- **Universal Resolution Support**: Complete responsive layout overhaul covering display resolutions from `800×600` up to `3840×2160` (4K UHD) without information truncation, overlapping, clipped buttons, or hidden columns.
+- **Dynamic Table Cell Word-Wrapping**: Built `apply_responsive_table_formatting` in `utils/table_delegate.py` with native `setWordWrap(True)`, `Qt.ElideNone`, multi-line header alignment, and dynamic vertical row height expansion (`QHeaderView.ResizeToContents`).
+- **Window Geometry Persistence**: Added `QSettings("EduLedger", "SchoolFeeManager")` in `views/main_window.py` to persist window size, position, and maximized state across restarts.
+- **Scroll Container Architecture**: Wrapped all 8 primary application views and 10 dialog windows in dynamic `QScrollArea` viewports with minimum dimension protection.
+
+---
+
 ## [2.3.0] - Phase X Academic Structure Refactor (Semester & Year Based ERP)
 
 ### 🎓 Academic ERP Refactor (Semester & Year Support)

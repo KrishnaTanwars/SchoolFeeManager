@@ -3,7 +3,8 @@ Student Details Dialog — Displays full student profile in a clean, grouped car
 """
 
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QGroupBox, QFormLayout, QFrame
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QGroupBox, QFormLayout, QFrame,
+    QScrollArea, QWidget
 )
 from PySide6.QtCore import Qt
 from utils.helpers import format_date
@@ -13,16 +14,27 @@ class StudentDetailsDialog(QDialog):
         super().__init__(parent)
         self.student = student
         self.setWindowTitle(f"Student Details — {student.name if student else ''}")
-        self.setMinimumSize(580, 520)
+        self.setMinimumSize(500, 420)
+        self.resize(580, 520)
         self.setup_ui()
 
     def setup_ui(self):
-        main_layout = QVBoxLayout(self)
+        dialog_vbox = QVBoxLayout(self)
+        dialog_vbox.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+
+        container = QWidget()
+        main_layout = QVBoxLayout(container)
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
         if not self.student:
             main_layout.addWidget(QLabel("No student record loaded."))
+            scroll.setWidget(container)
+            dialog_vbox.addWidget(scroll)
             return
 
         s = self.student
@@ -38,8 +50,10 @@ class StudentDetailsDialog(QDialog):
 
         title_v = QVBoxLayout()
         lbl_name = QLabel(s.name)
+        lbl_name.setWordWrap(True)
         lbl_name.setStyleSheet("font-size: 18px; font-weight: 800; color: #1e3a8a; border: none;")
         lbl_sub = QLabel(f"Adm. No: {s.admission_no}  |  Course: {s.course or 'General'}  |  Semester: {getattr(s, 'semester', None) or 'N/A'}")
+        lbl_sub.setWordWrap(True)
         lbl_sub.setStyleSheet("font-size: 12px; font-weight: 600; color: #64748b; border: none;")
         title_v.addWidget(lbl_name)
         title_v.addWidget(lbl_sub)
@@ -68,7 +82,6 @@ class StudentDetailsDialog(QDialog):
         f_academic.addRow("Branch / Department:", self._val_label(getattr(s, "branch", None) or "General"))
         f_academic.addRow("Academic Year:", self._val_label(getattr(s, "year", None) or "N/A"))
         f_academic.addRow("Semester:", self._val_label(getattr(s, "semester", None) or "N/A"))
-        f_academic.addRow("Class & Section:", self._val_label(f"{s.class_name} - Sec {s.section or 'A'}"))
         f_academic.addRow("Academic Session:", self._val_label(s.academic_session))
         f_academic.addRow("Admission Date:", self._val_label(format_date(s.admission_date)))
 
@@ -100,7 +113,11 @@ class StudentDetailsDialog(QDialog):
         btn_layout.addWidget(btn_close)
         main_layout.addLayout(btn_layout)
 
+        scroll.setWidget(container)
+        dialog_vbox.addWidget(scroll)
+
     def _val_label(self, text: str) -> QLabel:
         lbl = QLabel(text)
+        lbl.setWordWrap(True)
         lbl.setStyleSheet("font-weight: 600; color: #0f172a; border: none;")
         return lbl

@@ -115,9 +115,17 @@ class FeeController:
             if not name:
                 return False, "Description / Fee Head Name is required."
 
+            target_course = course if course else "All"
+            existing = db.query(FeeCategory).filter(
+                FeeCategory.name.ilike(name),
+                FeeCategory.course == target_course
+            ).first()
+            if existing:
+                return False, f"Fee Head '{name}' already exists for course '{target_course}'."
+
             cat = FeeCategory(
                 name=name,
-                course=course if course else "All",
+                course=target_course,
                 branch=branch if branch else "All",
                 academic_year=academic_year if academic_year else "All",
                 semester=semester if semester else "All",

@@ -28,6 +28,7 @@ from services.export_service import ExportService
 from dialogs.user_dialog import UserDialog
 from dialogs.change_password_dialog import ChangePasswordDialog
 from utils.logger import logger
+from utils.table_delegate import apply_responsive_table_formatting
 
 
 class CategoryCard(QFrame):
@@ -456,6 +457,7 @@ class SettingsView(QWidget):
         self.table_users.setSelectionBehavior(QTableWidget.SelectRows)
         self.table_users.setSelectionMode(QTableWidget.SingleSelection)
         self.table_users.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        apply_responsive_table_formatting(self.table_users)
         layout.addWidget(self.table_users)
 
     def load_users(self):
@@ -566,6 +568,7 @@ class SettingsView(QWidget):
         self.table_sessions.setColumnCount(3)
         self.table_sessions.setHorizontalHeaderLabels(["Session Name", "Is Active Current Session", "Action"])
         self.table_sessions.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        apply_responsive_table_formatting(self.table_sessions)
         layout.addWidget(self.table_sessions)
 
     def load_sessions(self):
@@ -764,6 +767,7 @@ class SettingsView(QWidget):
         self.table_backup_history.setColumnCount(5)
         self.table_backup_history.setHorizontalHeaderLabels(["Filename", "Size", "Type", "Created By", "Timestamp"])
         self.table_backup_history.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        apply_responsive_table_formatting(self.table_backup_history)
         v_hist.addWidget(self.table_backup_history)
 
         layout.addWidget(box_hist)
@@ -912,6 +916,7 @@ class SettingsView(QWidget):
         self.table_audit.setHorizontalHeaderLabels(["Date", "Time", "Username", "Action", "Module", "Description Details"])
         self.table_audit.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table_audit.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
+        apply_responsive_table_formatting(self.table_audit)
         layout.addWidget(self.table_audit)
 
     def load_audit_logs(self):

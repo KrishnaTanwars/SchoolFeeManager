@@ -185,31 +185,62 @@ class PDFService:
 
         # Fee Items Table with 'Rs.' Notation (Prevents ■ square box rendering)
         fee_table_data = [
-            [Paragraph("S.No.", table_hdr), Paragraph("Fee Particulars / Head", table_hdr), Paragraph("Amount (Rs.)", table_hdr)]
+            [Paragraph("S.No.", table_hdr), Paragraph("Fee Head / Particular", table_hdr), Paragraph("Amount Paid (Rs.)", table_hdr)]
         ]
 
-        for idx, item in enumerate(receipt.items, 1):
+        if receipt.items:
+            for idx, item in enumerate(receipt.items, 1):
+                fee_table_data.append([
+                    Paragraph(str(idx), label_val),
+                    Paragraph(item.category_name, label_val),
+                    Paragraph(f"{item.amount:,.2f}", label_val)
+                ])
+        else:
             fee_table_data.append([
-                Paragraph(str(idx), label_val),
-                Paragraph(item.category_name, label_val),
-                Paragraph(f"{item.amount:,.2f}", label_val)
+                Paragraph("1", label_val),
+                Paragraph("Fee Collection", label_val),
+                Paragraph(f"{receipt.total_amount:,.2f}", label_val)
             ])
 
-        # Summary Rows
-        fee_table_data.append([
-            "", Paragraph("<b>Total Calculated Fee</b>", label_bold), Paragraph(f"<b>Rs. {receipt.total_amount:,.2f}</b>", label_bold)
-        ])
-        fee_table_data.append([
-            "", Paragraph("<b>ACTUAL PAID AMOUNT</b>", label_bold), Paragraph(f"<b>Rs. {receipt.paid_amount:,.2f}</b>", label_bold)
-        ])
-        if receipt.due_amount > 0:
+        summary_rows_count = 0
+
+        # Optional Discount Row
+        disc_amt = getattr(receipt, "discount_amount", 0.0) or 0.0
+        if disc_amt > 0:
             fee_table_data.append([
-                "", Paragraph("<font color='#dc2626'><b>OUTSTANDING DUE AMOUNT</b></font>", label_bold), Paragraph(f"<font color='#dc2626'><b>Rs. {receipt.due_amount:,.2f}</b></font>", label_bold)
+                "", Paragraph("<font color='#047857'><b>Discount</b></font>", label_bold), Paragraph(f"<font color='#047857'><b>- Rs. {disc_amt:,.2f}</b></font>", label_bold)
+            ])
+            summary_rows_count += 1
+
+        # Optional Fine Row
+        fn_amt = getattr(receipt, "fine_amount", 0.0) or 0.0
+        if fn_amt > 0:
+            fee_table_data.append([
+                "", Paragraph("<font color='#b91c1c'><b>Fine / Penalty</b></font>", label_bold), Paragraph(f"<font color='#b91c1c'><b>+ Rs. {fn_amt:,.2f}</b></font>", label_bold)
+            ])
+            summary_rows_count += 1
+
+        # Total Paid Amount Row
+        actual_paid = getattr(receipt, 'paid_amount', receipt.total_amount)
+        if actual_paid is None:
+            actual_paid = receipt.total_amount or 0.0
+            
+        fee_table_data.append([
+            "", Paragraph("<b>Total Paid Amount</b>", label_bold), Paragraph(f"<b>Rs. {actual_paid:,.2f}</b>", label_bold)
+        ])
+        summary_rows_count += 1
+
+        # Outstanding Due Row
+        due_amt = getattr(receipt, 'due_amount', 0.0) or 0.0
+        if due_amt > 0:
+            fee_table_data.append([
+                "", Paragraph("<font color='#dc2626'><b>Outstanding Due</b></font>", label_bold), Paragraph(f"<font color='#dc2626'><b>Rs. {due_amt:,.2f}</b></font>", label_bold)
             ])
         else:
             fee_table_data.append([
-                "", Paragraph("<font color='#16a34a'><b>Balance Due</b></font>", label_bold), Paragraph("<font color='#16a34a'><b>Rs. 0.00 (PAID IN FULL)</b></font>", label_bold)
+                "", Paragraph("<font color='#16a34a'><b>Outstanding Due</b></font>", label_bold), Paragraph("<font color='#16a34a'><b>Rs. 0.00 (PAID IN FULL)</b></font>", label_bold)
             ])
+        summary_rows_count += 1
 
         fee_table = Table(fee_table_data, colWidths=[15*mm, 125*mm, 40*mm])
         fee_table.setStyle(TableStyle([
@@ -218,7 +249,7 @@ class PDFService:
             ('ALIGN', (2,0), (2,-1), 'RIGHT'),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
-            ('BACKGROUND', (0,-3), (-1,-1), colors.HexColor("#eff6ff")),
+            ('BACKGROUND', (0, -summary_rows_count), (-1, -1), colors.HexColor("#eff6ff")),
             ('TOPPADDING', (0,0), (-1,-1), 5),
             ('BOTTOMPADDING', (0,0), (-1,-1), 5),
         ]))

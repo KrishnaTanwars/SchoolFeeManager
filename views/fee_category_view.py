@@ -10,6 +10,7 @@ from PySide6.QtCore import Qt
 from controllers.fee_controller import FeeController
 from dialogs.fee_category_dialog import FeeCategoryDialog
 from utils.helpers import format_currency, format_date
+from utils.table_delegate import apply_responsive_table_formatting
 
 class FeeCategoryView(QWidget):
     def __init__(self, parent=None):
@@ -78,8 +79,8 @@ class FeeCategoryView(QWidget):
         header.setSectionResizeMode(5, QHeaderView.Fixed)           # Actions
         self.table.setColumnWidth(5, 160)
 
-        self.table.verticalHeader().setDefaultSectionSize(40)
         self.table.setAlternatingRowColors(True)
+        apply_responsive_table_formatting(self.table)
 
         layout.addWidget(self.table)
         self.load_categories()

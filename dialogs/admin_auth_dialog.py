@@ -19,7 +19,8 @@ class AdminAuthDialog(QDialog):
         
         self.setWindowTitle("Administrator Authorization Required")
         self.setModal(True)
-        self.setFixedSize(450, 290)
+        self.setMinimumSize(400, 260)
+        self.resize(450, 290)
         self.setup_ui()
 
     def setup_ui(self):

@@ -66,20 +66,19 @@ class TestPhase4FeeHeadsMaster(unittest.TestCase):
     def test_03_duplicate_validation_within_course(self):
         """Verifies duplicate prevention within same course, while allowing same name across UG and PG."""
         # Cleanup if left over from prior test run
-        for c in FeeController.get_all_categories():
-            if c.name == "Custom Shared Fee":
-                FeeController.delete_category(c.id)
+        for cid in [c.id for c in FeeController.get_all_categories() if c.name == "Unique Custom Shared Fee"]:
+            FeeController.delete_category(cid)
 
         # Create UG Tuition Custom
         FeeController.create_category({
-            "name": "Custom Shared Fee",
+            "name": "Unique Custom Shared Fee",
             "course": "UG",
             "default_amount": 1000.0
         })
 
         # Creating duplicate under UG should fail
         dup_succ, dup_msg = FeeController.create_category({
-            "name": "Custom Shared Fee",
+            "name": "Unique Custom Shared Fee",
             "course": "UG",
             "default_amount": 1200.0
         })
@@ -88,7 +87,7 @@ class TestPhase4FeeHeadsMaster(unittest.TestCase):
 
         # Creating under PG should succeed
         pg_succ, pg_msg = FeeController.create_category({
-            "name": "Custom Shared Fee",
+            "name": "Unique Custom Shared Fee",
             "course": "PG",
             "default_amount": 2000.0
         })
