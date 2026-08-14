@@ -61,6 +61,7 @@ class StudentController:
                         Student.father_name.ilike(pattern),
                         Student.mother_name.ilike(pattern),
                         Student.mobile.ilike(pattern),
+                        Student.aadhaar_number.ilike(pattern),
                         Student.class_name.ilike(pattern),
                         Student.course.ilike(pattern),
                         Student.branch.ilike(pattern),
@@ -113,6 +114,15 @@ class StudentController:
             if existing:
                 return False, f"Admission Number '{admission_no}' is already registered."
 
+            # Aadhaar Validation & Duplicate Check
+            aadhaar = data.get("aadhaar_number", "").strip() if data.get("aadhaar_number") else ""
+            if aadhaar:
+                if not aadhaar.isdigit() or len(aadhaar) != 12:
+                    return False, "Aadhaar Number must be exactly 12 numeric digits."
+                existing_aadhaar = db.query(Student).filter(Student.aadhaar_number == aadhaar).first()
+                if existing_aadhaar:
+                    return False, "This Aadhaar Number is already registered."
+
             from services.session_service import session_manager
             student = Student(
                 admission_no=admission_no,
@@ -120,6 +130,7 @@ class StudentController:
                 name=data.get("name", "").strip(),
                 father_name=data.get("father_name", "").strip(),
                 mother_name=data.get("mother_name", "").strip(),
+                date_of_birth=data.get("date_of_birth"),
                 class_name=data.get("class_name", "").strip() or data.get("course", "").strip(),
                 section=data.get("section", "").strip(),
                 course=data.get("course", "").strip(),
@@ -127,6 +138,7 @@ class StudentController:
                 year=data.get("year", "").strip(),
                 semester=data.get("semester", "").strip(),
                 mobile=data.get("mobile", "").strip(),
+                aadhaar_number=aadhaar or None,
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),
                 academic_session=data.get("academic_session", "").strip() or session_manager.get_active_session(),
@@ -162,10 +174,23 @@ class StudentController:
             if not student:
                 return False, "Student record not found."
 
+            # Aadhaar Validation & Duplicate Check
+            aadhaar = data.get("aadhaar_number", "").strip() if data.get("aadhaar_number") else ""
+            if aadhaar:
+                if not aadhaar.isdigit() or len(aadhaar) != 12:
+                    return False, "Aadhaar Number must be exactly 12 numeric digits."
+                existing_aadhaar = db.query(Student).filter(
+                    Student.aadhaar_number == aadhaar,
+                    Student.id != student_id
+                ).first()
+                if existing_aadhaar:
+                    return False, "This Aadhaar Number is already registered."
+
             student.roll_no = data.get("roll_no", "").strip()
             student.name = data.get("name", "").strip()
             student.father_name = data.get("father_name", "").strip()
             student.mother_name = data.get("mother_name", "").strip()
+            student.date_of_birth = data.get("date_of_birth")
             student.class_name = data.get("class_name", "").strip() or data.get("course", "").strip()
             student.section = data.get("section", "").strip()
             student.course = data.get("course", "").strip()
@@ -173,8 +198,8 @@ class StudentController:
             student.year = data.get("year", "").strip()
             student.semester = data.get("semester", "").strip()
             student.mobile = data.get("mobile", "").strip()
-            student.address = data.get("address", "").strip()
-            student.admission_date = data.get("admission_date")
+            student.aadhaar_number = aadhaar or None
+            student.admission_date = data.get("admission_date", student.admission_date)
             student.academic_session = data.get("academic_session", student.academic_session)
             student.status = data.get("status", student.status)
 

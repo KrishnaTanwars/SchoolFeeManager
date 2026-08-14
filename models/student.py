@@ -16,6 +16,7 @@ class Student(Base):
     name = Column(String(100), nullable=False, index=True)
     father_name = Column(String(100), nullable=False)
     mother_name = Column(String(100), nullable=True)
+    date_of_birth = Column(Date, nullable=True)
     class_name = Column(String(50), nullable=True, default="", index=True)
     section = Column(String(20), nullable=True)
     course = Column(String(100), nullable=True, index=True)
@@ -23,6 +24,7 @@ class Student(Base):
     year = Column(String(50), nullable=True, index=True) # 1st Year, 2nd Year, etc.
     semester = Column(String(50), nullable=True, index=True) # Semester 1, Semester 2, etc.
     mobile = Column(String(15), nullable=False, index=True)
+    aadhaar_number = Column(String(12), unique=True, nullable=True, index=True)
     address = Column(Text, nullable=True)
     admission_date = Column(Date, default=date.today, nullable=False)
     academic_session = Column(String(20), nullable=False, index=True)

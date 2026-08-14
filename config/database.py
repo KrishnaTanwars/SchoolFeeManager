@@ -89,6 +89,10 @@ def run_migrations():
                 cursor.execute("ALTER TABLE students ADD COLUMN year VARCHAR(50);")
             if "semester" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN semester VARCHAR(50);")
+            if "date_of_birth" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN date_of_birth DATE;")
+            if "aadhaar_number" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN aadhaar_number VARCHAR(12);")
 
             # Check fee_categories columns and indexes
             cursor.execute("PRAGMA table_info(fee_categories);")

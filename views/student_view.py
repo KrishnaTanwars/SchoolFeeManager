@@ -473,7 +473,7 @@ class StudentView(QWidget):
         if not action:
             return
 
-        headers = ["Admission No", "Roll No", "Student Name", "Class", "Section", "Father Name", "Mother Name", "Mobile", "Address", "Date of Admission", "Session", "Status"]
+        headers = ["Admission No", "Roll No", "Student Name", "Date of Birth", "Class", "Section", "Father Name", "Mother Name", "Mobile", "Aadhaar Number", "Address", "Date of Admission", "Session", "Status"]
 
         if action in (act_filter_csv, act_filter_excel, act_filter_pdf):
             students = self.current_students
@@ -483,7 +483,22 @@ class StudentView(QWidget):
             title = "Student Directory (Entire Database)"
 
         rows = [
-            [s.admission_no, s.roll_no or "", s.name, s.class_name, s.section or "", s.father_name, s.mother_name or "", s.mobile, s.address or "", format_date(s.admission_date), s.academic_session, s.status]
+            [
+                s.admission_no,
+                s.roll_no or "",
+                s.name,
+                format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "",
+                s.class_name,
+                s.section or "",
+                s.father_name,
+                s.mother_name or "",
+                s.mobile,
+                getattr(s, "aadhaar_number", None) or "",
+                s.address or "",
+                format_date(s.admission_date),
+                s.academic_session,
+                s.status
+            ]
             for s in students
         ]
 

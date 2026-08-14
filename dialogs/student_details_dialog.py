@@ -78,6 +78,7 @@ class StudentDetailsDialog(QDialog):
         f_academic.addRow("Admission Number:", self._val_label(s.admission_no))
         f_academic.addRow("Roll Number:", self._val_label(s.roll_no or "N/A"))
         f_academic.addRow("Student Name:", self._val_label(s.name))
+        f_academic.addRow("Date of Birth:", self._val_label(format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "N/A"))
         f_academic.addRow("Course / Program:", self._val_label(getattr(s, "course", None) or "General"))
         f_academic.addRow("Branch / Department:", self._val_label(getattr(s, "branch", None) or "General"))
         f_academic.addRow("Academic Year:", self._val_label(getattr(s, "year", None) or "N/A"))
@@ -96,6 +97,7 @@ class StudentDetailsDialog(QDialog):
         f_guardian.addRow("Father's Name:", self._val_label(s.father_name))
         f_guardian.addRow("Mother's Name:", self._val_label(s.mother_name or "N/A"))
         f_guardian.addRow("Mobile Number:", self._val_label(s.mobile))
+        f_guardian.addRow("Aadhaar Number:", self._val_label(getattr(s, "aadhaar_number", None) or "N/A"))
         f_guardian.addRow("Residential Address:", self._val_label(s.address or "N/A"))
 
         main_layout.addWidget(grp_guardian)

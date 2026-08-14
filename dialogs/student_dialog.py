@@ -1,5 +1,5 @@
 """
-Add / Edit Student Dialog with Strict Validation & Enhanced Date Picker.
+Add / Edit Student Dialog with Strict Validation, Enhanced Date Picker, Date of Birth, & Aadhaar Number support.
 """
 
 from typing import Optional, Dict, Any
@@ -7,7 +7,7 @@ from datetime import date
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
     QDateEdit, QTextEdit, QPushButton, QMessageBox, QGroupBox, QFormLayout,
-    QScrollArea, QFrame
+    QScrollArea, QFrame, QWidget
 )
 from PySide6.QtCore import Qt, QDate
 from controllers.student_controller import StudentController
@@ -20,8 +20,8 @@ class StudentDialog(QDialog):
         super().__init__(parent)
         self.student = student
         self.setWindowTitle("Edit Student Details" if student else "Register New Student")
-        self.setMinimumSize(520, 480)
-        self.resize(600, 620)
+        self.setMinimumSize(520, 520)
+        self.resize(620, 680)
 
         self.setup_ui()
         if self.student:
@@ -68,6 +68,17 @@ class StudentDialog(QDialog):
         self.txt_mother_name.setPlaceholderText("Mother's Name")
         form_layout.addRow("Mother's Name:", self.txt_mother_name)
 
+        # Date of Birth (Placed immediately BELOW Mother's Name and ABOVE Course & Branch)
+        self.dt_dob = QDateEdit()
+        self.dt_dob.setFixedHeight(34)
+        self.dt_dob.setCalendarPopup(True)
+        self.dt_dob.setDisplayFormat("dd-MM-yyyy")
+        self.dt_dob.setMinimumDate(QDate(1900, 1, 1))
+        self.dt_dob.setMaximumDate(QDate.currentDate())
+        self.dt_dob.setSpecialValueText("Select Date of Birth")
+        self.dt_dob.setDate(QDate(1900, 1, 1))
+        form_layout.addRow("Date of Birth *:", self.dt_dob)
+
         # Course & Branch Layout
         course_branch_layout = QHBoxLayout()
         self.cmb_course = QComboBox()
@@ -96,6 +107,12 @@ class StudentDialog(QDialog):
         self.txt_mobile = QLineEdit()
         self.txt_mobile.setPlaceholderText("10-Digit Mobile Number (e.g. 9876543210)")
         form_layout.addRow("Mobile Number *:", self.txt_mobile)
+
+        # Aadhaar Number (Placed immediately BELOW Mobile Number and ABOVE Date of Admission)
+        self.txt_aadhaar = QLineEdit()
+        self.txt_aadhaar.setPlaceholderText("12-digit Aadhaar Number")
+        self.txt_aadhaar.setMaxLength(12)
+        form_layout.addRow("Aadhaar Number:", self.txt_aadhaar)
 
         # Date of Admission
         self.dt_admission = QDateEdit()
@@ -155,6 +172,11 @@ class StudentDialog(QDialog):
         self.txt_name.setText(s.name)
         self.txt_father_name.setText(s.father_name)
         self.txt_mother_name.setText(s.mother_name or "")
+        if getattr(s, "date_of_birth", None):
+            self.dt_dob.setDate(QDate(s.date_of_birth.year, s.date_of_birth.month, s.date_of_birth.day))
+        else:
+            self.dt_dob.setDate(QDate(1900, 1, 1))
+
         if s.course:
             self.cmb_course.setCurrentText(s.course)
         if s.branch:
@@ -164,6 +186,8 @@ class StudentDialog(QDialog):
         if s.semester:
             self.cmb_semester.setCurrentText(s.semester)
         self.txt_mobile.setText(s.mobile)
+        self.txt_aadhaar.setText(getattr(s, "aadhaar_number", None) or "")
+
         if s.admission_date:
             self.dt_admission.setDate(QDate(s.admission_date.year, s.admission_date.month, s.admission_date.day))
         self.cmb_session.setCurrentText(s.academic_session)
@@ -176,6 +200,7 @@ class StudentDialog(QDialog):
         father_name = self.txt_father_name.text().strip()
         course_name = self.cmb_course.currentText().strip()
         mobile = self.txt_mobile.text().strip()
+        aadhaar = self.txt_aadhaar.text().strip()
 
         if not adm_no:
             QMessageBox.warning(self, "Validation Error", "Admission Number is required.")
@@ -189,14 +214,43 @@ class StudentDialog(QDialog):
             QMessageBox.warning(self, "Validation Error", "Father's Name is required.")
             self.txt_father_name.setFocus()
             return
+
+        # Date of Birth Validation
+        qdob = self.dt_dob.date()
+        if qdob == QDate(1900, 1, 1):
+            QMessageBox.warning(self, "Validation Error", "Date of Birth is required.")
+            self.dt_dob.setFocus()
+            return
+
+        if qdob > QDate.currentDate():
+            QMessageBox.warning(self, "Validation Error", "Date of Birth cannot be in the future.")
+            self.dt_dob.setFocus()
+            return
+
+        dob_date = date(qdob.year(), qdob.month(), qdob.day())
+        today = date.today()
+        age = today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))
+        if age > 100 or age < 1:
+            QMessageBox.warning(self, "Validation Error", "Please enter a realistic Date of Birth (Age must be between 1 and 100 years).")
+            self.dt_dob.setFocus()
+            return
+
         if not course_name:
             QMessageBox.warning(self, "Validation Error", "Course is required.")
             self.cmb_course.setFocus()
             return
+
         if not validate_indian_mobile(mobile):
             QMessageBox.warning(self, "Validation Error", "Please enter a valid 10-digit Indian Mobile Number.")
             self.txt_mobile.setFocus()
             return
+
+        # Aadhaar Validation
+        if aadhaar:
+            if not aadhaar.isdigit() or len(aadhaar) != 12:
+                QMessageBox.warning(self, "Validation Error", "Aadhaar Number must be exactly 12 numeric digits.")
+                self.txt_aadhaar.setFocus()
+                return
 
         qdate = self.dt_admission.date()
         admission_date = date(qdate.year(), qdate.month(), qdate.day())
@@ -210,6 +264,7 @@ class StudentDialog(QDialog):
             "name": name,
             "father_name": father_name,
             "mother_name": self.txt_mother_name.text().strip(),
+            "date_of_birth": dob_date,
             "course": course_name,
             "branch": self.cmb_branch.currentText().strip(),
             "year": "" if yr == "None" else yr,
@@ -217,6 +272,7 @@ class StudentDialog(QDialog):
             "class_name": course_name,
             "section": "",
             "mobile": mobile,
+            "aadhaar_number": aadhaar or None,
             "address": self.txt_address.toPlainText().strip(),
             "admission_date": admission_date,
             "academic_session": self.cmb_session.currentText(),
