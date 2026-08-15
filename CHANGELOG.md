@@ -2,6 +2,16 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [3.0.0] - Phase 5 Release (FINAL PRODUCTION RELEASE)
+
+### 🏆 Full Production Hardening, System Lockdown & Master Deployment
+- **Complete End-to-End Regression Hardening**: Validated 100% of core ERP workflows (Student Management, Photo Upload/Removal, Promotion Engine, Academic Sessions, Multi-dimensional Fee Engine, 1-Page A4 PDF Receipts, Receipt History, Reports, Backup & Restore, Hardware License Guard).
+- **Database Performance Indexing**: Verified SQLite query indexes on `students.admission_no`, `students.aadhaar_number`, `receipts.receipt_no`, `receipts.student_id`, and `audit_logs.created_at`.
+- **Zero-Clipping UI Polish**: Hardened Windows 11 high-DPI scaling rendering across all resolution bounds.
+- **Master Release Distribution**: Generated PyInstaller EXE (`SchoolFeeManager.exe`), Inno Setup Windows Installer (`SchoolFeeERP_Setup_v3.0.0.exe`), Standalone Portable ZIP, Developer Source ZIP, SHA256 & MD5 Checksums, PDF Manuals, and populating [`release/v3.0.0/`](file:///E:/Downloads/ERP/SchoolFeeManager/release/v3.0.0).
+
+---
+
 ## [2.9.0] - Phase 4 Release (Advanced Fee Management)
 
 ### 💳 Multi-Dimensional Fee Engine & Semester-Based Management
