@@ -146,7 +146,20 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
     def test_04_fee_head_ug_pg_isolation(self):
         """Part 11 & 12: Verify UG student receives ONLY UG fee heads and PG student receives ONLY PG fee heads."""
         ug_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/001")
+        if not ug_student:
+            StudentController.create_student({
+                "admission_no": "TEST/ADM/V25/001", "name": "Rahul Sharma (UG)", "father_name": "Ramesh",
+                "course_category": "UG", "course": "Bachelor of Pharmacy", "mobile": "9876543210", "status": "Active"
+            })
+            ug_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/001")
+
         pg_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/002")
+        if not pg_student:
+            StudentController.create_student({
+                "admission_no": "TEST/ADM/V25/002", "name": "Priya Verma (PG)", "father_name": "Suresh",
+                "course_category": "PG", "course": "Master of Pharmacy", "mobile": "9123456789", "status": "Active"
+            })
+            pg_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/002")
 
         self.assertIsNotNone(ug_student)
         self.assertIsNotNone(pg_student)
