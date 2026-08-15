@@ -161,10 +161,11 @@ class TestFullApplicationWorkflows(unittest.TestCase):
         window = MainWindow()
         self.assertIsNotNone(window)
 
-        # Navigate every view
-        for view_key in ["dashboard", "receipt", "history", "students", "fees", "reports", "settings"]:
-            window.navigate_to(view_key)
-            self.assertEqual(window.stacked_widget.currentWidget(), window.views[view_key])
+        from unittest.mock import patch
+        with patch("dialogs.admin_auth_dialog.AdminAuthDialog.exec", return_value=True):
+            for view_key in ["dashboard", "receipt", "history", "students", "fees", "reports", "settings"]:
+                window.navigate_to(view_key)
+                self.assertEqual(window.stacked_widget.currentWidget(), window.views[view_key])
 
         # Test Dialogs Instantiation
         st_dlg = StudentDialog(None)
