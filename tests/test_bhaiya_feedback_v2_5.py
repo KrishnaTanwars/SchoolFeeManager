@@ -32,7 +32,7 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
         if s2:
             StudentController.delete_student(s2.id)
 
-        # 1. Student WITH Photo (UG B.Pharm)
+        # 1. Student WITH Photo (UG B. Pharmacy)
         data1 = {
             "admission_no": adm_no_1,
             "roll_no": "101",
@@ -41,7 +41,7 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
             "mother_name": "Sunita Sharma",
             "date_of_birth": date(2003, 5, 14),
             "course_category": "UG",
-            "course": "Bachelor of Pharmacy",
+            "course": "B. Pharmacy",
             "branch": "Pharmacy",
             "year": "1st",
             "semester": "1st Sem",
@@ -56,7 +56,7 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
         success1, msg1 = StudentController.create_student(data1)
         self.assertTrue(success1, f"UG Add Student failed: {msg1}")
 
-        # 2. Student WITHOUT Photo (PG M.Pharm)
+        # 2. Student WITHOUT Photo (PG M. Pharmacy)
         data2 = {
             "admission_no": adm_no_2,
             "roll_no": "102",
@@ -65,7 +65,7 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
             "mother_name": "Kavita Verma",
             "date_of_birth": date(2001, 8, 22),
             "course_category": "PG",
-            "course": "Master of Pharmacy",
+            "course": "M. Pharmacy",
             "branch": "Pharmacy",
             "year": "1st",
             "semester": "1st Sem",
@@ -84,13 +84,13 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
         st1 = StudentController.get_student_by_admission_no(adm_no_1)
         self.assertIsNotNone(st1)
         self.assertEqual(st1.course_category, "UG")
-        self.assertEqual(st1.course, "Bachelor of Pharmacy")
+        self.assertEqual(st1.course, "B. Pharmacy")
         self.assertEqual(st1.photo_path, "photo_test_ug_101.jpg")
 
         st2 = StudentController.get_student_by_admission_no(adm_no_2)
         self.assertIsNotNone(st2)
         self.assertEqual(st2.course_category, "PG")
-        self.assertEqual(st2.course, "Master of Pharmacy")
+        self.assertEqual(st2.course, "M. Pharmacy")
         self.assertIsNone(st2.photo_path)
 
     def test_02_student_export_photo_column(self):
@@ -124,32 +124,34 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
     def test_03_course_category_and_semester_dependencies(self):
         """Part 4-8: Verify UG/PG course hierarchy, semester constraints, and year mapping."""
         ug_courses = AcademicController.get_courses_by_category("UG")
-        self.assertIn("Bachelor of Pharmacy", ug_courses)
-        self.assertNotIn("Master of Pharmacy", ug_courses)
+        self.assertIn("B. Pharmacy", ug_courses)
+        self.assertNotIn("M. Pharmacy", ug_courses)
 
         pg_courses = AcademicController.get_courses_by_category("PG")
-        self.assertIn("Master of Pharmacy", pg_courses)
-        self.assertNotIn("Bachelor of Pharmacy", pg_courses)
+        self.assertIn("M. Pharmacy", pg_courses)
+        self.assertNotIn("B. Pharmacy", pg_courses)
 
-        # B.Pharm Years (1st..4th) and Semesters (1st..8th)
-        bpharm_years = AcademicController.get_years(course_name="Bachelor of Pharmacy")
+        # B. Pharmacy Years (1st..4th) and Semesters (1st..8th)
+        bpharm_years = AcademicController.get_years(course_name="B. Pharmacy")
         self.assertEqual(len(bpharm_years), 4)
-        bpharm_sems = AcademicController.get_semesters(course_name="Bachelor of Pharmacy")
+        bpharm_sems = AcademicController.get_semesters(course_name="B. Pharmacy")
         self.assertEqual(len(bpharm_sems), 8)
 
-        # M.Pharm Years (1st..2nd) and Semesters (1st..4th)
-        mpharm_years = AcademicController.get_years(course_name="Master of Pharmacy")
+        # M. Pharmacy Years (1st..2nd) and Semesters (1st..4th)
+        mpharm_years = AcademicController.get_years(course_name="M. Pharmacy")
         self.assertEqual(len(mpharm_years), 2)
-        mpharm_sems = AcademicController.get_semesters(course_name="Master of Pharmacy")
+        mpharm_sems = AcademicController.get_semesters(course_name="M. Pharmacy")
         self.assertEqual(len(mpharm_sems), 4)
 
     def test_04_fee_head_ug_pg_isolation(self):
-        """Part 11 & 12: Verify UG student receives ONLY UG fee heads and PG student receives ONLY PG fee heads."""
+        """Part 11 & 12: Verify UG student receives ONLY 14 UG fee heads and PG student receives ONLY 4 PG fee heads."""
+        FeeController.seed_default_fee_heads()
+
         ug_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/001")
         if not ug_student:
             StudentController.create_student({
                 "admission_no": "TEST/ADM/V25/001", "name": "Rahul Sharma (UG)", "father_name": "Ramesh",
-                "course_category": "UG", "course": "Bachelor of Pharmacy", "mobile": "9876543210", "status": "Active"
+                "course_category": "UG", "course": "B. Pharmacy", "mobile": "9876543210", "status": "Active"
             })
             ug_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/001")
 
@@ -157,7 +159,7 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
         if not pg_student:
             StudentController.create_student({
                 "admission_no": "TEST/ADM/V25/002", "name": "Priya Verma (PG)", "father_name": "Suresh",
-                "course_category": "PG", "course": "Master of Pharmacy", "mobile": "9123456789", "status": "Active"
+                "course_category": "PG", "course": "M. Pharmacy", "mobile": "9123456789", "status": "Active"
             })
             pg_student = StudentController.get_student_by_admission_no("TEST/ADM/V25/002")
 
@@ -167,16 +169,24 @@ class TestBhaiyaFeedbackV25(unittest.TestCase):
         ug_cats = FeeController.get_applicable_categories(ug_student)
         pg_cats = FeeController.get_applicable_categories(pg_student)
 
-        # Verify UG fee heads contain UG heads and NO PG heads
         ug_cat_names = [c.name for c in ug_cats]
-        ug_cat_courses = [c.course for c in ug_cats]
-        self.assertIn("UG Tuition Fee", ug_cat_names)
-        self.assertNotIn("PG Tuition Fee", ug_cat_names)
-
-        # Verify PG fee heads contain PG heads and NO UG heads
         pg_cat_names = [c.name for c in pg_cats]
-        self.assertIn("PG Tuition Fee", pg_cat_names)
-        self.assertNotIn("UG Tuition Fee", pg_cat_names)
+
+        # Verify UG has exactly 14 fee heads and exact spellings
+        self.assertEqual(len(ug_cat_names), 14, f"UG Fee heads count should be 14, got {len(ug_cat_names)}: {ug_cat_names}")
+        self.assertIn("ADMISSION FORM FEE", ug_cat_names)
+        self.assertIn("UG TUTION FEE", ug_cat_names)
+        self.assertIn("ELIGIBILTY FEE", ug_cat_names)
+        self.assertIn("UG LABROTARY CHARGES", ug_cat_names)
+        self.assertNotIn("PG TUTION FEE", ug_cat_names)
+
+        # Verify PG has exactly 4 fee heads and exact spellings
+        self.assertEqual(len(pg_cat_names), 4, f"PG Fee heads count should be 4, got {len(pg_cat_names)}: {pg_cat_names}")
+        self.assertIn("ADMISSION FORM FEE", pg_cat_names)
+        self.assertIn("PG TUTION FEE", pg_cat_names)
+        self.assertIn("PG DEVELOPMENT FEE", pg_cat_names)
+        self.assertIn("PG LABORATORY USAGES", pg_cat_names)
+        self.assertNotIn("UG TUTION FEE", pg_cat_names)
 
     def test_05_bulk_student_deletion(self):
         """Part 17-21 & 25: Verify bulk student deletion works permanently in database."""

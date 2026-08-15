@@ -99,8 +99,12 @@ def run_migrations():
                 cursor.execute("ALTER TABLE students ADD COLUMN photo_path VARCHAR(255);")
 
             # Backfill student course_category based on course name
-            cursor.execute("UPDATE students SET course_category = 'PG' WHERE course_category IS NULL AND (LOWER(course) LIKE '%master%' OR LOWER(course) LIKE '%mpharm%' OR LOWER(course) LIKE '%pg%');")
+            cursor.execute("UPDATE students SET course_category = 'PG' WHERE (LOWER(course) LIKE '%master%' OR LOWER(course) LIKE '%mpharm%' OR LOWER(course) LIKE '%pg%');")
             cursor.execute("UPDATE students SET course_category = 'UG' WHERE course_category IS NULL OR course_category = '';")
+
+            # Standardize student course names
+            cursor.execute("UPDATE students SET course = 'B. Pharmacy' WHERE LOWER(course) LIKE '%bachelor%' OR LOWER(course) LIKE '%bpharm%';")
+            cursor.execute("UPDATE students SET course = 'M. Pharmacy' WHERE LOWER(course) LIKE '%master%' OR LOWER(course) LIKE '%mpharm%';")
 
             # Check fee_categories columns and indexes
             cursor.execute("PRAGMA table_info(fee_categories);")
@@ -109,6 +113,60 @@ def run_migrations():
                 cursor.execute("ALTER TABLE fee_categories ADD COLUMN course VARCHAR(100) DEFAULT 'All';")
             if "branch" not in fee_cat_cols:
                 cursor.execute("ALTER TABLE fee_categories ADD COLUMN branch VARCHAR(100) DEFAULT 'All';")
+
+            # Migrate and standardize Fee Heads Master to exact college spellings
+            fee_renames = [
+                ("Admission Form Fee", "ADMISSION FORM FEE", "All"),
+                ("UG Tuition Fee", "UG TUTION FEE", "UG"),
+                ("UG Tuision Fee", "UG TUTION FEE", "UG"),
+                ("UG Development Fee", "UG DEVELOPMENT FEE", "UG"),
+                ("Social Gathering Fee", "SOCIAL GATHERING FEE", "UG"),
+                ("Sports Fee", "SPORT FEE", "UG"),
+                ("Eligibility Fee", "ELIGIBILTY FEE", "UG"),
+                ("Identity Card Fee", "IDENTITY CARD FEE", "UG"),
+                ("SRTMU Exam Fee", "SRTMU EXAM FEE", "UG"),
+                ("SRTMU GRM / Photocopy Fee", "SRTMU GRM/PHOTOCOPY FEE", "UG"),
+                ("SRTMU GRM/Photocopy Fee", "SRTMU GRM/PHOTOCOPY FEE", "UG"),
+                ("UG Laboratory Deposit", "UG LABORATORY DEPOSIT", "UG"),
+                ("UG Club Fee", "UG CLUB FEES", "UG"),
+                ("UG Laboratory Charges", "UG LABROTARY CHARGES", "UG"),
+                ("Caution Money", "CAUTION MONEY", "UG"),
+                ("Other Fine", "OTHER FINE", "UG"),
+                ("PG Tuition Fee", "PG TUTION FEE", "PG"),
+                ("PG Tuision Fee", "PG TUTION FEE", "PG"),
+                ("PG Development Fee", "PG DEVELOPMENT FEE", "PG"),
+                ("PG Laboratory Usage Fee", "PG LABORATORY USAGES", "PG"),
+                ("PG Laboratory Deposit", "PG LABORATORY USAGES", "PG")
+            ]
+
+            for old_n, new_n, crs in fee_renames:
+                cursor.execute("UPDATE fee_categories SET name = ?, course = ? WHERE LOWER(TRIM(name)) = LOWER(?);", (new_n, crs, old_n))
+
+            # Ensure ADMISSION FORM FEE is shared across UG and PG with course = 'All'
+            cursor.execute("UPDATE fee_categories SET course = 'All' WHERE name = 'ADMISSION FORM FEE';")
+
+            # Official 17 Active Fee Heads
+            official_17 = (
+                'ADMISSION FORM FEE', 'UG TUTION FEE', 'UG DEVELOPMENT FEE', 'SOCIAL GATHERING FEE',
+                'SPORT FEE', 'ELIGIBILTY FEE', 'IDENTITY CARD FEE', 'SRTMU EXAM FEE',
+                'SRTMU GRM/PHOTOCOPY FEE', 'UG LABORATORY DEPOSIT', 'UG CLUB FEES',
+                'UG LABROTARY CHARGES', 'CAUTION MONEY', 'OTHER FINE',
+                'PG TUTION FEE', 'PG DEVELOPMENT FEE', 'PG LABORATORY USAGES'
+            )
+            # Inactivate any legacy or temporary test fee heads not in the official 17
+            cursor.execute(f"UPDATE fee_categories SET is_active = 0 WHERE name NOT IN {official_17};")
+
+            # Deduplicate active fee heads so only 1 active record per name & course exists
+            cursor.execute("""
+                UPDATE fee_categories 
+                SET is_active = 0 
+                WHERE id NOT IN (
+                    SELECT MIN(id) 
+                    FROM fee_categories 
+                    WHERE is_active = 1 
+                    GROUP BY name, course
+                ) AND is_active = 1;
+            """)
             if "academic_year" not in fee_cat_cols:
                 cursor.execute("ALTER TABLE fee_categories ADD COLUMN academic_year VARCHAR(50) DEFAULT 'All';")
             if "semester" not in fee_cat_cols:

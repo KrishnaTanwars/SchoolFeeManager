@@ -43,9 +43,9 @@ class FeeCategoryDialog(QDialog):
         self.txt_name.setPlaceholderText("e.g. UG Tuition Fee, Admission Form Fee")
         form.addRow("Description / Name *:", self.txt_name)
 
-        # Course Dropdown (UG / PG)
+        # Course Dropdown (UG / PG / Shared)
         self.cmb_course = QComboBox()
-        self.cmb_course.addItems(["UG", "PG"])
+        self.cmb_course.addItems(["UG — B. Pharmacy", "PG — M. Pharmacy", "Shared (UG & PG)"])
         form.addRow("Course Level *:", self.cmb_course)
 
         # Default Amount
@@ -90,14 +90,27 @@ class FeeCategoryDialog(QDialog):
     def load_data(self):
         c = self.category
         self.txt_name.setText(c.name)
-        self.cmb_course.setCurrentText(c.course if getattr(c, "course", None) in ("UG", "PG") else "UG")
+        crs = getattr(c, "course", "UG") or "UG"
+        if crs == "PG":
+            self.cmb_course.setCurrentText("PG — M. Pharmacy")
+        elif crs in ("All", "ALL", "Shared"):
+            self.cmb_course.setCurrentText("Shared (UG & PG)")
+        else:
+            self.cmb_course.setCurrentText("UG — B. Pharmacy")
+
         self.spn_amount.setValue(c.default_amount)
         self.chk_active.setChecked(c.is_active)
         self.txt_desc.setPlainText(c.description or "")
 
     def save_category(self):
         name = self.txt_name.text().strip()
-        course = self.cmb_course.currentText().strip()
+        selected_crs = self.cmb_course.currentText()
+        if "PG" in selected_crs:
+            course = "PG"
+        elif "Shared" in selected_crs:
+            course = "All"
+        else:
+            course = "UG"
         amount = self.spn_amount.value()
         is_active = self.chk_active.isChecked()
         desc = self.txt_desc.toPlainText().strip()

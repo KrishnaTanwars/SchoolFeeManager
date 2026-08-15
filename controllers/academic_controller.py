@@ -10,8 +10,8 @@ from utils.logger import logger
 class AcademicController:
     
     DEFAULT_COURSES = [
-        {"code": "BPHARM", "name": "Bachelor of Pharmacy", "course_type": "UG", "duration_years": 4, "total_semesters": 8},
-        {"code": "MPHARM", "name": "Master of Pharmacy", "course_type": "PG", "duration_years": 2, "total_semesters": 4},
+        {"code": "BPHARM", "name": "B. Pharmacy", "course_type": "UG", "duration_years": 4, "total_semesters": 8},
+        {"code": "MPHARM", "name": "M. Pharmacy", "course_type": "PG", "duration_years": 2, "total_semesters": 4},
     ]
 
     DEFAULT_BRANCHES = [
@@ -42,12 +42,15 @@ class AcademicController:
         """Ensures default Courses, Branches, Academic Years, and Semesters are present and updated."""
         db = get_db()
         try:
-            # Seed or sync default courses (Bachelor of Pharmacy & Master of Pharmacy)
+            # Seed or sync default courses (B. Pharmacy & M. Pharmacy)
             for c in cls.DEFAULT_COURSES:
-                existing = db.query(Course).filter(Course.name == c["name"]).first()
+                existing = db.query(Course).filter(
+                    (Course.name == c["name"]) | (Course.code == c["code"])
+                ).first()
                 if not existing:
                     db.add(Course(**c))
                 else:
+                    existing.name = c["name"]
                     existing.duration_years = c["duration_years"]
                     existing.total_semesters = c["total_semesters"]
                     existing.course_type = c["course_type"]
@@ -99,9 +102,9 @@ class AcademicController:
         cat = category.strip().upper()
         if cat in ("UG", "PG"):
             if cat == "UG":
-                return ["Bachelor of Pharmacy"]
+                return ["B. Pharmacy"]
             elif cat == "PG":
-                return ["Master of Pharmacy"]
+                return ["M. Pharmacy"]
         db = get_db()
         try:
             query = db.query(Course).filter(Course.is_active == True)
@@ -110,10 +113,10 @@ class AcademicController:
             courses = query.order_by(Course.id).all()
             if courses:
                 return [c.name for c in courses]
-            return ["Bachelor of Pharmacy"] if cat == "UG" else ["Master of Pharmacy"] if cat == "PG" else ["Bachelor of Pharmacy", "Master of Pharmacy"]
+            return ["B. Pharmacy"] if cat == "UG" else ["M. Pharmacy"] if cat == "PG" else ["B. Pharmacy", "M. Pharmacy"]
         except Exception as e:
             logger.error(f"Error fetching courses by category: {e}")
-            return ["Bachelor of Pharmacy"] if cat == "UG" else ["Master of Pharmacy"] if cat == "PG" else ["Bachelor of Pharmacy", "Master of Pharmacy"]
+            return ["B. Pharmacy"] if cat == "UG" else ["M. Pharmacy"] if cat == "PG" else ["B. Pharmacy", "M. Pharmacy"]
         finally:
             db.close()
 
@@ -127,7 +130,7 @@ class AcademicController:
             return [c.name for c in courses]
         except Exception as e:
             logger.error(f"Error fetching courses: {e}")
-            return ["Bachelor of Pharmacy", "Master of Pharmacy"]
+            return ["B. Pharmacy", "M. Pharmacy"]
         finally:
             db.close()
 
@@ -152,10 +155,10 @@ class AcademicController:
         cls.seed_academic_masters_if_empty()
         max_years = 4
         if course_name:
-            cn = course_name.lower()
-            if "master" in cn or "mpharm" in cn or "m.pharmacy" in cn or "pg" in cn:
+            cn = course_name.lower().replace(".", "").replace(" ", "").strip()
+            if "master" in cn or "mpharm" in cn or "mpharmacy" in cn or "pg" in cn:
                 max_years = 2
-            elif "bachelor" in cn or "bpharm" in cn or "b.pharmacy" in cn or "ug" in cn:
+            elif "bachelor" in cn or "bpharm" in cn or "bpharmacy" in cn or "ug" in cn:
                 max_years = 4
 
         db = get_db()
@@ -177,10 +180,10 @@ class AcademicController:
         cls.seed_academic_masters_if_empty()
         max_sem = total_semesters
         if not max_sem and course_name:
-            cn = course_name.lower()
-            if "master" in cn or "mpharm" in cn or "m.pharmacy" in cn or "pg" in cn:
+            cn = course_name.lower().replace(".", "").replace(" ", "").strip()
+            if "master" in cn or "mpharm" in cn or "mpharmacy" in cn or "pg" in cn:
                 max_sem = 4
-            elif "bachelor" in cn or "bpharm" in cn or "b.pharmacy" in cn or "ug" in cn:
+            elif "bachelor" in cn or "bpharm" in cn or "bpharmacy" in cn or "ug" in cn:
                 max_sem = 8
 
         db = get_db()

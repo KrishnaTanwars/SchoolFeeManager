@@ -48,7 +48,7 @@ class FeeCategoryView(QWidget):
 
         self.cmb_course_filter = QComboBox()
         self.cmb_course_filter.setFixedHeight(36)
-        self.cmb_course_filter.addItems(["All Courses", "UG", "PG"])
+        self.cmb_course_filter.addItems(["All Courses", "UG (B. Pharmacy)", "PG (M. Pharmacy)"])
         self.cmb_course_filter.currentIndexChanged.connect(self.load_categories)
 
         self.cmb_status_filter = QComboBox()
@@ -57,7 +57,7 @@ class FeeCategoryView(QWidget):
         self.cmb_status_filter.currentIndexChanged.connect(self.load_categories)
 
         filter_layout.addWidget(self.txt_search, stretch=4)
-        filter_layout.addWidget(self.cmb_course_filter, stretch=1)
+        filter_layout.addWidget(self.cmb_course_filter, stretch=2)
         filter_layout.addWidget(self.cmb_status_filter, stretch=1)
 
         layout.addLayout(filter_layout)
@@ -66,7 +66,7 @@ class FeeCategoryView(QWidget):
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels([
-            "Description / Fee Head", "Course", "Default Amount (₹)", "Status", "Created Date", "Actions"
+            "Description / Fee Head", "Course Category / Course", "Default Amount (₹)", "Status", "Created Date", "Actions"
         ])
         
         # Responsive Header Resize Allocation
@@ -87,9 +87,14 @@ class FeeCategoryView(QWidget):
 
     def load_categories(self):
         search = self.txt_search.text().strip()
-        course_val = self.cmb_course_filter.currentText()
-        if course_val == "All Courses":
+        selected_course = self.cmb_course_filter.currentText()
+        if "UG" in selected_course:
+            course_val = "UG"
+        elif "PG" in selected_course:
+            course_val = "PG"
+        else:
             course_val = "All"
+
         status_idx = self.cmb_status_filter.currentIndex()
         active_only = True if status_idx == 0 else False
 
@@ -102,7 +107,16 @@ class FeeCategoryView(QWidget):
 
         for row_idx, cat in enumerate(categories):
             self.table.setItem(row_idx, 0, QTableWidgetItem(cat.name))
-            self.table.setItem(row_idx, 1, QTableWidgetItem(getattr(cat, "course", "UG")))
+            
+            raw_crs = str(getattr(cat, "course", "UG") or "UG").strip()
+            if raw_crs == "UG":
+                disp_crs = "UG — B. Pharmacy"
+            elif raw_crs == "PG":
+                disp_crs = "PG — M. Pharmacy"
+            else:
+                disp_crs = "Shared (UG & PG)"
+
+            self.table.setItem(row_idx, 1, QTableWidgetItem(disp_crs))
             self.table.setItem(row_idx, 2, QTableWidgetItem(format_currency(cat.default_amount)))
             self.table.setItem(row_idx, 3, QTableWidgetItem("Active" if cat.is_active else "Inactive"))
             created_str = format_date(cat.created_at) if getattr(cat, "created_at", None) else "N/A"
