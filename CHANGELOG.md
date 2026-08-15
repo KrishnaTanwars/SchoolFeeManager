@@ -2,6 +2,20 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.6.0] - Phase 1 Release (Stability & Core Reliability)
+
+### 🎯 Core Transaction Reliability & Workflow Hardening
+- **Register New Student Workflow**: End-to-end verification of `StudentDialog` UI setup, QWidget import resolution, DOB calendar picker, 12-digit numeric Aadhaar validation, and student photo handling. Exactly one student record created per registration with full transaction safety.
+- **Instant Autocomplete Student Search**: Enhanced real-time autocomplete search in Fee Collection. Per-character search by Name, Admission/Enrollment Number, and Mobile Number. Multi-matching results (e.g., duplicate first names like Ananya Sharma, Ananya Joshi, Ananya Gupta, Ananya Singh) are displayed clearly in suggestions dropdown without focus stealing or auto-selecting the first item.
+- **Generate & Print Receipt Reliability**: End-to-end audit of receipt creation flow (Student Validation -> Fee Heads -> Subtotal/Discount/Fine -> Payment Mode -> Receipt Record -> Preview -> PDF -> Print -> History). Resolved `lbl_yr_sem` reference in `clear_student_card()`.
+- **User-Accessible PDF Workflow**: Generated PDFs saved to predictable user-accessible exports directory (`exports/`). Added prominent 1-click `"📂 Open PDF"` button in `ReceiptPreviewDialog` launching system native viewer/browser immediately.
+- **Individual Fee Heads on Receipts**: Itemized fee head breakdown with individual paid amounts displayed on generated fee receipts, preview dialogs, and printable A4 PDF documents.
+- **Payment Modes & Partial Payment**: Supported Cash, UPI/QR (with UTR No), Cheque/DD (with Cheque/DD No, Date, Bank Name), and Net Banking modes with exact full payment (`Due = ₹0`) and partial payment tracking across database, receipts, PDF, and Receipt History.
+- **20-Record Fictional Demo Dataset**: Built dataset (`demo/demo_20_fictional_students.csv`) containing 20 fictional student records suitable for testing search, duplicate names, UG/PG, B. Pharmacy/M. Pharmacy, DOB, Aadhaar, and Fee Collection.
+- **Automated Regression Suite**: Created [`tests/test_student_search_regression.py`](file:///E:/Downloads/ERP/SchoolFeeManager/tests/test_student_search_regression.py) and [`tests/test_receipt_view_regression.py`](file:///E:/Downloads/ERP/SchoolFeeManager/tests/test_receipt_view_regression.py) achieving 100% test pass rate across 88 total automated tests.
+
+---
+
 ## [2.4.0] - Final Production Release (License Key Activation & Responsive Screen Scaling)
 
 ### 🔐 Secure License Key Activation (Inno Setup Installer Guard)

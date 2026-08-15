@@ -1,0 +1,21 @@
+Admission / Enrollment No,Student Name,Father Name,Mother Name,Course,Branch,Year,Semester,Class,Section,Mobile,Date of Birth,Aadhaar Number,Address,Date of Admission,Session,Status
+ADM/2025/UG01,Ananya Sharma,Rajesh Sharma,Sunita Sharma,B. Pharmacy,Pharmacy,1st Year,Semester 1,Degree College,A,9876543210,2004-05-15,991122334455,"101, Green Park, New Delhi",2025-07-01,2025-2026,Active
+ADM/2025/UG02,Ananya Joshi,Suresh Joshi,Meena Joshi,B. Pharmacy,Pharmacy,2nd Year,Semester 3,Degree College,A,9876543211,2003-08-20,991122334456,"204, Model Town, Jaipur",2024-07-01,2025-2026,Active
+ADM/2025/UG03,Ananya Gupta,Mahesh Gupta,Rekha Gupta,B. Pharmacy,Pharmacy,3rd Year,Semester 5,Degree College,B,9876543212,2002-11-10,991122334457,"505, Civil Lines, Lucknow",2023-07-01,2025-2026,Active
+ADM/2025/UG04,Ananya Singh,Vikram Singh,Kavita Singh,B. Pharmacy,Pharmacy,4th Year,Semester 7,Degree College,A,9876543213,2001-02-28,991122334458,"12, MG Road, Indore",2022-07-01,2025-2026,Active
+ADM/2025/PG01,Rahul Verma,Anil Verma,Suman Verma,M. Pharmacy,Pharmaceutics,1st Year,Semester 1,Postgraduate,A,9123456780,2000-04-12,992233445561,"78, University Campus, Bhopal",2025-07-15,2025-2026,Active
+ADM/2025/PG02,Priyanka Deshmukh,Prakash Deshmukh,Asha Deshmukh,M. Pharmacy,Pharmacology,1st Year,Semester 2,Postgraduate,A,9123456781,2000-09-25,992233445562,"45, FC Road, Pune",2025-07-15,2025-2026,Active
+ADM/2025/PG03,Amit Kulkarni,Ashok Kulkarni,Radha Kulkarni,M. Pharmacy,Quality Assurance,2nd Year,Semester 3,Postgraduate,A,9123456782,1999-07-14,992233445563,"89, Tilak Nagar, Nagpur",2024-07-15,2025-2026,Active
+ADM/2025/PG04,Sneha Patil,Sanjay Patil,Lata Patil,M. Pharmacy,Pharmaceutics,2nd Year,Semester 4,Postgraduate,A,9123456783,1999-12-05,992233445564,"23, Station Road, Nashik",2024-07-15,2025-2026,Active
+ADM/2025/UG05,Rohan Mehta,Manoj Mehta,Seema Mehta,B. Pharmacy,Pharmacy,1st Year,Semester 1,Degree College,A,9811223344,2004-01-18,993344556671,"67, Anand Vihar, Delhi",2025-07-01,2025-2026,Active
+ADM/2025/UG06,Priya Nair,Raman Nair,Geetha Nair,B. Pharmacy,Pharmacy,1st Year,Semester 2,Degree College,B,9811223345,2004-06-30,993344556672,"34, Kaloor, Kochi",2025-07-01,2025-2026,Active
+ADM/2025/UG07,Aditya Rao,Ranganath Rao,Padma Rao,B. Pharmacy,Pharmacy,2nd Year,Semester 3,Degree College,A,9811223346,2003-03-22,993344556673,"15, Banjara Hills, Hyderabad",2024-07-01,2025-2026,Active
+ADM/2025/UG08,Kavya Reddy,Venkat Reddy,Laxmi Reddy,B. Pharmacy,Pharmacy,2nd Year,Semester 4,Degree College,B,9811223347,2003-10-15,993344556674,"88, Jubilee Hills, Hyderabad",2024-07-01,2025-2026,Active
+ADM/2025/UG09,Abhishek Saxena,Pradeep Saxena,Anita Saxena,B. Pharmacy,Pharmacy,3rd Year,Semester 5,Degree College,A,9811223348,2002-08-08,993344556675,"112, Malviya Nagar, Jaipur",2023-07-01,2025-2026,Active
+ADM/2025/UG10,Neha Agarwal,Sunildutt Agarwal,Poonam Agarwal,B. Pharmacy,Pharmacy,3rd Year,Semester 6,Degree College,B,9811223349,2002-12-19,993344556676,"404, Salt Lake, Kolkata",2023-07-01,2025-2026,Active
+ADM/2025/UG11,Siddharth Malhotra,Rajendra Malhotra,Neena Malhotra,B. Pharmacy,Pharmacy,4th Year,Semester 7,Degree College,A,9811223350,2001-05-04,993344556677,"56, Sector 17, Chandigarh",2022-07-01,2025-2026,Active
+ADM/2025/UG12,Divya Pillai,Narayanan Pillai,Saraswathi Pillai,B. Pharmacy,Pharmacy,4th Year,Semester 8,Degree College,B,9811223351,2001-11-21,993344556678,"90, Kowdiar, Thiruvananthapuram",2022-07-01,2025-2026,Active
+ADM/2025/UG13,Varun Kapoor,Harsh Kapoor,Ritu Kapoor,B. Pharmacy,Pharmacy,1st Year,Semester 1,Degree College,A,9811223352,2004-09-09,993344556679,"22, Rajpur Road, Dehradun",2025-07-01,2025-2026,Active
+ADM/2025/UG14,Meera Shinde,Dattatray Shinde,Savita Shinde,B. Pharmacy,Pharmacy,2nd Year,Semester 3,Degree College,A,9811223353,2003-04-14,993344556680,"77, Shivaji Nagar, Kolhapur",2024-07-01,2025-2026,Active
+ADM/2025/UG15,Tanmay Bhatia,Rakesh Bhatia,Vandana Bhatia,B. Pharmacy,Pharmacy,3rd Year,Semester 5,Degree College,B,9811223354,2002-07-27,993344556681,"19, Civil Lines, Agra",2023-07-01,2025-2026,Active
+ADM/2025/UG16,Isha Choudhury,Subhash Choudhury,Mamta Choudhury,B. Pharmacy,Pharmacy,4th Year,Semester 7,Degree College,A,9811223355,2001-03-16,993344556682,"31, Zoo Road, Guwahati",2022-07-01,2025-2026,Active

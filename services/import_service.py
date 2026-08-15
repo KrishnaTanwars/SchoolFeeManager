@@ -65,19 +65,17 @@ class ImportService:
             mob = f"987{i:07d}"
             addr = cities[(i - 1) % len(cities)]
             adm_date = f"2025-06-{(i % 28) + 1:02d}"
-            dob_sample = f"2005-0{((i % 8) + 1)}-{(i % 25) + 1:02d}"
-            aadhaar_sample = f"6789{i:08d}"
             sess = "2025-2026"
-            rows.append([adm_no, roll_no, st_name, dob_sample, crs, br, yr, sem, f_name, m_name, mob, aadhaar_sample, addr, adm_date, sess, "Active"])
+            rows.append([adm_no, roll_no, st_name, crs, br, yr, sem, f_name, m_name, mob, addr, adm_date, sess, "Active"])
         return rows
 
     @staticmethod
     def generate_sample_csv(output_path: Optional[str] = None) -> Tuple[bool, str]:
         """Generates sample CSV student import template with 100 Indian college student rows."""
         headers = [
-            "Admission Number", "Roll Number", "Student Name", "Date of Birth", "Course", "Branch",
+            "Admission Number", "Roll Number", "Student Name", "Course", "Branch",
             "Academic Year", "Semester", "Father Name",
-            "Mother Name", "Mobile Number", "Aadhaar Number", "Address", "Admission Date", "Academic Session", "Status"
+            "Mother Name", "Mobile Number", "Address", "Admission Date", "Academic Session", "Status"
         ]
         rows = ImportService._get_100_sample_indian_rows()
         if not output_path:
@@ -89,9 +87,9 @@ class ImportService:
     def generate_sample_excel(output_path: Optional[str] = None) -> Tuple[bool, str]:
         """Generates sample Excel student import template with 100 Indian college student rows."""
         headers = [
-            "Admission Number", "Roll Number", "Student Name", "Date of Birth", "Course", "Branch",
+            "Admission Number", "Roll Number", "Student Name", "Course", "Branch",
             "Academic Year", "Semester", "Father Name",
-            "Mother Name", "Mobile Number", "Aadhaar Number", "Address", "Admission Date", "Academic Session", "Status"
+            "Mother Name", "Mobile Number", "Address", "Admission Date", "Academic Session", "Status"
         ]
         rows = ImportService._get_100_sample_indian_rows()
         if not output_path:
@@ -177,11 +175,9 @@ class ImportService:
             existing_adm_nos = set(a[0].lower() for a in db.query(Student.admission_no).all() if a[0])
             existing_rolls = set(r[0].lower() for r in db.query(Student.roll_no).all() if r[0])
             existing_mobiles = set(m[0] for m in db.query(Student.mobile).all() if m[0])
-            existing_aadhaars = set(a[0] for a in db.query(Student.aadhaar_number).all() if a[0])
 
             file_adm_nos = set()
             file_rolls = set()
-            file_aadhaars = set()
 
             parsed_items = []
             errors_report = []
@@ -193,7 +189,8 @@ class ImportService:
                 adm_no = row.get("Admission Number") or row.get("Admission No") or row.get("Adm No") or ""
                 roll_no = row.get("Roll Number") or row.get("Roll No") or ""
                 name = row.get("Student Name") or row.get("Name") or ""
-                dob_str = row.get("Date of Birth") or row.get("Date Of Birth") or row.get("DOB") or ""
+                dob_str = row.get("Date of Birth") or row.get("Date Of Birth") or row.get("DOB") or row.get("dob") or ""
+                aadhaar_num = row.get("Aadhaar Number") or row.get("Aadhaar No") or row.get("Aadhaar") or row.get("aadhaar") or ""
                 cls_name = row.get("Class") or row.get("Class Name") or "Degree College"
                 sec = row.get("Section") or "A"
                 crs = row.get("Course") or "General"
@@ -203,7 +200,6 @@ class ImportService:
                 father_name = row.get("Father Name") or ""
                 mother_name = row.get("Mother Name") or ""
                 mobile = row.get("Mobile Number") or row.get("Mobile") or row.get("Phone") or ""
-                aadhaar = row.get("Aadhaar Number") or row.get("Aadhaar No") or row.get("Aadhaar") or row.get("Aadhar") or ""
                 address = row.get("Address") or ""
                 adm_date_str = row.get("Admission Date") or row.get("Date Of Admission") or ""
                 session = row.get("Academic Session") or row.get("Session") or "2025-2026"
@@ -233,20 +229,7 @@ class ImportService:
                     issues.append("Invalid Mobile Format (must be 10 digits)")
                     suggested_fixes.append("Format mobile to 10 digits e.g. 9876543210")
 
-                # 3. Aadhaar Validation & Duplicate Check
-                clean_aadhaar = aadhaar.strip()
-                if clean_aadhaar:
-                    if not clean_aadhaar.isdigit() or len(clean_aadhaar) != 12:
-                        issues.append("Invalid Aadhaar Format (must be exactly 12 digits)")
-                        suggested_fixes.append("Provide 12 numeric digits for Aadhaar")
-                    elif clean_aadhaar in existing_aadhaars or clean_aadhaar in file_aadhaars:
-                        issues.append(f"Aadhaar Number '{clean_aadhaar}' is already registered")
-                        suggested_fixes.append("Use a unique Aadhaar number")
-                        status_code = "Duplicate"
-                    else:
-                        file_aadhaars.add(clean_aadhaar)
-
-                # 4. Admission Number Duplicate Detection
+                # 3. Admission Number Duplicate Detection
                 norm_adm = adm_no.strip().lower()
                 if norm_adm:
                     if norm_adm in existing_adm_nos:
@@ -260,7 +243,7 @@ class ImportService:
                     else:
                         file_adm_nos.add(norm_adm)
 
-                # 5. Roll Number Duplicate Detection
+                # 4. Roll Number Duplicate Detection
                 norm_roll = roll_no.strip().lower()
                 if norm_roll:
                     if norm_roll in existing_rolls or norm_roll in file_rolls:
@@ -271,20 +254,11 @@ class ImportService:
                     else:
                         file_rolls.add(norm_roll)
 
-                # 6. Date Parsing (DOB & Admission Date)
-                parsed_dob = None
-                if dob_str.strip():
-                    try:
-                        for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%Y/%m/%d"):
-                            try:
-                                parsed_dob = datetime.strptime(dob_str.strip(), fmt).date()
-                                break
-                            except ValueError:
-                                pass
-                    except Exception:
-                        issues.append("Invalid DOB format")
-                        suggested_fixes.append("Use YYYY-MM-DD or DD-MM-YYYY format for Date of Birth")
+                # 5. Mobile Duplicate Warning
+                if clean_mobile and clean_mobile in existing_mobiles:
+                    issues.append("Warning: Mobile number shared with existing student")
 
+                # 6. Date Parsing
                 parsed_adm_date = date.today()
                 if adm_date_str.strip():
                     try:
@@ -313,12 +287,22 @@ class ImportService:
                         "Suggested Fix": "; ".join(suggested_fixes)
                     })
 
+                parsed_dob = None
+                if dob_str.strip():
+                    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%Y/%m/%d"):
+                        try:
+                            parsed_dob = datetime.strptime(dob_str.strip(), fmt).date()
+                            break
+                        except ValueError:
+                            pass
+
                 parsed_items.append({
                     "row_num": row_num,
                     "admission_no": adm_no.strip(),
                     "roll_no": roll_no.strip(),
                     "name": name.strip(),
                     "date_of_birth": parsed_dob,
+                    "aadhaar_number": aadhaar_num.strip() if aadhaar_num.strip() else None,
                     "class_name": cls_name.strip(),
                     "section": sec.strip() or "A",
                     "course": crs.strip(),
@@ -328,7 +312,6 @@ class ImportService:
                     "father_name": father_name.strip(),
                     "mother_name": mother_name.strip(),
                     "mobile": clean_mobile or mobile.strip(),
-                    "aadhaar_number": clean_aadhaar or None,
                     "address": address.strip(),
                     "admission_date": parsed_adm_date,
                     "academic_session": session.strip() or "2025-2026",
@@ -371,6 +354,7 @@ class ImportService:
                     roll_no=item["roll_no"],
                     name=item["name"],
                     date_of_birth=item.get("date_of_birth"),
+                    aadhaar_number=item.get("aadhaar_number"),
                     class_name=item.get("course") or item.get("class_name") or "",
                     section=item.get("section", ""),
                     course=item.get("course", "General"),
@@ -380,7 +364,6 @@ class ImportService:
                     father_name=item["father_name"],
                     mother_name=item["mother_name"],
                     mobile=item["mobile"],
-                    aadhaar_number=item.get("aadhaar_number"),
                     address=item["address"],
                     admission_date=item["admission_date"],
                     academic_session=item["academic_session"],

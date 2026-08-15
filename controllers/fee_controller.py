@@ -44,8 +44,8 @@ class FeeController:
     def get_applicable_categories(student: Any) -> List[FeeCategory]:
         """
         Returns active Fee Heads applicable to the given student based on:
-        Course Category (UG/PG), Course, Branch, Academic Year, Semester, and Academic Session.
-        Falls back to matching course category fee heads if specific course matches are not found.
+        Course, Branch, Academic Year, Semester, and Academic Session.
+        Falls back to all active fee heads if student parameters are unassigned.
         """
         db = get_db()
         try:
@@ -53,26 +53,16 @@ class FeeController:
             cats = query.all()
 
             matched = []
-            st_cat = getattr(student, "course_category", None)
             st_course = getattr(student, "course", None) or "All"
-            if not st_cat and st_course != "All":
-                st_cat = "PG" if ("master" in st_course.lower() or "mpharm" in st_course.lower() or "pg" in st_course.lower()) else "UG"
-            st_cat = st_cat or "UG"
-
             st_branch = getattr(student, "branch", None) or "All"
             st_year = getattr(student, "year", None) or "All"
             st_sem = getattr(student, "semester", None) or "All"
             st_session = getattr(student, "academic_session", None) or "All"
 
             for c in cats:
-                c_crs = str(c.course or "").strip()
-                # Strict Category Isolation: If fee head is UG, match UG students; if PG, match PG students.
-                if c_crs.upper() in ("UG", "PG"):
-                    if c_crs.upper() != st_cat.upper():
-                        continue
-                elif c_crs != "All" and st_course != "All" and c_crs.lower() != st_course.lower():
+                # Check course match
+                if c.course not in ("All", "UG", "PG") and st_course != "All" and c.course.lower() != st_course.lower():
                     continue
-
                 # Check branch match
                 if c.branch != "All" and st_branch != "All" and c.branch.lower() != st_branch.lower():
                     continue
@@ -89,15 +79,7 @@ class FeeController:
 
             for c in matched:
                 db.expunge(c)
-
-            if matched:
-                return matched
-
-            # Fallback: Filter all active fee heads matching category
-            category_fallback = [c for c in cats if c.course.upper() in (st_cat.upper(), "ALL")]
-            for c in category_fallback:
-                db.expunge(c)
-            return category_fallback if category_fallback else cats
+            return matched if matched else cats
         finally:
             db.close()
 
@@ -248,72 +230,45 @@ class FeeController:
 
     @staticmethod
     def seed_default_fee_heads():
-        """Seeds default 14 UG and 4 PG Fee Heads with exact college spellings and shared ADMISSION FORM FEE."""
+        """Seeds official 14 UG and 4 PG Fee Heads with exact college-provided spellings."""
         db = get_db()
         try:
-            # Shared fee head (applies to both UG & PG)
-            shared_heads = [
-                ("ADMISSION FORM FEE", 0.0)
-            ]
-
-            # UG-specific fee heads (B. Pharmacy)
             ug_heads = [
-                ("UG TUTION FEE", 0.0),
-                ("UG DEVELOPMENT FEE", 0.0),
-                ("SOCIAL GATHERING FEE", 0.0),
-                ("SPORT FEE", 0.0),
-                ("ELIGIBILTY FEE", 0.0),
-                ("IDENTITY CARD FEE", 0.0),
-                ("SRTMU EXAM FEE", 0.0),
-                ("SRTMU GRM/PHOTOCOPY FEE", 0.0),
-                ("UG LABORATORY DEPOSIT", 0.0),
-                ("UG CLUB FEES", 0.0),
-                ("UG LABROTARY CHARGES", 0.0),
-                ("CAUTION MONEY", 0.0),
-                ("OTHER FINE", 0.0)
+                ("ADMISSION FORM FEE", 500.0),
+                ("UG TUTION FEE", 12000.0),
+                ("UG DEVELOPMENT FEE", 3000.0),
+                ("SOCIAL GATHERING FEE", 500.0),
+                ("SPORT FEE", 300.0),
+                ("ELIGIBILTY FEE", 400.0),
+                ("IDENTITY CARD FEE", 100.0),
+                ("SRTMU EXAM FEE", 800.0),
+                ("SRTMU GRM/PHOTOCOPY FEE", 150.0),
+                ("UG LABORATORY DEPOSIT", 1000.0),
+                ("UG CLUB FEES", 200.0),
+                ("UG LABROTARY CHARGES", 1500.0),
+                ("CAUTION MONEY", 500.0),
+                ("OTHER FINE", 100.0)
             ]
 
-            # PG-specific fee heads (M. Pharmacy)
             pg_heads = [
-                ("PG TUTION FEE", 0.0),
-                ("PG DEVELOPMENT FEE", 0.0),
-                ("PG LABORATORY USAGES", 0.0)
+                ("ADMISSION FORM FEE", 500.0),
+                ("PG TUTION FEE", 18000.0),
+                ("PG DEVELOPMENT FEE", 5000.0),
+                ("PG LABORATORY USAGES", 2500.0)
             ]
 
-            # Seed Shared
-            for name, amt in shared_heads:
-                existing = db.query(FeeCategory).filter(FeeCategory.name == name, FeeCategory.course == "All").first()
-                if not existing:
-                    db.add(FeeCategory(name=name, course="All", default_amount=amt, is_active=True))
-
-            # Seed UG
             for name, amt in ug_heads:
                 existing = db.query(FeeCategory).filter(FeeCategory.name == name, FeeCategory.course == "UG").first()
                 if not existing:
                     db.add(FeeCategory(name=name, course="UG", default_amount=amt, is_active=True))
 
-            # Seed PG
             for name, amt in pg_heads:
                 existing = db.query(FeeCategory).filter(FeeCategory.name == name, FeeCategory.course == "PG").first()
                 if not existing:
                     db.add(FeeCategory(name=name, course="PG", default_amount=amt, is_active=True))
-                else:
-                    existing.is_active = True
-
-            # Inactivate non-official fee categories
-            official_17 = [
-                'ADMISSION FORM FEE', 'UG TUTION FEE', 'UG DEVELOPMENT FEE', 'SOCIAL GATHERING FEE',
-                'SPORT FEE', 'ELIGIBILTY FEE', 'IDENTITY CARD FEE', 'SRTMU EXAM FEE',
-                'SRTMU GRM/PHOTOCOPY FEE', 'UG LABORATORY DEPOSIT', 'UG CLUB FEES',
-                'UG LABROTARY CHARGES', 'CAUTION MONEY', 'OTHER FINE',
-                'PG TUTION FEE', 'PG DEVELOPMENT FEE', 'PG LABORATORY USAGES'
-            ]
-            legacy = db.query(FeeCategory).filter(FeeCategory.name.notin_(official_17)).all()
-            for l in legacy:
-                l.is_active = False
 
             db.commit()
-            logger.info("Default college UG and PG fee heads seeded successfully.")
+            logger.info("Default official UG and PG fee heads seeded successfully.")
         except Exception as e:
             db.rollback()
             logger.error(f"Failed to seed default fee heads: {e}", exc_info=True)

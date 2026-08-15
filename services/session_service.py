@@ -1,127 +1,100 @@
 """
-Centralized Active Academic Session Service for EduLedger ERP.
-Single source of truth for active academic session across all modules with real-time PySide6 signal propagation.
+Centralized Academic Session Management Service.
+Manages current session state, real-time UI header synchronization, and listener notifications.
 """
 
-from typing import Tuple, Optional, List
-from PySide6.QtCore import QObject, Signal
+from typing import Callable, List, Optional
 from config.database import get_db
-from models.settings import AcademicSession, SchoolInformation
+from models.settings import AcademicSession
 from utils.logger import logger
 
-class SessionManager(QObject):
-    """
-    Centralized Session Manager Service emitting real-time signals on active session state change.
-    """
-    session_changed = Signal(str)
+class SessionManager:
+    _listeners: List[Callable[[str], None]] = []
+    _cached_session: Optional[str] = None
 
-    _instance = None
+    @classmethod
+    def register_listener(cls, callback: Callable[[str], None]):
+        if callback not in cls._listeners:
+            cls._listeners.append(callback)
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(SessionManager, cls).__new__(cls)
-        return cls._instance
+    @classmethod
+    def unregister_listener(cls, callback: Callable[[str], None]):
+        if callback in cls._listeners:
+            cls._listeners.remove(callback)
 
-    def __init__(self, parent=None):
-        if not hasattr(self, "_initialized"):
-            super().__init__(parent)
-            self._active_session: Optional[str] = None
-            self._initialized = True
+    @classmethod
+    def _notify_listeners(cls, new_session: str):
+        for cb in list(cls._listeners):
+            try:
+                cb(new_session)
+            except Exception as e:
+                logger.error(f"Error notifying session listener: {e}")
 
-    def get_active_session(self) -> str:
-        """
-        Retrieves current active academic session name from DB / cache.
-        Single source of truth for entire ERP application.
-        """
+    @classmethod
+    def get_current_session(cls) -> str:
+        """Returns the currently marked active session name, or '2024-2025' default."""
+        if cls._cached_session:
+            return cls._cached_session
+
         db = get_db()
         try:
-            active_s = db.query(AcademicSession).filter(AcademicSession.is_current == True).first()
-            if active_s and active_s.session_name:
-                self._active_session = active_s.session_name.strip()
-                return self._active_session
-
-            # Fallback 1: Check SchoolInformation.current_session
-            info = db.query(SchoolInformation).first()
-            if info and info.current_session:
-                self._active_session = info.current_session.strip()
-                return self._active_session
-
-            # Fallback 2: Default operational session
-            self._active_session = "2024-2025"
-            return self._active_session
+            curr = db.query(AcademicSession).filter(AcademicSession.is_current == True).first()
+            if curr:
+                cls._cached_session = curr.session_name
+                return curr.session_name
+            
+            # Fallback to first session or default
+            first_s = db.query(AcademicSession).first()
+            if first_s:
+                cls._cached_session = first_s.session_name
+                return first_s.session_name
+            return "2024-2025"
         except Exception as e:
-            logger.error(f"Error fetching active academic session: {e}", exc_info=True)
-            return self._active_session or "2024-2025"
+            logger.error(f"Error retrieving current session: {e}")
+            return "2024-2025"
         finally:
             db.close()
 
-    def set_active_session(self, session_name: str) -> Tuple[bool, str]:
-        """
-        Updates the active academic session in database and emits real-time session_changed signal.
-        """
-        s_name = session_name.strip()
-        if not s_name:
+    @classmethod
+    def set_current_session(cls, session_name: str) -> tuple[bool, str]:
+        """Sets the active session in database and notifies all UI listeners."""
+        if not session_name or not session_name.strip():
             return False, "Session name cannot be empty."
 
+        s_name = session_name.strip()
         db = get_db()
         try:
-            sessions = db.query(AcademicSession).all()
-            found = False
-            for s in sessions:
-                if s.session_name == s_name:
-                    s.is_current = True
-                    found = True
-                else:
-                    s.is_current = False
-
-            if not found:
-                new_session = AcademicSession(session_name=s_name, is_current=True)
-                db.add(new_session)
-
-            info = db.query(SchoolInformation).first()
-            if info:
-                info.current_session = s_name
-
+            db.query(AcademicSession).update({AcademicSession.is_current: False})
+            target = db.query(AcademicSession).filter(AcademicSession.session_name == s_name).first()
+            if target:
+                target.is_current = True
+            else:
+                target = AcademicSession(session_name=s_name, is_current=True)
+                db.add(target)
             db.commit()
-
-            old_session = self._active_session
-            self._active_session = s_name
-
-            # Log Audit Trail
-            try:
-                from services.security_service import SecurityService
-                SecurityService.log_audit(
-                    action="Session Changed",
-                    module="Settings",
-                    details=f"Switched active academic session from '{old_session}' to '{s_name}'",
-                    status="Success"
-                )
-            except Exception as audit_err:
-                logger.warning(f"Could not log audit for session change: {audit_err}")
-
-            logger.info(f"Active academic session updated to: {s_name}")
             
-            # Emit PySide6 signal for real-time header and UI updates
-            self.session_changed.emit(s_name)
-
-            return True, f"Switched to academic session '{s_name}' successfully."
+            cls._cached_session = s_name
+            cls._notify_listeners(s_name)
+            logger.info(f"SessionManager updated current session to: {s_name}")
+            return True, f"Active session changed to '{s_name}'."
         except Exception as e:
             db.rollback()
-            logger.error(f"Error setting active session '{s_name}': {e}", exc_info=True)
-            return False, f"Database error updating active session: {str(e)}"
+            logger.error(f"Error setting current session: {e}")
+            return False, f"Failed to set session: {str(e)}"
         finally:
             db.close()
 
-    def refresh(self) -> str:
-        """
-        Forces refresh of cached active session from DB and notifies listeners if changed.
-        """
-        old_val = self._active_session
-        new_val = self.get_active_session()
-        if old_val != new_val:
-            self.session_changed.emit(new_val)
-        return new_val
-
-
-# Global singleton instance
-session_manager = SessionManager()
+    @classmethod
+    def get_all_sessions(cls) -> List[str]:
+        """Returns list of all session names."""
+        db = get_db()
+        try:
+            sessions = db.query(AcademicSession).order_by(AcademicSession.session_name.desc()).all()
+            if not sessions:
+                return ["2024-2025", "2025-2026"]
+            return [s.session_name for s in sessions]
+        except Exception as e:
+            logger.error(f"Error fetching all sessions: {e}")
+            return ["2024-2025"]
+        finally:
+            db.close()

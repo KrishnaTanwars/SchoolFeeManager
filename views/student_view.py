@@ -1,20 +1,17 @@
 """
-Student Master Management View with Fixed Action Button Layout, Zero-Clipping Styling,
-Current Active Session Defaulting, Session Filter beside Search, and Bulk Delete support.
+Student Master Management View with Fixed Action Button Layout and Zero-Clipping Styling.
 """
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
     QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox,
-    QFileDialog, QCheckBox
+    QFileDialog
 )
 from PySide6.QtCore import Qt
 from controllers.student_controller import StudentController
-from controllers.settings_controller import SettingsController
 from dialogs.student_dialog import StudentDialog
 from dialogs.student_ledger_dialog import StudentFeeLedgerDialog
 from services.export_service import ExportService
-from services.session_service import session_manager
 from utils.helpers import format_date
 from utils.table_delegate import apply_responsive_table_formatting
 from components.academic_filter_widget import AcademicFilterWidget
@@ -23,7 +20,6 @@ from dialogs.student_details_dialog import StudentDetailsDialog
 class StudentView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.current_students = []
         self.setup_ui()
 
     def setup_ui(self):
@@ -64,93 +60,58 @@ class StudentView(QWidget):
         hdr_layout.addWidget(self.btn_add_student)
         layout.addLayout(hdr_layout)
 
-        # Integrated Academic Filter Widget (Course, Branch, Year, Semester)
-        self.academic_filter = AcademicFilterWidget(self, show_all_option=True, include_session=False)
+        # Integrated Academic Filter Widget
+        self.academic_filter = AcademicFilterWidget(self, show_all_option=True, include_session=True)
         self.academic_filter.filters_changed.connect(self.load_students)
         layout.addWidget(self.academic_filter)
 
-        # Filter & Search Controls Bar (Search Box + Session Filter Beside Search + Status Filter)
+        # Filter & Search Controls Bar
         filter_layout = QHBoxLayout()
         filter_layout.setSpacing(8)
 
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(36)
-        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Course, Branch, Semester, Mobile...")
+        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Aadhaar, Course, Branch, Mobile...")
         self.txt_search.textChanged.connect(self.load_students)
-
-        lbl_session = QLabel("Session:")
-        lbl_session.setStyleSheet("font-weight: bold; color: #1e3a8a; font-size: 13px;")
-
-        self.cmb_session = QComboBox()
-        self.cmb_session.setFixedHeight(36)
-        self.cmb_session.setMinimumWidth(130)
-        self.cmb_session.currentIndexChanged.connect(self.load_students)
-
-        lbl_status = QLabel("Status:")
-        lbl_status.setStyleSheet("font-weight: bold; color: #1e3a8a; font-size: 13px;")
 
         self.cmb_status_filter = QComboBox()
         self.cmb_status_filter.setFixedHeight(36)
         self.cmb_status_filter.addItems(["Active Only", "All Status", "Inactive Only"])
         self.cmb_status_filter.currentIndexChanged.connect(self.load_students)
 
-        filter_layout.addWidget(self.txt_search, stretch=4)
-        filter_layout.addWidget(lbl_session)
-        filter_layout.addWidget(self.cmb_session, stretch=2)
-        filter_layout.addWidget(lbl_status)
-        filter_layout.addWidget(self.cmb_status_filter, stretch=1)
-        layout.addLayout(filter_layout)
-
-        # Bulk Operations Action Bar
-        bulk_layout = QHBoxLayout()
-        bulk_layout.setSpacing(8)
-
-        self.btn_select_all = QPushButton("☑ Select All")
-        self.btn_select_all.setCursor(Qt.PointingHandCursor)
-        self.btn_select_all.setProperty("class", "SecondaryBtn")
-        self.btn_select_all.setFixedHeight(32)
-        self.btn_select_all.clicked.connect(self.select_all_students)
-
-        self.btn_deselect_all = QPushButton("☐ Deselect All")
-        self.btn_deselect_all.setCursor(Qt.PointingHandCursor)
-        self.btn_deselect_all.setProperty("class", "SecondaryBtn")
-        self.btn_deselect_all.setFixedHeight(32)
-        self.btn_deselect_all.clicked.connect(self.deselect_all_students)
-
-        self.btn_delete_selected = QPushButton("🗑️ Delete Selected")
-        self.btn_delete_selected.setCursor(Qt.PointingHandCursor)
-        self.btn_delete_selected.setFixedHeight(32)
-        self.btn_delete_selected.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; padding: 0 12px;")
-        self.btn_delete_selected.clicked.connect(self.delete_selected_students)
-
         self.lbl_selected_count = QLabel("Selected: 0")
-        self.lbl_selected_count.setStyleSheet("font-weight: 700; color: #475569; font-size: 13px; margin-left: 8px;")
+        self.lbl_selected_count.setStyleSheet("font-weight: bold; color: #1e3a8a; font-size: 13px; margin-left: 10px;")
 
-        bulk_layout.addWidget(self.btn_select_all)
-        bulk_layout.addWidget(self.btn_deselect_all)
-        bulk_layout.addWidget(self.btn_delete_selected)
-        bulk_layout.addWidget(self.lbl_selected_count)
-        bulk_layout.addStretch()
-        layout.addLayout(bulk_layout)
+        self.btn_bulk_delete = QPushButton("🗑️ Delete Selected")
+        self.btn_bulk_delete.setFixedHeight(36)
+        self.btn_bulk_delete.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; padding: 0 12px; border-radius: 4px;")
+        self.btn_bulk_delete.setCursor(Qt.PointingHandCursor)
+        self.btn_bulk_delete.clicked.connect(self.delete_selected_students)
+
+        filter_layout.addWidget(self.txt_search, stretch=3)
+        filter_layout.addWidget(self.cmb_status_filter, stretch=1)
+        filter_layout.addWidget(self.lbl_selected_count)
+        filter_layout.addWidget(self.btn_bulk_delete)
+        layout.addLayout(filter_layout)
 
         # ERP Student Table
         self.table = QTableWidget()
         self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels([
-            "☐", "Admission No.", "Student Name", "Course / Branch", "Year / Semester",
-            "Session", "Status", "Actions"
+            "☐", "Admission / Enrollment No.", "Student Name", "Course / Branch",
+            "Year / Semester", "Session", "Status", "Actions"
         ])
         
         self.table.setWordWrap(True)
         header = self.table.horizontalHeader()
         header.setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        header.sectionClicked.connect(self.on_header_section_clicked)
         
-        header.setSectionResizeMode(0, QHeaderView.Fixed)           # Checkbox Column
-        self.table.setColumnWidth(0, 38)
-        header.setSectionResizeMode(1, QHeaderView.ResizeToContents) # Admission No.
-        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Student Name
-        header.setSectionResizeMode(3, QHeaderView.Stretch)          # Course / Branch
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Year / Semester
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Checkbox
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents) # Adm No
+        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Name
+        header.setSectionResizeMode(3, QHeaderView.Stretch)          # Course/Branch
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Yr/Sem
         header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Session
         header.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Status
         header.setSectionResizeMode(7, QHeaderView.Fixed)           # Actions
@@ -158,57 +119,30 @@ class StudentView(QWidget):
 
         self.table.setAlternatingRowColors(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.table.itemDoubleClicked.connect(self.on_row_double_clicked)
-        self.table.horizontalHeader().sectionClicked.connect(self.on_header_section_clicked)
         self.table.itemChanged.connect(self.on_item_changed)
+        self.table.itemDoubleClicked.connect(self.on_row_double_clicked)
         apply_responsive_table_formatting(self.table)
 
         layout.addWidget(self.table)
-
-        # Connect to Centralized Active Session Manager
-        session_manager.session_changed.connect(self.on_active_session_changed)
 
         self.populate_filters()
         self.load_students()
 
     def populate_filters(self):
-        self.cmb_session.blockSignals(True)
-        self.cmb_session.clear()
-
-        sessions = SettingsController.get_academic_sessions()
-        session_names = [s.session_name for s in sessions] if sessions else ["2024-2025", "2025-2026", "2026-2027"]
-
-        active_session = session_manager.get_active_session()
-        if active_session and active_session not in session_names:
-            session_names.insert(0, active_session)
-
-        # Order: Active session first, followed by other sessions, then "All Sessions"
-        ordered_sessions = [active_session] + [s for s in session_names if s != active_session] + ["All Sessions"]
-        self.cmb_session.addItems(ordered_sessions)
-        self.cmb_session.setCurrentText(active_session)
-        self.cmb_session.blockSignals(False)
-
-    def on_active_session_changed(self, new_session: str):
-        """Called when Active Academic Session changes globally in Settings."""
-        self.populate_filters()
-        self.load_students()
+        pass
 
     def load_students(self):
-        self.table.blockSignals(True)
         search = self.txt_search.text().strip()
         academic_filters = self.academic_filter.get_filter_values()
         status_idx = self.cmb_status_filter.currentIndex()
 
         status = "Active" if status_idx == 0 else ("All" if status_idx == 1 else "Inactive")
 
-        selected_sess = self.cmb_session.currentText().strip()
-        session_filter_val = "All" if selected_sess == "All Sessions" else selected_sess
-
         self.current_students = StudentController.get_all_students(
             search_query=search if search else "",
             class_filter="All",
             section_filter="All",
-            session_filter=session_filter_val,
+            session_filter=academic_filters.get("session") or "All",
             status_filter=status,
             course_filter=academic_filters.get("course") or "All",
             branch_filter=academic_filters.get("branch") or "All",
@@ -216,21 +150,21 @@ class StudentView(QWidget):
             semester_filter=academic_filters.get("semester") or "All"
         )
 
+        self.table.blockSignals(True)
         self.table.setRowCount(len(self.current_students))
 
         for row_idx, s in enumerate(self.current_students):
-            # Checkbox item
+            # Column 0: Checkbox
             chk_item = QTableWidgetItem()
-            chk_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            chk_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             chk_item.setCheckState(Qt.Unchecked)
             chk_item.setData(Qt.UserRole, s)
             self.table.setItem(row_idx, 0, chk_item)
 
-            # Admission No item
+            # Column 1: Admission No
             item_adm = QTableWidgetItem(s.admission_no)
             item_adm.setData(Qt.UserRole, s)
             self.table.setItem(row_idx, 1, item_adm)
-
             self.table.setItem(row_idx, 2, QTableWidgetItem(s.name))
             
             course_branch = s.course or "General"
@@ -249,7 +183,7 @@ class StudentView(QWidget):
             self.table.setItem(row_idx, 5, QTableWidgetItem(s.academic_session))
             self.table.setItem(row_idx, 6, QTableWidgetItem(s.status))
 
-            # Compact Icon Actions Container (👁️ View, 💰 Ledger, ✏️ Edit) — Individual Delete Removed as requested
+            # Compact Actions Widget (View, Ledger, Edit - NO DELETE)
             action_widget = QWidget()
             act_layout = QHBoxLayout(action_widget)
             act_layout.setContentsMargins(2, 2, 2, 2)
@@ -257,7 +191,7 @@ class StudentView(QWidget):
 
             btn_view = QPushButton("👁️")
             btn_view.setFixedSize(30, 28)
-            btn_view.setToolTip("View Complete Student Record")
+            btn_view.setToolTip("View Complete Student Profile")
             btn_view.setStyleSheet("background-color: #0f766e; color: #ffffff; font-weight: bold; border-radius: 4px; border: none;")
             btn_view.setCursor(Qt.PointingHandCursor)
             btn_view.clicked.connect(lambda _, st=s: self.view_student_details(st))
@@ -407,6 +341,30 @@ class StudentView(QWidget):
         if dlg.exec():
             self.populate_filters()
             self.load_students()
+
+    def delete_student(self, student):
+        from dialogs.admin_auth_dialog import AdminAuthDialog
+        auth_dlg = AdminAuthDialog(
+            self,
+            action_title="Student Delete Protection",
+            action_context=f"Delete Student: '{student.name}' ({student.admission_no})",
+            module="Student Master"
+        )
+        if not auth_dlg.exec():
+            return
+
+        reply = QMessageBox.question(
+            self, "Confirm Delete Student",
+            f"Are you sure you want to delete student '{student.name}' ({student.admission_no})?\nThis action cannot be undone.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            success, msg = StudentController.delete_student(student.id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.load_students()
+            else:
+                QMessageBox.critical(self, "Error", msg)
 
     def download_sample_csv(self):
         path, _ = QFileDialog.getSaveFileName(self, "Save Sample CSV Template", "sample_students_import.csv", "CSV Files (*.csv)")

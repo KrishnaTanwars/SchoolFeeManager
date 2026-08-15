@@ -268,8 +268,29 @@ class MainWindow(QMainWindow):
         shortcut_search = QShortcut(QKeySequence("Ctrl+K"), self)
         shortcut_search.activated.connect(self.open_global_search)
 
+        from PySide6.QtWidgets import QComboBox
+        from services.session_service import SessionManager
+
+        self.cmb_header_session = QComboBox()
+        self.cmb_header_session.setFixedHeight(30)
+        self.cmb_header_session.setToolTip("Select Active Academic Session")
+        self.cmb_header_session.setStyleSheet("""
+            QComboBox {
+                font-size: 11px;
+                font-weight: 700;
+                color: #1e3a8a;
+                background-color: #f1f5f9;
+                border: 1px solid #cbd5e1;
+                border-radius: 5px;
+                padding: 2px 8px;
+            }
+        """)
+        self.cmb_header_session.currentTextChanged.connect(self.on_header_session_changed)
+
         header_layout.addWidget(self.lbl_school_header)
         header_layout.addStretch()
+        header_layout.addWidget(QLabel("<b>Session:</b>"))
+        header_layout.addWidget(self.cmb_header_session)
         header_layout.addWidget(self.btn_global_search)
 
         right_layout.addWidget(self.header_frame)
@@ -317,43 +338,8 @@ class MainWindow(QMainWindow):
         """)
         self.status_bar.addPermanentWidget(self.lbl_status_user)
 
-        # Connect Session Manager Signal for Real-Time Academic Session Header Sync
-        from services.session_service import session_manager
-        session_manager.session_changed.connect(self.on_active_session_changed)
-
         # Start at Login
         self.show_login()
-
-    def update_header_label(self, active_session: str = None):
-        if not active_session:
-            from services.session_service import session_manager
-            active_session = session_manager.get_active_session()
-        info = SettingsController.get_school_info()
-        school_name = info.school_name if info else "DPS International School"
-        self.lbl_school_header.setText(f"<b>{school_name}</b> &nbsp;|&nbsp; Academic Session: <b>{active_session}</b>")
-
-    def on_active_session_changed(self, new_session: str):
-        self.update_header_label(new_session)
-        # Synchronize and refresh all stacked views dynamically
-        for key, view in self.views.items():
-            try:
-                if hasattr(view, "refresh_dashboard"):
-                    view.refresh_dashboard()
-                elif hasattr(view, "refresh_view"):
-                    view.refresh_view()
-                elif hasattr(view, "load_students"):
-                    view.load_students()
-                elif hasattr(view, "load_categories"):
-                    view.load_categories()
-                elif hasattr(view, "load_receipts"):
-                    view.load_receipts()
-                elif hasattr(view, "load_sessions"):
-                    view.load_sessions()
-                if hasattr(view, "load_filter_options"):
-                    view.load_filter_options()
-            except Exception as e:
-                pass
-        self.status_bar.showMessage(f"Active Academic Session updated to {new_session}")
 
     def setup_shortcuts(self):
         QShortcut(QKeySequence("Ctrl+B"), self, self.toggle_sidebar)
@@ -378,7 +364,22 @@ class MainWindow(QMainWindow):
             self.lbl_status_user.setText(f"Logged in as: <b>{user.full_name}</b> ({role_display})")
             self.lbl_status_user.show()
         
-        self.update_header_label()
+        info = SettingsController.get_school_info()
+        if info:
+            self.lbl_school_header.setText(f"<b>{info.school_name}</b>")
+
+        from services.session_service import SessionManager
+        all_sessions = SessionManager.get_all_sessions()
+        curr_session = SessionManager.get_current_session()
+
+        self.cmb_header_session.blockSignals(True)
+        self.cmb_header_session.clear()
+        self.cmb_header_session.addItems(all_sessions)
+        if self.cmb_header_session.findText(curr_session) >= 0:
+            self.cmb_header_session.setCurrentText(curr_session)
+        self.cmb_header_session.blockSignals(False)
+
+        SessionManager.register_listener(self.on_session_changed_externally)
 
         self.sidebar_base.show()
         self.sidebar_frame.show()
@@ -391,6 +392,20 @@ class MainWindow(QMainWindow):
         # Ensure collapsed state on startup and enable interactive hover
         self.collapse_sidebar(animated=False)
         self._hover_enabled = True
+
+    def on_header_session_changed(self, session_name: str):
+        if not session_name:
+            return
+        from services.session_service import SessionManager
+        SessionManager.set_current_session(session_name)
+        self.refresh_active_view()
+
+    def on_session_changed_externally(self, new_session: str):
+        if self.cmb_header_session.currentText() != new_session:
+            self.cmb_header_session.blockSignals(True)
+            if self.cmb_header_session.findText(new_session) >= 0:
+                self.cmb_header_session.setCurrentText(new_session)
+            self.cmb_header_session.blockSignals(False)
 
     # ---------------- HOVER & OVERLAY MOUSE EVENTS ----------------
     def on_sidebar_mouse_enter(self):

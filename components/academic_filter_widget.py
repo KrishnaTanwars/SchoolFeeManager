@@ -123,11 +123,23 @@ class AcademicFilterWidget(QFrame):
         # Populate Sessions
         if self.include_session:
             self.cmb_session.clear()
-            sessions = SettingsController.get_academic_sessions()
-            session_names = [s.session_name for s in sessions] if sessions else ["2024-2025", "2025-2026", "2026-2027"]
-            self.cmb_session.addItems(prefix + session_names)
+            from services.session_service import SessionManager
+            sessions = SessionManager.get_all_sessions()
+            curr_s = SessionManager.get_current_session()
+            self.cmb_session.addItems(prefix + sessions)
+            if self.show_all_option and curr_s in sessions:
+                self.cmb_session.setCurrentText(curr_s)
+            SessionManager.register_listener(self.on_global_session_changed)
 
         self.block_all_signals(False)
+
+    def on_global_session_changed(self, new_session: str):
+        if self.include_session and hasattr(self, "cmb_session"):
+            if self.cmb_session.findText(new_session) >= 0:
+                self.cmb_session.blockSignals(True)
+                self.cmb_session.setCurrentText(new_session)
+                self.cmb_session.blockSignals(False)
+                self.on_filter_changed()
 
     def block_all_signals(self, block: bool):
         self.cmb_category.blockSignals(block)

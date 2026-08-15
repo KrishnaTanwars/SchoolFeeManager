@@ -57,10 +57,10 @@ class StudentController:
                     or_(
                         Student.name.ilike(pattern),
                         Student.admission_no.ilike(pattern),
+                        Student.aadhaar_number.ilike(pattern),
                         Student.father_name.ilike(pattern),
                         Student.mother_name.ilike(pattern),
                         Student.mobile.ilike(pattern),
-                        Student.aadhaar_number.ilike(pattern),
                         Student.class_name.ilike(pattern),
                         Student.course.ilike(pattern),
                         Student.branch.ilike(pattern),
@@ -122,33 +122,26 @@ class StudentController:
                 if existing_aadhaar:
                     return False, "This Aadhaar Number is already registered."
 
-            course_val = data.get("course", "").strip()
-            category_val = data.get("course_category", "").strip()
-            if not category_val:
-                category_val = "PG" if ("master" in course_val.lower() or "mpharm" in course_val.lower() or "pg" in course_val.lower()) else "UG"
-
-            from services.session_service import session_manager
             student = Student(
                 admission_no=admission_no,
                 roll_no=data.get("roll_no", "").strip(),
                 name=data.get("name", "").strip(),
                 father_name=data.get("father_name", "").strip(),
                 mother_name=data.get("mother_name", "").strip(),
-                date_of_birth=data.get("date_of_birth"),
-                class_name=data.get("class_name", "").strip() or course_val,
+                class_name=data.get("class_name", "").strip() or data.get("course", "").strip(),
                 section=data.get("section", "").strip(),
-                course=course_val,
-                course_category=category_val,
+                course=data.get("course", "").strip(),
                 branch=data.get("branch", "").strip(),
                 year=data.get("year", "").strip(),
                 semester=data.get("semester", "").strip(),
                 mobile=data.get("mobile", "").strip(),
-                aadhaar_number=aadhaar or None,
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),
-                academic_session=data.get("academic_session", "").strip() or session_manager.get_active_session(),
-                status=data.get("status", "Active"),
-                photo_path=data.get("photo_path")
+                date_of_birth=data.get("date_of_birth"),
+                aadhaar_number=aadhaar or None,
+                photo_path=data.get("photo_path"),
+                academic_session=data.get("academic_session", "2024-2025"),
+                status="Active"
             )
             db.add(student)
 
@@ -192,31 +185,27 @@ class StudentController:
                 if existing_aadhaar:
                     return False, "This Aadhaar Number is already registered."
 
-            course_val = data.get("course", student.course or "").strip()
-            category_val = data.get("course_category", getattr(student, "course_category", None) or "").strip()
-            if not category_val:
-                category_val = "PG" if ("master" in course_val.lower() or "mpharm" in course_val.lower() or "pg" in course_val.lower()) else "UG"
-
             student.roll_no = data.get("roll_no", "").strip()
             student.name = data.get("name", "").strip()
             student.father_name = data.get("father_name", "").strip()
             student.mother_name = data.get("mother_name", "").strip()
-            student.date_of_birth = data.get("date_of_birth")
-            student.class_name = data.get("class_name", "").strip() or course_val
+            student.class_name = data.get("class_name", "").strip() or data.get("course", "").strip()
             student.section = data.get("section", "").strip()
-            student.course = course_val
-            student.course_category = category_val
+            student.course = data.get("course", "").strip()
             student.branch = data.get("branch", "").strip()
             student.year = data.get("year", "").strip()
             student.semester = data.get("semester", "").strip()
             student.mobile = data.get("mobile", "").strip()
+            student.address = data.get("address", "").strip()
+            if "admission_date" in data:
+                student.admission_date = data.get("admission_date")
+            if "date_of_birth" in data:
+                student.date_of_birth = data.get("date_of_birth")
             student.aadhaar_number = aadhaar or None
-            student.address = data.get("address", student.address)
-            student.admission_date = data.get("admission_date", student.admission_date)
-            student.academic_session = data.get("academic_session", student.academic_session)
-            student.status = data.get("status", student.status)
             if "photo_path" in data:
                 student.photo_path = data.get("photo_path")
+            student.academic_session = data.get("academic_session", student.academic_session)
+            student.status = data.get("status", student.status)
 
             # Audit Log
             user = AuthController.get_current_user()
@@ -234,6 +223,46 @@ class StudentController:
             db.rollback()
             logger.error(f"Error updating student {student_id}: {e}", exc_info=True)
             return False, f"Failed to update student: {str(e)}"
+        finally:
+            db.close()
+
+    @staticmethod
+    def delete_students_bulk(student_ids: List[int]) -> tuple[bool, str, int]:
+        """Bulk deletes student records. Returns (success: bool, message: str, count: int)."""
+        if not student_ids:
+            return False, "No student IDs provided for bulk deletion.", 0
+        db = get_db()
+        try:
+            students = db.query(Student).filter(Student.id.in_(student_ids)).all()
+            count = len(students)
+            if count == 0:
+                return False, "No matching student records found for deletion.", 0
+
+            for st in students:
+                db.delete(st)
+
+            db.commit()
+
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Students Deleted",
+                module="Student Master",
+                details=f"Successfully bulk deleted {count} student records (IDs: {student_ids})",
+                status="Success"
+            )
+            logger.info(f"Bulk deleted {count} students.")
+            return True, f"Successfully deleted {count} selected student(s).", count
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error bulk deleting students: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Student Delete Failed",
+                module="Student Master",
+                details=f"Failed to bulk delete {len(student_ids)} students: {str(e)}",
+                status="Failed"
+            )
+            return False, f"Cannot delete selected student(s) with associated fee receipts. {str(e)}", 0
         finally:
             db.close()
 
@@ -273,54 +302,6 @@ class StudentController:
                 status="Failed"
             )
             return False, f"Cannot delete student with associated receipt history. {str(e)}"
-        finally:
-            db.close()
-
-    @staticmethod
-    def delete_students_bulk(student_ids: List[int]) -> tuple[bool, str, int]:
-        """
-        Deletes multiple students in a single database transaction.
-        Returns (success: bool, message: str, deleted_count: int).
-        """
-        if not student_ids:
-            return False, "No student IDs provided for bulk deletion.", 0
-
-        db = get_db()
-        try:
-            students = db.query(Student).filter(Student.id.in_(student_ids)).all()
-            if not students:
-                return False, "No matching student records found.", 0
-
-            count = len(students)
-            names_summary = ", ".join([f"'{s.name}' ({s.admission_no})" for s in students[:5]])
-            if count > 5:
-                names_summary += f" and {count - 5} more"
-
-            for s in students:
-                db.delete(s)
-            db.commit()
-
-            from services.security_service import SecurityService
-            SecurityService.log_audit(
-                action="Bulk Students Deleted",
-                module="Student Master",
-                details=f"Deleted {count} students: {names_summary}",
-                status="Success"
-            )
-
-            logger.info(f"Bulk deleted {count} students.")
-            return True, f"Successfully deleted {count} student record(s).", count
-        except Exception as e:
-            db.rollback()
-            logger.error(f"Error bulk deleting students: {e}", exc_info=True)
-            from services.security_service import SecurityService
-            SecurityService.log_audit(
-                action="Bulk Student Delete Failed",
-                module="Student Master",
-                details=f"Failed to bulk delete {len(student_ids)} students: {str(e)}",
-                status="Failed"
-            )
-            return False, f"Cannot delete one or more selected students (they may have associated receipt records). {str(e)}", 0
         finally:
             db.close()
 
@@ -407,7 +388,7 @@ class StudentController:
                 if not headers:
                     return {"error": "CSV file is empty."}
 
-                from services.session_service import session_manager
+                # Normalize headers
                 hdr_map = {}
                 for idx, h in enumerate(headers):
                     clean_h = h.strip().lower().replace(" ", "_").replace("'", "")
@@ -479,7 +460,7 @@ class StudentController:
                             mobile=mobile or "0000000000",
                             address=address,
                             admission_date=adm_date,
-                            academic_session=session_val or session_manager.get_active_session(),
+                            academic_session=session_val or "2024-2025",
                             status=status_val if status_val in ("Active", "Inactive") else "Active"
                         )
                         db.add(st)

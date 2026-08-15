@@ -15,6 +15,7 @@ from config.database import init_db, get_db, run_migrations
 from models.student import Student
 from models.receipt import Receipt
 from controllers.student_controller import StudentController
+from controllers.fee_controller import FeeController
 from controllers.receipt_controller import ReceiptController
 from controllers.fee_controller import FeeController
 from services.export_service import ExportService

@@ -2,7 +2,7 @@
 ; Professional Enterprise Windows Installer with License Activation Guard
 
 #ifndef MyAppVersion
-#define MyAppVersion "2.4.0"
+#define MyAppVersion "2.6.0"
 #endif
 
 #define MyAppName "School Fee ERP"
@@ -27,7 +27,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=License.txt
 OutputDir=dist_installer
-OutputBaseFilename=SchoolFeeERP_Setup
+OutputBaseFilename=SchoolFeeERP_Setup_v2.6.0
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern

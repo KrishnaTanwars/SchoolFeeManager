@@ -4,253 +4,151 @@ Receipt Print Preview & Comprehensive Action Dialog (Print, Export PDF, Admin De
 
 from typing import Optional
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QMessageBox, QTextBrowser, QFileDialog
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QMessageBox, QTextEdit, QFileDialog
 )
 from PySide6.QtCore import Qt
 from models.receipt import Receipt
 from services.pdf_service import PDFService
 from services.print_service import PrintService
 from controllers.receipt_controller import ReceiptController
-from controllers.settings_controller import SettingsController
 from dialogs.admin_auth_dialog import AdminAuthDialog
 from utils.logger import logger
 
 
+from controllers.settings_controller import SettingsController
+
 def generate_receipt_html(receipt: Receipt) -> str:
-    """Generates professional HTML template for receipt preview matching printable PDF document."""
     school_info = SettingsController.get_school_info()
-    school_name = school_info.school_name if school_info else "DPS International Public School"
-    school_addr = school_info.address if school_info else "Plot 12, Sector 5, RK Puram, New Delhi - 110022"
-    school_phone = school_info.phone if school_info else "+91 98765 43210, 011-26123456"
-    school_email = school_info.email if school_info else "accounts@dpsschool.edu.in"
+    school_name = getattr(school_info, "name", None) or "EduLedger Institute of Technology & Management"
+    school_addr = getattr(school_info, "address", None) or "Main Campus, Knowledge Park, Education Hub"
+    school_city = getattr(school_info, "city", None) or "New Delhi"
+    school_state = getattr(school_info, "state", None) or "Delhi"
+    school_pin = getattr(school_info, "pin_code", None) or "110001"
+    school_phone = getattr(school_info, "phone", None) or "011-23456789"
 
-    student = getattr(receipt, "student", None)
-    st_name = getattr(student, "name", "N/A") if student else "N/A"
-    adm_no = getattr(student, "admission_no", "N/A") if student else "N/A"
-    father_name = getattr(student, "father_name", "N/A") if student else "N/A"
-
-    course_str = getattr(receipt, "course", None) or (getattr(student, "course", None) if student else None) or "General"
-    branch_str = getattr(receipt, "branch", None) or (getattr(student, "branch", None) if student else None) or ""
-    crs_br = f"{course_str}" + (f" ({branch_str})" if branch_str else "")
-
-    year_str = getattr(receipt, "academic_year", None) or (getattr(student, "year", None) if student else None) or "N/A"
-    sem_str = getattr(receipt, "semester", None) or (getattr(student, "semester", None) if student else None) or "N/A"
-    yr_sem = f"{year_str} / {sem_str}"
-
-    class_name = (getattr(student, "class_name", "") if student else "") or course_str
-    section = (getattr(student, "section", "") if student else "") or "A"
-    class_sec = f"{class_name} ({section})" if section else class_name
-
-    rec_date = receipt.receipt_date.strftime('%d-%m-%Y') if receipt.receipt_date else "N/A"
+    st = receipt.student
     paid_amt = getattr(receipt, 'paid_amount', receipt.total_amount) or receipt.total_amount
     due_amt = getattr(receipt, 'due_amount', 0.0) or 0.0
 
-    # Fee Head Particulars Table Rows
     fee_rows_html = ""
     if receipt.items:
-        for idx, item in enumerate(receipt.items, 1):
-            bg_color = "#f8fafc" if idx % 2 == 1 else "#ffffff"
+        for idx, item in enumerate(receipt.items, start=1):
             cat_name = getattr(item, "category_name", "Fee Head")
-            amt_val = getattr(item, "amount", 0.0)
             fee_rows_html += f"""
-            <tr style="background-color: {bg_color};">
-                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center;">{idx}</td>
-                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 700; color: #0f172a;">{cat_name}</td>
-                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">₹ {amt_val:,.2f}</td>
+            <tr>
+                <td style="text-align: center; border: 1px solid #cbd5e1; padding: 4px 6px;">{idx}</td>
+                <td style="border: 1px solid #cbd5e1; padding: 4px 6px;">{cat_name}</td>
+                <td style="text-align: right; border: 1px solid #cbd5e1; padding: 4px 6px;">₹ {item.amount:,.2f}</td>
             </tr>
             """
     else:
         fee_rows_html = f"""
         <tr>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center;">1</td>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 700;">Tuition Fee</td>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">₹ {receipt.total_amount:,.2f}</td>
+            <td style="text-align: center; border: 1px solid #cbd5e1; padding: 4px 6px;">1</td>
+            <td style="border: 1px solid #cbd5e1; padding: 4px 6px;">Tuition & Academic Fees</td>
+            <td style="text-align: right; border: 1px solid #cbd5e1; padding: 4px 6px;">₹ {receipt.total_amount:,.2f}</td>
         </tr>
         """
 
-    # Summary Rows
-    summary_rows = f"""
-    <tr style="background-color: #f1f5f9; font-weight: bold;">
-        <td colspan="2" style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right;">Total Calculated Fee:</td>
-        <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; color: #0f172a;">₹ {receipt.subtotal:,.2f}</td>
-    </tr>
-    """
-    if receipt.discount_amount and receipt.discount_amount > 0:
-        summary_rows += f"""
-        <tr style="background-color: #f1f5f9; color: #15803d;">
-            <td colspan="2" style="padding: 6px 10px; border: 1px solid #cbd5e1; text-align: right;">Discount (-):</td>
-            <td style="padding: 6px 10px; border: 1px solid #cbd5e1; text-align: right;">- ₹ {receipt.discount_amount:,.2f}</td>
-        </tr>
-        """
-    if receipt.fine_amount and receipt.fine_amount > 0:
-        summary_rows += f"""
-        <tr style="background-color: #f1f5f9; color: #b91c1c;">
-            <td colspan="2" style="padding: 6px 10px; border: 1px solid #cbd5e1; text-align: right;">Fine / Penalty (+):</td>
-            <td style="padding: 6px 10px; border: 1px solid #cbd5e1; text-align: right;">+ ₹ {receipt.fine_amount:,.2f}</td>
-        </tr>
-        """
-    summary_rows += f"""
-    <tr style="background-color: #e2e8f0; font-weight: bold; font-size: 12px;">
-        <td colspan="2" style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right;">ACTUAL PAID AMOUNT:</td>
-        <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; color: #1e3a8a;">₹ {paid_amt:,.2f}</td>
-    </tr>
-    """
-    if due_amt > 0:
-        summary_rows += f"""
-        <tr style="background-color: #fef2f2; font-weight: bold; color: #dc2626;">
-            <td colspan="2" style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right;">OUTSTANDING DUE:</td>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right;">₹ {due_amt:,.2f}</td>
-        </tr>
-        """
-    else:
-        summary_rows += f"""
-        <tr style="background-color: #f0fdf4; font-weight: bold; color: #166534;">
-            <td colspan="2" style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right;">OUTSTANDING DUE:</td>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right;">₹ 0.00 (PAID IN FULL)</td>
-        </tr>
-        """
-
-    # Payment Details Section
-    pm_upper = receipt.payment_mode.upper() if receipt.payment_mode else "CASH"
-    payment_info_str = f"<b>Payment Mode:</b> {receipt.payment_mode}"
-    if "UPI" in pm_upper or "QR" in pm_upper:
-        if getattr(receipt, 'utr_number', None):
-            payment_info_str += f" &nbsp;|&nbsp; <b>UTR No:</b> {receipt.utr_number}"
-        if getattr(receipt, 'bank_name', None):
-            payment_info_str += f" &nbsp;|&nbsp; <b>Bank:</b> {receipt.bank_name}"
-    elif "CHEQUE" in pm_upper or "DD" in pm_upper or "DEMAND" in pm_upper:
-        if getattr(receipt, 'cheque_number', None):
-            payment_info_str += f" &nbsp;|&nbsp; <b>Cheque/DD No:</b> {receipt.cheque_number}"
-        if getattr(receipt, 'cheque_date', None) and receipt.cheque_date:
-            payment_info_str += f" &nbsp;|&nbsp; <b>Date:</b> {receipt.cheque_date.strftime('%d-%m-%Y')}"
-        if getattr(receipt, 'bank_name', None):
-            payment_info_str += f" &nbsp;|&nbsp; <b>Bank:</b> {receipt.bank_name}"
-    elif "NET" in pm_upper or "NEFT" in pm_upper or "CARD" in pm_upper:
-        if getattr(receipt, 'utr_number', None) or receipt.reference_no:
-            payment_info_str += f" &nbsp;|&nbsp; <b>Txn/Ref No:</b> {getattr(receipt, 'utr_number', None) or receipt.reference_no}"
-        if getattr(receipt, 'bank_name', None):
-            payment_info_str += f" &nbsp;|&nbsp; <b>Bank:</b> {receipt.bank_name}"
-    else:
-        if receipt.reference_no:
-            payment_info_str += f" &nbsp;|&nbsp; <b>Ref No:</b> {receipt.reference_no}"
-
-    if receipt.remarks:
-        payment_info_str += f" &nbsp;|&nbsp; <b>Remarks:</b> {receipt.remarks}"
+    payment_details_str = f"<b>Mode:</b> {receipt.payment_mode}"
+    if receipt.reference_no:
+        payment_details_str += f" | <b>Ref / Txn No:</b> {receipt.reference_no}"
 
     html = f"""
+    <!DOCTYPE html>
     <html>
     <head>
-        <style>
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; margin: 0; padding: 4px; background-color: #f1f5f9; }}
-            .receipt-card {{ border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }}
-            .header-table {{ width: 100%; border-bottom: 2px solid #1e3a8a; padding-bottom: 4px; margin-bottom: 6px; }}
-            .school-title {{ color: #1e3a8a; font-size: 17px; font-weight: bold; margin: 0; text-align: center; }}
-            .school-subtitle {{ color: #475569; font-size: 10.5px; margin-top: 2px; text-align: center; }}
-            .badge-container {{ text-align: center; margin: 6px 0 8px 0; }}
-            .badge {{ background-color: #1e3a8a; color: #ffffff; padding: 4px 14px; font-weight: bold; font-size: 11px; border-radius: 4px; display: inline-block; letter-spacing: 1px; }}
-            .info-table {{ width: 100%; border-collapse: collapse; background-color: #f8fafc; border: 1px solid #cbd5e1; margin-bottom: 8px; font-size: 10.5px; }}
-            .info-table td {{ padding: 3px 6px; border: 1px solid #e2e8f0; }}
-            .info-label {{ font-weight: bold; color: #334155; width: 18%; }}
-            .info-val {{ color: #0f172a; width: 32%; }}
-            .fee-table {{ width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10.5px; border: 1px solid #cbd5e1; }}
-            .fee-table th {{ background-color: #1e3a8a; color: #ffffff; padding: 5px 6px; font-weight: bold; text-align: left; }}
-            .words-box {{ background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 5px 8px; font-size: 10.5px; border-radius: 4px; margin-bottom: 8px; }}
-            .payment-box {{ background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 5px 8px; font-size: 10.5px; border-radius: 4px; margin-bottom: 10px; color: #334155; }}
-            .sig-table {{ width: 100%; margin-top: 14px; font-size: 10.5px; color: #475569; }}
-        </style>
+    <style>
+        body {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #0f172a; margin: 0; padding: 8px; }}
+        .header {{ text-align: center; margin-bottom: 6px; border-bottom: 2px solid #1e3a8a; padding-bottom: 4px; }}
+        .school-name {{ font-size: 16px; font-weight: 800; color: #1e3a8a; margin: 0; text-transform: uppercase; }}
+        .school-sub {{ font-size: 10px; color: #475569; margin-top: 2px; }}
+        .badge-row {{ text-align: center; margin: 6px 0; }}
+        .badge {{ background-color: #1e3a8a; color: #ffffff; padding: 3px 12px; font-weight: 800; font-size: 11px; border-radius: 3px; display: inline-block; }}
+        .info-table {{ width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 10.5px; }}
+        .info-table td {{ padding: 3px 4px; vertical-align: top; }}
+        .info-label {{ font-weight: 700; color: #334155; width: 18%; }}
+        .info-val {{ color: #0f172a; width: 32%; }}
+        .fee-table {{ width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 10px; border: 1px solid #cbd5e1; }}
+        .fee-table th {{ background-color: #1e3a8a; color: #ffffff; padding: 4px 6px; font-weight: bold; text-align: left; border: 1px solid #1e3a8a; }}
+        .summary-box {{ background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; margin-bottom: 6px; font-size: 10.5px; }}
+        .footer {{ text-align: right; margin-top: 15px; font-size: 10px; font-weight: 700; color: #1e3a8a; }}
+    </style>
     </head>
     <body>
-        <div class="receipt-card">
-            <table class="header-table">
+        <div class="header">
+            <div class="school-name">{school_name}</div>
+            <div class="school-sub">{school_addr}, {school_city}, {school_state} - {school_pin} | Ph: {school_phone}</div>
+        </div>
+
+        <div class="badge-row">
+            <span class="badge">FEE PAYMENT RECEIPT</span>
+        </div>
+
+        <table class="info-table">
+            <tr>
+                <td class="info-label">Receipt No:</td>
+                <td class="info-val"><b>{receipt.receipt_no}</b></td>
+                <td class="info-label">Receipt Date:</td>
+                <td class="info-val">{receipt.receipt_date.strftime('%d-%m-%Y')}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Adm / Enroll No:</td>
+                <td class="info-val"><b>{st.admission_no}</b></td>
+                <td class="info-label">Academic Session:</td>
+                <td class="info-val">{receipt.academic_session}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Student Name:</td>
+                <td class="info-val"><b>{st.name}</b></td>
+                <td class="info-label">Father's Name:</td>
+                <td class="info-val">{st.father_name}</td>
+            </tr>
+            <tr>
+                <td class="info-label">Course / Program:</td>
+                <td class="info-val">{getattr(st, 'course', None) or 'General'}</td>
+                <td class="info-label">Year / Semester:</td>
+                <td class="info-val">{getattr(st, 'year', None) or 'N/A'} / {getattr(st, 'semester', None) or 'N/A'}</td>
+            </tr>
+        </table>
+
+        <table class="fee-table">
+            <thead>
                 <tr>
-                    <td align="center">
-                        <div class="school-title">{school_name}</div>
-                        <div class="school-subtitle">{school_addr}<br/>Ph: {school_phone} | Email: {school_email}</div>
-                    </td>
+                    <th style="width: 8%; text-align: center;">#</th>
+                    <th style="width: 65%;">Fee Head / Particular Description</th>
+                    <th style="width: 27%; text-align: right;">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {fee_rows_html}
+            </tbody>
+        </table>
+
+        <div class="summary-box">
+            <table style="width: 100%; font-size: 10.5px;">
+                <tr>
+                    <td><b>Total Calculated Fee:</b> ₹ {receipt.total_amount:,.2f}</td>
+                    <td style="text-align: right;"><b>Total Amount Paid:</b> <span style="color: #166534; font-weight: 800;">₹ {paid_amt:,.2f}</span></td>
+                </tr>
+                <tr>
+                    <td><b>Amount in Words:</b> {receipt.amount_in_words}</td>
+                    <td style="text-align: right;"><b>Balance Due:</b> <span style="color: {'#dc2626' if due_amt > 0 else '#166534'}; font-weight: 800;">₹ {due_amt:,.2f}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding-top: 4px;">{payment_details_str}</td>
                 </tr>
             </table>
+        </div>
 
-            <div class="badge-container">
-                <span class="badge">FEE PAYMENT RECEIPT</span>
-            </div>
-
-            <table class="info-table">
-                <tr>
-                    <td class="info-label">Receipt No:</td>
-                    <td class="info-val" style="font-weight: bold; color: #1e3a8a;">{receipt.receipt_no}</td>
-                    <td class="info-label">Receipt Date:</td>
-                    <td class="info-val">{rec_date}</td>
-                </tr>
-                <tr>
-                    <td class="info-label">Admission / Enrollment No:</td>
-                    <td class="info-val" style="font-weight: bold;">{adm_no}</td>
-                    <td class="info-label">Academic Session:</td>
-                    <td class="info-val">{receipt.academic_session}</td>
-                </tr>
-                <tr>
-                    <td class="info-label">Student Name:</td>
-                    <td class="info-val" style="font-weight: bold; color: #0f172a;">{st_name}</td>
-                    <td class="info-label">Course / Branch:</td>
-                    <td class="info-val">{crs_br}</td>
-                </tr>
-                <tr>
-                    <td class="info-label">Father's Name:</td>
-                    <td class="info-val">{father_name}</td>
-                    <td class="info-label">Year / Semester:</td>
-                    <td class="info-val">{yr_sem}</td>
-                </tr>
-                <tr>
-                    <td class="info-label">Class / Section:</td>
-                    <td class="info-val">{class_sec}</td>
-                    <td class="info-label">Status:</td>
-                    <td class="info-val" style="font-weight: bold; color: #15803d;">{receipt.status}</td>
-                </tr>
-            </table>
-
-            <table class="fee-table">
-                <thead>
-                    <tr>
-                        <th style="width: 10%; text-align: center;">S.No</th>
-                        <th style="width: 65%;">Fee Head / Particular Description</th>
-                        <th style="width: 25%; text-align: right;">Amount (₹)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {fee_rows_html}
-                </tbody>
-                <tfoot>
-                    {summary_rows}
-                </tfoot>
-            </table>
-
-            <div class="words-box">
-                <b>Amount in Words:</b> {receipt.amount_in_words}
-            </div>
-
-            <div class="payment-box">
-                {payment_info_str}
-            </div>
-
-            <table class="sig-table">
-                <tr>
-                    <td align="left" style="width: 50%;">
-                        <br/><br/>
-                        _________________________________<br/>
-                        <b>Student / Parent Signature</b>
-                    </td>
-                    <td align="right" style="width: 50%;">
-                        <br/><br/>
-                        _________________________________<br/>
-                        <b>Authorized Accounts Signatory</b>
-                    </td>
-                </tr>
-            </table>
+        <div class="footer">
+            <br>
+            Authorized Signatory / Cashier Stamp
         </div>
     </body>
     </html>
     """
     return html
-
 
 class ReceiptPreviewDialog(QDialog):
     def __init__(self, parent=None, receipt: Optional[Receipt] = None, pdf_path: Optional[str] = None):
@@ -258,8 +156,8 @@ class ReceiptPreviewDialog(QDialog):
         self.receipt = receipt
         self.pdf_path = pdf_path
         self.setWindowTitle(f"Receipt Details & Actions - {receipt.receipt_no if receipt else 'Document'}")
-        self.setMinimumSize(680, 520)
-        self.resize(780, 680)
+        self.setMinimumSize(540, 520)
+        self.resize(680, 620)
 
         # Ensure PDF is generated
         if not self.pdf_path and self.receipt:
@@ -270,25 +168,16 @@ class ReceiptPreviewDialog(QDialog):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(12)
+        layout.setSpacing(10)
 
         hdr_label = QLabel(f"Receipt No: <b>{self.receipt.receipt_no if self.receipt else 'Preview'}</b>")
         hdr_label.setStyleSheet("font-size: 16px; color: #1e3a8a; font-weight: bold;")
         layout.addWidget(hdr_label)
 
-        # Professional Interactive HTML Document Viewer
         if self.receipt:
-            txt_view = QTextBrowser()
+            txt_view = QTextEdit()
             txt_view.setReadOnly(True)
-            txt_view.setStyleSheet("""
-                QTextBrowser {
-                    background-color: #f8fafc;
-                    border: 1px solid #cbd5e1;
-                    border-radius: 6px;
-                }
-            """)
-            html_content = generate_receipt_html(self.receipt)
-            txt_view.setHtml(html_content)
+            txt_view.setHtml(generate_receipt_html(self.receipt))
             layout.addWidget(txt_view)
 
         # Action Buttons Toolbar
@@ -301,7 +190,13 @@ class ReceiptPreviewDialog(QDialog):
         self.btn_print.setCursor(Qt.PointingHandCursor)
         self.btn_print.clicked.connect(self.print_receipt)
 
-        self.btn_pdf_export = QPushButton("📄 Export PDF")
+        self.btn_open_pdf = QPushButton("📂 Open PDF")
+        self.btn_open_pdf.setFixedHeight(34)
+        self.btn_open_pdf.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; padding: 0 14px;")
+        self.btn_open_pdf.setCursor(Qt.PointingHandCursor)
+        self.btn_open_pdf.clicked.connect(self.open_pdf)
+
+        self.btn_pdf_export = QPushButton("📄 Save PDF As...")
         self.btn_pdf_export.setFixedHeight(34)
         self.btn_pdf_export.setStyleSheet("background-color: #059669; color: #ffffff; font-weight: bold; border-radius: 4px; border: none; padding: 0 14px;")
         self.btn_pdf_export.setCursor(Qt.PointingHandCursor)
@@ -320,12 +215,26 @@ class ReceiptPreviewDialog(QDialog):
         self.btn_close.clicked.connect(self.accept)
 
         btn_layout.addWidget(self.btn_print)
+        btn_layout.addWidget(self.btn_open_pdf)
         btn_layout.addWidget(self.btn_pdf_export)
         btn_layout.addWidget(self.btn_delete)
         btn_layout.addStretch()
         btn_layout.addWidget(self.btn_close)
 
         layout.addLayout(btn_layout)
+
+    def open_pdf(self):
+        if not self.pdf_path and self.receipt:
+            self.pdf_path = PDFService.generate_receipt_pdf(self.receipt)
+
+        if self.pdf_path and Path(self.pdf_path).exists():
+            import os
+            try:
+                os.startfile(self.pdf_path)
+            except Exception as e:
+                QMessageBox.critical(self, "Error Opening PDF", f"Could not open PDF file:\n{str(e)}")
+        else:
+            QMessageBox.warning(self, "File Not Found", "Generated PDF file was not found.")
 
     def print_receipt(self):
         if self.pdf_path:

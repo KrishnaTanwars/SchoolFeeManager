@@ -1,6 +1,5 @@
 """
 Professional ERP Dashboard View with Responsive KPI Cards & Modern Analytics.
-Expanded Recent Fee Receipts Ledger layout without Recent System Activity widget.
 """
 
 from PySide6.QtWidgets import (
@@ -8,14 +7,11 @@ from PySide6.QtWidgets import (
     QTableWidget, QTableWidgetItem, QHeaderView, QGroupBox, QGridLayout, QScrollArea
 )
 from PySide6.QtCore import Qt, Signal
-
 from controllers.report_controller import ReportController
 from controllers.receipt_controller import ReceiptController
 from utils.helpers import format_currency, format_date
 from utils.table_delegate import apply_responsive_table_formatting
 from dialogs.receipt_preview_dialog import ReceiptPreviewDialog
-from utils.logger import logger
-
 
 class DashboardView(QWidget):
     navigate_requested = Signal(str)
@@ -35,7 +31,7 @@ class DashboardView(QWidget):
         container = QWidget()
         layout = QVBoxLayout(container)
         layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(16)
+        layout.setSpacing(18)
 
         # Header Title Banner
         hdr_layout = QHBoxLayout()
@@ -46,7 +42,6 @@ class DashboardView(QWidget):
 
         self.btn_refresh = QPushButton("🔄  Refresh Data")
         self.btn_refresh.setProperty("class", "SecondaryBtn")
-        self.btn_refresh.setCursor(Qt.PointingHandCursor)
         self.btn_refresh.clicked.connect(self.refresh_dashboard)
         hdr_layout.addWidget(self.btn_refresh)
 
@@ -88,13 +83,12 @@ class DashboardView(QWidget):
 
         layout.addWidget(actions_group)
 
-        # Main Workspace Content: Expanded Recent Receipts Ledger (Left) + Student Statistics (Right)
-        main_split = QHBoxLayout()
-        main_split.setSpacing(16)
+        # Lower Split: Recent Receipts Ledger (Expanded) + Student Analytics (Right)
+        bottom_split = QHBoxLayout()
+        bottom_split.setSpacing(15)
 
-        # Left Panel: Expanded Vertically Recent Fee Receipts Ledger
+        # Recent Receipts Table Section
         recent_group = QGroupBox("Recent Fee Receipts Ledger")
-        recent_group.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         recent_layout = QVBoxLayout(recent_group)
         recent_layout.setContentsMargins(12, 12, 12, 12)
 
@@ -103,28 +97,23 @@ class DashboardView(QWidget):
         self.table_recent.setHorizontalHeaderLabels([
             "Receipt No", "Date", "Student Name", "Course / Branch", "Paid (₹)", "Action"
         ])
-        self.table_recent.setMinimumHeight(450)
-
+        
         header = self.table_recent.horizontalHeader()
         for col in range(5):
             header.setSectionResizeMode(col, QHeaderView.Stretch)
         header.setSectionResizeMode(5, QHeaderView.Fixed)
-        self.table_recent.setColumnWidth(5, 140)
+        self.table_recent.setColumnWidth(5, 160)
 
         self.table_recent.setAlternatingRowColors(True)
         apply_responsive_table_formatting(self.table_recent)
 
         recent_layout.addWidget(self.table_recent)
-        main_split.addWidget(recent_group, stretch=3)
+        bottom_split.addWidget(recent_group, stretch=3)
 
-        # Right Panel: Student Statistics Analytics
-        right_vbox = QVBoxLayout()
-        right_vbox.setSpacing(16)
-
+        # Student Analytics by Course Section
         analytics_group = QGroupBox("Student Statistics by Course")
-        analytics_group.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         analytics_layout = QVBoxLayout(analytics_group)
-        analytics_layout.setContentsMargins(10, 10, 10, 10)
+        analytics_layout.setContentsMargins(12, 12, 12, 12)
 
         self.table_analytics = QTableWidget()
         self.table_analytics.setColumnCount(2)
@@ -134,10 +123,9 @@ class DashboardView(QWidget):
         apply_responsive_table_formatting(self.table_analytics)
 
         analytics_layout.addWidget(self.table_analytics)
-        right_vbox.addWidget(analytics_group, stretch=1)
+        bottom_split.addWidget(analytics_group, stretch=1)
 
-        main_split.addLayout(right_vbox, stretch=1)
-        layout.addLayout(main_split, stretch=1)
+        layout.addLayout(bottom_split, stretch=1)
 
         scroll.setWidget(container)
         main_vbox.addWidget(scroll)
@@ -146,8 +134,8 @@ class DashboardView(QWidget):
 
     def refresh_dashboard(self):
         try:
-            # Expanded Recent Receipts (top 25)
-            recent_receipts = ReceiptController.get_all_receipts()[:25]
+            # Recent Receipts
+            recent_receipts = ReceiptController.get_all_receipts()[:15]
             self.table_recent.setRowCount(len(recent_receipts))
 
             for row_idx, r in enumerate(recent_receipts):
@@ -156,25 +144,25 @@ class DashboardView(QWidget):
                 self.table_recent.setItem(row_idx, 2, QTableWidgetItem(r.student.name if r.student else "N/A"))
                 crs_br = f"{r.student.course or 'General'}" + (f" ({r.student.branch})" if (r.student and getattr(r.student, "branch", None)) else "") if r.student else "N/A"
                 self.table_recent.setItem(row_idx, 3, QTableWidgetItem(crs_br))
-                paid_val = getattr(r, 'paid_amount', r.total_amount) or r.total_amount
-                self.table_recent.setItem(row_idx, 4, QTableWidgetItem(format_currency(paid_val)))
+                self.table_recent.setItem(row_idx, 4, QTableWidgetItem(format_currency(r.total_amount)))
 
                 action_widget = QWidget()
                 act_layout = QHBoxLayout(action_widget)
-                act_layout.setContentsMargins(4, 2, 4, 2)
+                act_layout.setContentsMargins(6, 4, 6, 4)
                 act_layout.setAlignment(Qt.AlignCenter)
 
                 btn_view = QPushButton("👁  View / Print")
-                btn_view.setFixedHeight(28)
+                btn_view.setFixedHeight(30)
+                btn_view.setMinimumWidth(130)
                 btn_view.setStyleSheet("""
                     QPushButton {
                         background-color: #1e3a8a;
                         color: #ffffff;
-                        font-size: 11px;
+                        font-size: 12px;
                         font-weight: bold;
-                        border-radius: 4px;
+                        border-radius: 5px;
                         border: none;
-                        padding: 2px 8px;
+                        padding: 4px 10px;
                     }
                     QPushButton:hover {
                         background-color: #2563eb;
@@ -194,10 +182,9 @@ class DashboardView(QWidget):
             for r_idx, stat in enumerate(course_stats):
                 self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat["course_name"]))
                 self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(f"{stat['student_count']} Students"))
-        except Exception as e:
-            logger.error(f"Error refreshing dashboard: {e}", exc_info=True)
+        except Exception:
+            pass
 
     def view_receipt(self, receipt):
-        fresh_rec = ReceiptController.get_receipt_by_id(receipt.id) or receipt
-        dlg = ReceiptPreviewDialog(self, fresh_rec)
+        dlg = ReceiptPreviewDialog(self, receipt)
         dlg.exec()
