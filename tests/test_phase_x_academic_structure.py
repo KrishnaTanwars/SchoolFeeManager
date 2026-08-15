@@ -45,13 +45,13 @@ class TestPhaseXAcademicStructure(unittest.TestCase):
         self.assertIn("Finance", branches)
 
         years = AcademicController.get_years()
-        self.assertIn("1st Year", years)
-        self.assertIn("2nd Year", years)
+        self.assertIn("1st", years)
+        self.assertIn("2nd", years)
 
         semesters = AcademicController.get_semesters()
-        self.assertIn("Semester 1", semesters)
-        self.assertIn("Semester 3", semesters)
-        self.assertIn("Semester 8", semesters)
+        self.assertIn("1st Sem", semesters)
+        self.assertIn("3rd Sem", semesters)
+        self.assertIn("8th Sem", semesters)
 
     def test_02_student_crud_with_academic_fields(self):
         """Verify Student creation and updating with Course, Branch, Year, and Semester."""

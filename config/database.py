@@ -93,6 +93,8 @@ def run_migrations():
                 cursor.execute("ALTER TABLE students ADD COLUMN date_of_birth DATE;")
             if "aadhaar_number" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN aadhaar_number VARCHAR(12);")
+            if "photo_path" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN photo_path VARCHAR(255);")
 
             # Check fee_categories columns and indexes
             cursor.execute("PRAGMA table_info(fee_categories);")

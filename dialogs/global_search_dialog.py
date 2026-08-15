@@ -122,7 +122,6 @@ class GlobalSearchDialog(QDialog):
                 sq = sq.filter(
                     (Student.name.ilike(pattern)) |
                     (Student.admission_no.ilike(pattern)) |
-                    (Student.roll_no.ilike(pattern)) |
                     (Student.mobile.ilike(pattern)) |
                     (Student.father_name.ilike(pattern)) |
                     (Student.class_name.ilike(pattern)) |

@@ -55,16 +55,16 @@ def generate_receipt_html(receipt: Receipt) -> str:
             fee_rows_html += f"""
             <tr style="background-color: {bg_color};">
                 <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center;">{idx}</td>
-                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 500;">{cat_name}</td>
-                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600;">₹ {amt_val:,.2f}</td>
+                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 700; color: #0f172a;">{cat_name}</td>
+                <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">₹ {amt_val:,.2f}</td>
             </tr>
             """
     else:
         fee_rows_html = f"""
         <tr>
             <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center;">1</td>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1;">Tuition Fee</td>
-            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 600;">₹ {receipt.total_amount:,.2f}</td>
+            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 700;">Tuition Fee</td>
+            <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; font-weight: 700;">₹ {receipt.total_amount:,.2f}</td>
         </tr>
         """
 
@@ -182,7 +182,7 @@ def generate_receipt_html(receipt: Receipt) -> str:
                     <td class="info-val">{rec_date}</td>
                 </tr>
                 <tr>
-                    <td class="info-label">Admission No:</td>
+                    <td class="info-label">Admission / Enrollment No:</td>
                     <td class="info-val" style="font-weight: bold;">{adm_no}</td>
                     <td class="info-label">Academic Session:</td>
                     <td class="info-val">{receipt.academic_session}</td>

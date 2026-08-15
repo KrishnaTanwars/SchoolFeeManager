@@ -20,13 +20,14 @@ def setup_db_session():
         # Clear test receipts and students
         from models.receipt import Receipt, ReceiptItem
         from models.student import Student
-        test_students = db.query(Student).filter(Student.admission_no.like("TEST-%")).all()
-        for ts in test_students:
-            recs = db.query(Receipt).filter(Receipt.student_id == ts.id).all()
-            for r in recs:
-                db.query(ReceiptItem).filter(ReceiptItem.receipt_id == r.id).delete()
-                db.delete(r)
-            db.delete(ts)
+        from sqlalchemy import or_
+        recs = db.query(Receipt).all()
+        for r in recs:
+            db.query(ReceiptItem).filter(ReceiptItem.receipt_id == r.id).delete()
+            db.delete(r)
+        st_list = db.query(Student).filter(or_(Student.admission_no.like("TEST%"), Student.admission_no.like("DOB%"), Student.mobile == "9876543210")).all()
+        for s in st_list:
+            db.delete(s)
         db.commit()
 
         # Clear or reset sessions

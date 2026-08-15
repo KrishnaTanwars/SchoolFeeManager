@@ -7,6 +7,7 @@ import pytest
 from datetime import date
 from config.database import init_db
 from models.student import Student
+from models.fee_category import FeeCategory
 from controllers.student_controller import StudentController
 from controllers.receipt_controller import ReceiptController
 from dialogs.receipt_preview_dialog import ReceiptPreviewDialog, generate_receipt_html
@@ -25,22 +26,38 @@ def setup_test_db():
 
 
 def create_sample_student_and_receipt(admission_no="REC-TEST-999", payment_mode="Cash", extra_fields=None):
+    from config.database import get_db
+    from models.receipt import Receipt, ReceiptItem
+    db = get_db()
+    try:
+        ex = db.query(Student).filter(Student.admission_no == admission_no).first()
+        if ex:
+            recs = db.query(Receipt).filter(Receipt.student_id == ex.id).all()
+            for r in recs:
+                db.query(ReceiptItem).filter(ReceiptItem.receipt_id == r.id).delete()
+                db.delete(r)
+            db.delete(ex)
+            db.commit()
+    finally:
+        db.close()
+
+    import random
+    rand_mob = f"987{random.randint(1000000, 9999999)}"
+
     s_data = {
         "admission_no": admission_no,
         "name": "Test Student Professional",
         "father_name": "Test Father Professional",
         "course": "B.Tech",
         "branch": "Computer Science",
-        "year": "1st Year",
-        "semester": "Semester 1",
-        "mobile": "9876543210",
+        "year": "1st",
+        "semester": "1st Sem",
+        "mobile": rand_mob,
         "academic_session": "2025-2026"
     }
     StudentController.create_student(s_data)
     st = StudentController.get_student_by_admission_no(admission_no)
 
-    from models.fee_category import FeeCategory
-    from config.database import get_db
     db = get_db()
     fc = db.query(FeeCategory).first()
     fc_id = fc.id if fc else None

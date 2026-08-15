@@ -57,7 +57,6 @@ class StudentController:
                     or_(
                         Student.name.ilike(pattern),
                         Student.admission_no.ilike(pattern),
-                        Student.roll_no.ilike(pattern),
                         Student.father_name.ilike(pattern),
                         Student.mother_name.ilike(pattern),
                         Student.mobile.ilike(pattern),
@@ -142,7 +141,8 @@ class StudentController:
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),
                 academic_session=data.get("academic_session", "").strip() or session_manager.get_active_session(),
-                status="Active"
+                status=data.get("status", "Active"),
+                photo_path=data.get("photo_path")
             )
             db.add(student)
 
@@ -199,9 +199,12 @@ class StudentController:
             student.semester = data.get("semester", "").strip()
             student.mobile = data.get("mobile", "").strip()
             student.aadhaar_number = aadhaar or None
+            student.address = data.get("address", student.address)
             student.admission_date = data.get("admission_date", student.admission_date)
             student.academic_session = data.get("academic_session", student.academic_session)
             student.status = data.get("status", student.status)
+            if "photo_path" in data:
+                student.photo_path = data.get("photo_path")
 
             # Audit Log
             user = AuthController.get_current_user()

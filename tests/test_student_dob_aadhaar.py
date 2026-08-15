@@ -102,6 +102,16 @@ def test_02_future_dob_validation():
 
 def test_03_register_student_with_valid_12digit_aadhaar():
     """Test 3: Enter 123456789012 -> Student saves successfully."""
+    from sqlalchemy import or_
+    db = get_db()
+    try:
+        ex = db.query(Student).filter(or_(Student.admission_no == "DOB-TEST-003", Student.aadhaar_number == "123456789012")).all()
+        for s in ex:
+            db.delete(s)
+        db.commit()
+    finally:
+        db.close()
+
     data = {
         "admission_no": "DOB-TEST-003",
         "name": "Priya Sharma",

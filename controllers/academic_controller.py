@@ -28,27 +28,27 @@ class AcademicController:
     ]
 
     DEFAULT_YEARS = [
-        {"code": "Y1", "name": "1st Year", "order_no": 1},
-        {"code": "Y2", "name": "2nd Year", "order_no": 2},
-        {"code": "Y3", "name": "3rd Year", "order_no": 3},
-        {"code": "Y4", "name": "4th Year", "order_no": 4},
-        {"code": "Y5", "name": "5th Year", "order_no": 5},
+        {"code": "Y1", "name": "1st", "order_no": 1},
+        {"code": "Y2", "name": "2nd", "order_no": 2},
+        {"code": "Y3", "name": "3rd", "order_no": 3},
+        {"code": "Y4", "name": "4th", "order_no": 4},
+        {"code": "Y5", "name": "5th", "order_no": 5},
     ]
 
     DEFAULT_SEMESTERS = [
-        {"code": "SEM1", "name": "Semester 1", "order_no": 1},
-        {"code": "SEM2", "name": "Semester 2", "order_no": 2},
-        {"code": "SEM3", "name": "Semester 3", "order_no": 3},
-        {"code": "SEM4", "name": "Semester 4", "order_no": 4},
-        {"code": "SEM5", "name": "Semester 5", "order_no": 5},
-        {"code": "SEM6", "name": "Semester 6", "order_no": 6},
-        {"code": "SEM7", "name": "Semester 7", "order_no": 7},
-        {"code": "SEM8", "name": "Semester 8", "order_no": 8},
+        {"code": "SEM1", "name": "1st Sem", "order_no": 1},
+        {"code": "SEM2", "name": "2nd Sem", "order_no": 2},
+        {"code": "SEM3", "name": "3rd Sem", "order_no": 3},
+        {"code": "SEM4", "name": "4th Sem", "order_no": 4},
+        {"code": "SEM5", "name": "5th Sem", "order_no": 5},
+        {"code": "SEM6", "name": "6th Sem", "order_no": 6},
+        {"code": "SEM7", "name": "7th Sem", "order_no": 7},
+        {"code": "SEM8", "name": "8th Sem", "order_no": 8},
     ]
 
     @classmethod
     def seed_academic_masters_if_empty(cls):
-        """Ensures default Courses, Branches, Academic Years, and Semesters are present."""
+        """Ensures default Courses, Branches, Academic Years, and Semesters are present and updated."""
         db = get_db()
         try:
             # Seed Courses
@@ -63,16 +63,28 @@ class AcademicController:
                     db.add(Branch(**b))
                 db.commit()
 
-            # Seed Years
+            # Seed or Update Years to new ordinal format
             if db.query(AcademicYear).count() == 0:
                 for y in cls.DEFAULT_YEARS:
                     db.add(AcademicYear(**y))
                 db.commit()
+            else:
+                for y in cls.DEFAULT_YEARS:
+                    ay = db.query(AcademicYear).filter(AcademicYear.code == y["code"]).first()
+                    if ay and ay.name != y["name"]:
+                        ay.name = y["name"]
+                db.commit()
 
-            # Seed Semesters
+            # Seed or Update Semesters to new ordinal format
             if db.query(Semester).count() == 0:
                 for s in cls.DEFAULT_SEMESTERS:
                     db.add(Semester(**s))
+                db.commit()
+            else:
+                for s in cls.DEFAULT_SEMESTERS:
+                    sem = db.query(Semester).filter(Semester.code == s["code"]).first()
+                    if sem and sem.name != s["name"]:
+                        sem.name = s["name"]
                 db.commit()
             logger.info("Academic master tables initialized successfully.")
         except Exception as e:

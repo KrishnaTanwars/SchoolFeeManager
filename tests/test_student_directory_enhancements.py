@@ -185,12 +185,16 @@ def test_06_bulk_delete_students():
     StudentController.create_student({
         "admission_no": "BULK-DEL-01",
         "name": "Temp Student 1",
+        "father_name": "Father 1",
+        "mobile": "9876543210",
         "course": "B.Tech",
         "academic_session": "2025-2026"
     })
     StudentController.create_student({
         "admission_no": "BULK-DEL-02",
         "name": "Temp Student 2",
+        "father_name": "Father 2",
+        "mobile": "9876543211",
         "course": "B.Tech",
         "academic_session": "2025-2026"
     })
@@ -210,12 +214,18 @@ def test_06_bulk_delete_students():
 def test_07_realtime_session_sync(qapp, sample_students_data):
     """Test 9: Changing global active session in SessionManager updates Student Directory."""
     view = StudentView()
-    session_manager.set_active_session("2026-2027")
+    try:
+        session_manager.set_active_session("2026-2027")
 
-    assert view.cmb_session.currentText() == "2026-2027"
-    sessions_in_view = {s.academic_session for s in view.current_students}
-    assert sessions_in_view == {"2026-2027"}
+        assert view.cmb_session.currentText() == "2026-2027"
+        sessions_in_view = {s.academic_session for s in view.current_students}
+        assert sessions_in_view == {"2026-2027"}
 
-    # Reset active session back to 2025-2026
-    session_manager.set_active_session("2025-2026")
-    assert view.cmb_session.currentText() == "2025-2026"
+        # Reset active session back to 2025-2026
+        session_manager.set_active_session("2025-2026")
+        assert view.cmb_session.currentText() == "2025-2026"
+    finally:
+        try:
+            session_manager.session_changed.disconnect(view.on_active_session_changed)
+        except Exception:
+            pass

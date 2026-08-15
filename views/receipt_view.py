@@ -199,7 +199,7 @@ class ReceiptView(QWidget):
         student_layout.setSpacing(8)
         student_layout.setContentsMargins(10, 10, 10, 10)
 
-        lbl_search_title = QLabel("Search Student (Name / Adm No / Father / Mobile / Roll):")
+        lbl_search_title = QLabel("Search Student (Name / Adm No / Father / Mobile):")
         lbl_search_title.setStyleSheet("font-weight: 600; color: #334155; font-size: 12px;")
         student_layout.addWidget(lbl_search_title)
 
@@ -892,21 +892,33 @@ class ReceiptView(QWidget):
         )
 
         if success and receipt:
-            QMessageBox.information(self, "Success", f"Receipt {receipt.receipt_no} generated successfully!")
+            try:
+                # Re-query fresh eager-loaded receipt to prevent DetachedInstanceError or lazy load failures
+                fresh_receipt = ReceiptController.get_receipt_by_id(receipt.id) or receipt
 
-            # Reset fields
-            self.spn_discount.setValue(0.0)
-            self.spn_fine.setValue(0.0)
-            self.txt_utr_no.clear()
-            self.txt_cheque_no.clear()
-            self.txt_ref_no.clear()
-            self.txt_remarks.clear()
-            self._user_edited_paid = False
-            self.clear_student_card()
-            self.refresh_view()
+                # Pre-generate PDF file
+                from services.pdf_service import PDFService
+                pdf_path = PDFService.generate_receipt_pdf(fresh_receipt)
 
-            # Open Print Preview Dialog
-            dlg = ReceiptPreviewDialog(self, receipt)
-            dlg.exec()
+                QMessageBox.information(self, "Success", f"Receipt {fresh_receipt.receipt_no} generated successfully!")
+
+                # Reset fields
+                self.spn_discount.setValue(0.0)
+                self.spn_fine.setValue(0.0)
+                self.txt_utr_no.clear()
+                self.txt_cheque_no.clear()
+                self.txt_ref_no.clear()
+                self.txt_remarks.clear()
+                self._user_edited_paid = False
+                self.clear_student_card()
+                self.refresh_view()
+
+                # Open Print Preview Dialog
+                dlg = ReceiptPreviewDialog(self, receipt=fresh_receipt, pdf_path=pdf_path)
+                dlg.exec()
+            except Exception as preview_err:
+                from utils.logger import logger
+                logger.error(f"Error opening receipt preview: {preview_err}", exc_info=True)
+                QMessageBox.information(self, "Success", f"Receipt {receipt.receipt_no} generated and saved successfully!")
         else:
             QMessageBox.critical(self, "Error", msg)

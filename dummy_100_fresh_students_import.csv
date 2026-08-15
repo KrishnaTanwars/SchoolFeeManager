@@ -1,0 +1,101 @@
+﻿Admission Number,Roll Number,Student Name,Date of Birth,Course,Branch,Academic Year,Semester,Father Name,Mother Name,Mobile Number,Aadhaar Number,Address,Admission Date,Academic Session,Status
+ADM/2025/9501,9501,Aarav Singh,2005-02-02,B.Tech,Computer Science,1st Year,Semester 1,Ishaan Singh,Siddharth Singh,9880000001,890000000001,"123 Green Park, New Delhi",2025-06-02,2025-2026,Active
+ADM/2025/9502,9502,Ananya Joshi,2005-03-03,B.Tech,Information Technology,2nd Year,Semester 3,Divya Joshi,Tanvi Joshi,9880000002,890000000002,"456 Vasant Kunj, New Delhi",2025-06-03,2025-2026,Active
+ADM/2025/9503,9503,Rohan Bhatia,2005-04-04,B.Tech,Mechanical Engineering,1st Year,Semester 1,Abhishek Bhatia,Nisha Bhatia,9880000003,890000000003,"789 Malviya Nagar, New Delhi",2025-06-04,2025-2026,Active
+ADM/2025/9504,9504,Priya Rao,2005-05-05,B.Tech,Electrical Engineering,3rd Year,Semester 5,Gaurav Rao,Akash Rao,9880000004,890000000004,"102 Hill Road, Bandra West, Mumbai",2025-06-05,2025-2026,Active
+ADM/2025/9505,9505,Aditya Deshmukh,2005-06-06,MBA,Finance,1st Year,Semester 1,Payal Deshmukh,Priya Deshmukh,9880000005,890000000005,"A-501 Hiranandani, Powai, Mumbai",2025-06-06,2025-2026,Active
+ADM/2025/9506,9506,Ishaan Trivedi,2005-07-07,MBA,Marketing,2nd Year,Semester 3,Nitin Trivedi,Divya Trivedi,9880000006,890000000006,"88 Koramangala 4th Block, Bengaluru",2025-06-07,2025-2026,Active
+ADM/2025/9507,9507,Kavya Choudhury,2005-08-08,BCA,Computer Applications,1st Year,Semester 1,Priya Choudhury,Rishabh Choudhury,9880000007,890000000007,"12th Main, Indiranagar, Bengaluru",2025-06-08,2025-2026,Active
+ADM/2025/9508,9508,Siddharth Sharma,2005-01-09,BBA,Business Administration,1st Year,Semester 1,Pooja Sharma,Tarun Sharma,9880000008,890000000008,"Flat 405, Viman Nagar, Pune",2025-06-09,2025-2026,Active
+ADM/2025/9509,9509,Pooja Singh,2005-02-10,MCA,Software Systems,2nd Year,Semester 3,Karan Singh,Preeti Singh,9880000009,890000000009,"C-84 Malviya Nagar, Jaipur",2025-06-10,2025-2026,Active
+ADM/2025/9510,9510,Manish Joshi,2005-03-11,B.Tech,Computer Science,1st Year,Semester 1,Saurabh Joshi,Kavya Joshi,9880000010,890000000010,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-11,2025-2026,Active
+ADM/2025/9511,9511,Divya Bhatia,2005-04-12,B.Tech,Information Technology,2nd Year,Semester 3,Archana Bhatia,Karan Bhatia,9880000011,890000000011,"123 Green Park, New Delhi",2025-06-12,2025-2026,Active
+ADM/2025/9512,9512,Vikas Rao,2005-05-13,B.Tech,Mechanical Engineering,1st Year,Semester 1,Akash Rao,Gaurav Rao,9880000012,890000000012,"456 Vasant Kunj, New Delhi",2025-06-13,2025-2026,Active
+ADM/2025/9513,9513,Sneha Deshmukh,2005-06-14,B.Tech,Electrical Engineering,3rd Year,Semester 5,Ananya Deshmukh,Simran Deshmukh,9880000013,890000000013,"789 Malviya Nagar, New Delhi",2025-06-14,2025-2026,Active
+ADM/2025/9514,9514,Karan Trivedi,2005-07-15,MBA,Finance,1st Year,Semester 1,Kavya Trivedi,Rohan Trivedi,9880000014,890000000014,"102 Hill Road, Bandra West, Mumbai",2025-06-15,2025-2026,Active
+ADM/2025/9515,9515,Tanvi Choudhury,2005-08-16,MBA,Marketing,2nd Year,Semester 3,Vikas Choudhury,Manish Choudhury,9880000015,890000000015,"A-501 Hiranandani, Powai, Mumbai",2025-06-16,2025-2026,Active
+ADM/2025/9516,9516,Abhishek Sharma,2005-01-17,BCA,Computer Applications,1st Year,Semester 1,Megha Sharma,Megha Sharma,9880000016,890000000016,"88 Koramangala 4th Block, Bengaluru",2025-06-17,2025-2026,Active
+ADM/2025/9517,9517,Megha Singh,2005-02-18,BBA,Business Administration,1st Year,Semester 1,Nisha Singh,Archana Singh,9880000017,890000000017,"12th Main, Indiranagar, Bengaluru",2025-06-18,2025-2026,Active
+ADM/2025/9518,9518,Rishabh Joshi,2005-03-19,MCA,Software Systems,2nd Year,Semester 3,Varun Joshi,Nitin Joshi,9880000018,890000000018,"Flat 405, Viman Nagar, Pune",2025-06-19,2025-2026,Active
+ADM/2025/9519,9519,Saurabh Bhatia,2005-04-20,B.Tech,Computer Science,1st Year,Semester 1,Preeti Bhatia,Ishaan Bhatia,9880000019,890000000019,"C-84 Malviya Nagar, Jaipur",2025-06-20,2025-2026,Active
+ADM/2025/9520,9520,Swati Rao,2005-05-21,B.Tech,Information Technology,2nd Year,Semester 3,Aditya Rao,Sneha Rao,9880000020,890000000020,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-21,2025-2026,Active
+ADM/2025/9521,9521,Gaurav Deshmukh,2005-06-22,B.Tech,Mechanical Engineering,1st Year,Semester 1,Manish Deshmukh,Swati Deshmukh,9880000021,890000000021,"123 Green Park, New Delhi",2025-06-22,2025-2026,Active
+ADM/2025/9522,9522,Nisha Trivedi,2005-07-23,B.Tech,Electrical Engineering,3rd Year,Semester 5,Tanvi Trivedi,Varun Trivedi,9880000022,890000000022,"456 Vasant Kunj, New Delhi",2025-06-23,2025-2026,Active
+ADM/2025/9523,9523,Nikhil Choudhury,2005-08-24,MBA,Finance,1st Year,Semester 1,Swati Choudhury,Ananya Choudhury,9880000023,890000000023,"789 Malviya Nagar, New Delhi",2025-06-24,2025-2026,Active
+ADM/2025/9524,9524,Archana Sharma,2005-01-25,MBA,Marketing,2nd Year,Semester 3,Tarun Sharma,Pooja Sharma,9880000024,890000000024,"102 Hill Road, Bandra West, Mumbai",2025-06-25,2025-2026,Active
+ADM/2025/9525,9525,Tarun Singh,2005-02-01,BCA,Computer Applications,1st Year,Semester 1,Shweta Singh,Abhishek Singh,9880000025,890000000025,"A-501 Hiranandani, Powai, Mumbai",2025-06-26,2025-2026,Active
+ADM/2025/9526,9526,Payal Joshi,2005-03-02,BBA,Business Administration,1st Year,Semester 1,Rohan Joshi,Nikhil Joshi,9880000026,890000000026,"88 Koramangala 4th Block, Bengaluru",2025-06-27,2025-2026,Active
+ADM/2025/9527,9527,Varun Bhatia,2005-04-03,MCA,Software Systems,2nd Year,Semester 3,Siddharth Bhatia,Shweta Bhatia,9880000027,890000000027,"12th Main, Indiranagar, Bengaluru",2025-06-28,2025-2026,Active
+ADM/2025/9528,9528,Simran Rao,2005-05-04,B.Tech,Computer Science,1st Year,Semester 1,Sneha Rao,Aditya Rao,9880000028,890000000028,"Flat 405, Viman Nagar, Pune",2025-06-01,2025-2026,Active
+ADM/2025/9529,9529,Akash Deshmukh,2005-06-05,B.Tech,Information Technology,2nd Year,Semester 3,Rishabh Deshmukh,Vikas Deshmukh,9880000029,890000000029,"C-84 Malviya Nagar, Jaipur",2025-06-02,2025-2026,Active
+ADM/2025/9530,9530,Shweta Trivedi,2005-07-06,B.Tech,Mechanical Engineering,1st Year,Semester 1,Nikhil Trivedi,Saurabh Trivedi,9880000030,890000000030,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-03,2025-2026,Active
+ADM/2025/9531,9531,Nitin Choudhury,2005-08-07,B.Tech,Electrical Engineering,3rd Year,Semester 5,Simran Choudhury,Payal Choudhury,9880000031,890000000031,"123 Green Park, New Delhi",2025-06-04,2025-2026,Active
+ADM/2025/9532,9532,Preeti Sharma,2005-01-08,MBA,Finance,1st Year,Semester 1,Aarav Sharma,Aarav Sharma,9880000032,890000000032,"456 Vasant Kunj, New Delhi",2025-06-05,2025-2026,Active
+ADM/2025/9533,9533,Aarav Singh,2005-02-09,MBA,Marketing,2nd Year,Semester 3,Ishaan Singh,Siddharth Singh,9880000033,890000000033,"789 Malviya Nagar, New Delhi",2025-06-06,2025-2026,Active
+ADM/2025/9534,9534,Ananya Joshi,2005-03-10,BCA,Computer Applications,1st Year,Semester 1,Divya Joshi,Tanvi Joshi,9880000034,890000000034,"102 Hill Road, Bandra West, Mumbai",2025-06-07,2025-2026,Active
+ADM/2025/9535,9535,Rohan Bhatia,2005-04-11,BBA,Business Administration,1st Year,Semester 1,Abhishek Bhatia,Nisha Bhatia,9880000035,890000000035,"A-501 Hiranandani, Powai, Mumbai",2025-06-08,2025-2026,Active
+ADM/2025/9536,9536,Priya Rao,2005-05-12,MCA,Software Systems,2nd Year,Semester 3,Gaurav Rao,Akash Rao,9880000036,890000000036,"88 Koramangala 4th Block, Bengaluru",2025-06-09,2025-2026,Active
+ADM/2025/9537,9537,Aditya Deshmukh,2005-06-13,B.Tech,Computer Science,1st Year,Semester 1,Payal Deshmukh,Priya Deshmukh,9880000037,890000000037,"12th Main, Indiranagar, Bengaluru",2025-06-10,2025-2026,Active
+ADM/2025/9538,9538,Ishaan Trivedi,2005-07-14,B.Tech,Information Technology,2nd Year,Semester 3,Nitin Trivedi,Divya Trivedi,9880000038,890000000038,"Flat 405, Viman Nagar, Pune",2025-06-11,2025-2026,Active
+ADM/2025/9539,9539,Kavya Choudhury,2005-08-15,B.Tech,Mechanical Engineering,1st Year,Semester 1,Priya Choudhury,Rishabh Choudhury,9880000039,890000000039,"C-84 Malviya Nagar, Jaipur",2025-06-12,2025-2026,Active
+ADM/2025/9540,9540,Siddharth Sharma,2005-01-16,B.Tech,Electrical Engineering,3rd Year,Semester 5,Pooja Sharma,Tarun Sharma,9880000040,890000000040,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-13,2025-2026,Active
+ADM/2025/9541,9541,Pooja Singh,2005-02-17,MBA,Finance,1st Year,Semester 1,Karan Singh,Preeti Singh,9880000041,890000000041,"123 Green Park, New Delhi",2025-06-14,2025-2026,Active
+ADM/2025/9542,9542,Manish Joshi,2005-03-18,MBA,Marketing,2nd Year,Semester 3,Saurabh Joshi,Kavya Joshi,9880000042,890000000042,"456 Vasant Kunj, New Delhi",2025-06-15,2025-2026,Active
+ADM/2025/9543,9543,Divya Bhatia,2005-04-19,BCA,Computer Applications,1st Year,Semester 1,Archana Bhatia,Karan Bhatia,9880000043,890000000043,"789 Malviya Nagar, New Delhi",2025-06-16,2025-2026,Active
+ADM/2025/9544,9544,Vikas Rao,2005-05-20,BBA,Business Administration,1st Year,Semester 1,Akash Rao,Gaurav Rao,9880000044,890000000044,"102 Hill Road, Bandra West, Mumbai",2025-06-17,2025-2026,Active
+ADM/2025/9545,9545,Sneha Deshmukh,2005-06-21,MCA,Software Systems,2nd Year,Semester 3,Ananya Deshmukh,Simran Deshmukh,9880000045,890000000045,"A-501 Hiranandani, Powai, Mumbai",2025-06-18,2025-2026,Active
+ADM/2025/9546,9546,Karan Trivedi,2005-07-22,B.Tech,Computer Science,1st Year,Semester 1,Kavya Trivedi,Rohan Trivedi,9880000046,890000000046,"88 Koramangala 4th Block, Bengaluru",2025-06-19,2025-2026,Active
+ADM/2025/9547,9547,Tanvi Choudhury,2005-08-23,B.Tech,Information Technology,2nd Year,Semester 3,Vikas Choudhury,Manish Choudhury,9880000047,890000000047,"12th Main, Indiranagar, Bengaluru",2025-06-20,2025-2026,Active
+ADM/2025/9548,9548,Abhishek Sharma,2005-01-24,B.Tech,Mechanical Engineering,1st Year,Semester 1,Megha Sharma,Megha Sharma,9880000048,890000000048,"Flat 405, Viman Nagar, Pune",2025-06-21,2025-2026,Active
+ADM/2025/9549,9549,Megha Singh,2005-02-25,B.Tech,Electrical Engineering,3rd Year,Semester 5,Nisha Singh,Archana Singh,9880000049,890000000049,"C-84 Malviya Nagar, Jaipur",2025-06-22,2025-2026,Active
+ADM/2025/9550,9550,Rishabh Joshi,2005-03-01,MBA,Finance,1st Year,Semester 1,Varun Joshi,Nitin Joshi,9880000050,890000000050,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-23,2025-2026,Active
+ADM/2025/9551,9551,Saurabh Bhatia,2005-04-02,MBA,Marketing,2nd Year,Semester 3,Preeti Bhatia,Ishaan Bhatia,9880000051,890000000051,"123 Green Park, New Delhi",2025-06-24,2025-2026,Active
+ADM/2025/9552,9552,Swati Rao,2005-05-03,BCA,Computer Applications,1st Year,Semester 1,Aditya Rao,Sneha Rao,9880000052,890000000052,"456 Vasant Kunj, New Delhi",2025-06-25,2025-2026,Active
+ADM/2025/9553,9553,Gaurav Deshmukh,2005-06-04,BBA,Business Administration,1st Year,Semester 1,Manish Deshmukh,Swati Deshmukh,9880000053,890000000053,"789 Malviya Nagar, New Delhi",2025-06-26,2025-2026,Active
+ADM/2025/9554,9554,Nisha Trivedi,2005-07-05,MCA,Software Systems,2nd Year,Semester 3,Tanvi Trivedi,Varun Trivedi,9880000054,890000000054,"102 Hill Road, Bandra West, Mumbai",2025-06-27,2025-2026,Active
+ADM/2025/9555,9555,Nikhil Choudhury,2005-08-06,B.Tech,Computer Science,1st Year,Semester 1,Swati Choudhury,Ananya Choudhury,9880000055,890000000055,"A-501 Hiranandani, Powai, Mumbai",2025-06-28,2025-2026,Active
+ADM/2025/9556,9556,Archana Sharma,2005-01-07,B.Tech,Information Technology,2nd Year,Semester 3,Tarun Sharma,Pooja Sharma,9880000056,890000000056,"88 Koramangala 4th Block, Bengaluru",2025-06-01,2025-2026,Active
+ADM/2025/9557,9557,Tarun Singh,2005-02-08,B.Tech,Mechanical Engineering,1st Year,Semester 1,Shweta Singh,Abhishek Singh,9880000057,890000000057,"12th Main, Indiranagar, Bengaluru",2025-06-02,2025-2026,Active
+ADM/2025/9558,9558,Payal Joshi,2005-03-09,B.Tech,Electrical Engineering,3rd Year,Semester 5,Rohan Joshi,Nikhil Joshi,9880000058,890000000058,"Flat 405, Viman Nagar, Pune",2025-06-03,2025-2026,Active
+ADM/2025/9559,9559,Varun Bhatia,2005-04-10,MBA,Finance,1st Year,Semester 1,Siddharth Bhatia,Shweta Bhatia,9880000059,890000000059,"C-84 Malviya Nagar, Jaipur",2025-06-04,2025-2026,Active
+ADM/2025/9560,9560,Simran Rao,2005-05-11,MBA,Marketing,2nd Year,Semester 3,Sneha Rao,Aditya Rao,9880000060,890000000060,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-05,2025-2026,Active
+ADM/2025/9561,9561,Akash Deshmukh,2005-06-12,BCA,Computer Applications,1st Year,Semester 1,Rishabh Deshmukh,Vikas Deshmukh,9880000061,890000000061,"123 Green Park, New Delhi",2025-06-06,2025-2026,Active
+ADM/2025/9562,9562,Shweta Trivedi,2005-07-13,BBA,Business Administration,1st Year,Semester 1,Nikhil Trivedi,Saurabh Trivedi,9880000062,890000000062,"456 Vasant Kunj, New Delhi",2025-06-07,2025-2026,Active
+ADM/2025/9563,9563,Nitin Choudhury,2005-08-14,MCA,Software Systems,2nd Year,Semester 3,Simran Choudhury,Payal Choudhury,9880000063,890000000063,"789 Malviya Nagar, New Delhi",2025-06-08,2025-2026,Active
+ADM/2025/9564,9564,Preeti Sharma,2005-01-15,B.Tech,Computer Science,1st Year,Semester 1,Aarav Sharma,Aarav Sharma,9880000064,890000000064,"102 Hill Road, Bandra West, Mumbai",2025-06-09,2025-2026,Active
+ADM/2025/9565,9565,Aarav Singh,2005-02-16,B.Tech,Information Technology,2nd Year,Semester 3,Ishaan Singh,Siddharth Singh,9880000065,890000000065,"A-501 Hiranandani, Powai, Mumbai",2025-06-10,2025-2026,Active
+ADM/2025/9566,9566,Ananya Joshi,2005-03-17,B.Tech,Mechanical Engineering,1st Year,Semester 1,Divya Joshi,Tanvi Joshi,9880000066,890000000066,"88 Koramangala 4th Block, Bengaluru",2025-06-11,2025-2026,Active
+ADM/2025/9567,9567,Rohan Bhatia,2005-04-18,B.Tech,Electrical Engineering,3rd Year,Semester 5,Abhishek Bhatia,Nisha Bhatia,9880000067,890000000067,"12th Main, Indiranagar, Bengaluru",2025-06-12,2025-2026,Active
+ADM/2025/9568,9568,Priya Rao,2005-05-19,MBA,Finance,1st Year,Semester 1,Gaurav Rao,Akash Rao,9880000068,890000000068,"Flat 405, Viman Nagar, Pune",2025-06-13,2025-2026,Active
+ADM/2025/9569,9569,Aditya Deshmukh,2005-06-20,MBA,Marketing,2nd Year,Semester 3,Payal Deshmukh,Priya Deshmukh,9880000069,890000000069,"C-84 Malviya Nagar, Jaipur",2025-06-14,2025-2026,Active
+ADM/2025/9570,9570,Ishaan Trivedi,2005-07-21,BCA,Computer Applications,1st Year,Semester 1,Nitin Trivedi,Divya Trivedi,9880000070,890000000070,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-15,2025-2026,Active
+ADM/2025/9571,9571,Kavya Choudhury,2005-08-22,BBA,Business Administration,1st Year,Semester 1,Priya Choudhury,Rishabh Choudhury,9880000071,890000000071,"123 Green Park, New Delhi",2025-06-16,2025-2026,Active
+ADM/2025/9572,9572,Siddharth Sharma,2005-01-23,MCA,Software Systems,2nd Year,Semester 3,Pooja Sharma,Tarun Sharma,9880000072,890000000072,"456 Vasant Kunj, New Delhi",2025-06-17,2025-2026,Active
+ADM/2025/9573,9573,Pooja Singh,2005-02-24,B.Tech,Computer Science,1st Year,Semester 1,Karan Singh,Preeti Singh,9880000073,890000000073,"789 Malviya Nagar, New Delhi",2025-06-18,2025-2026,Active
+ADM/2025/9574,9574,Manish Joshi,2005-03-25,B.Tech,Information Technology,2nd Year,Semester 3,Saurabh Joshi,Kavya Joshi,9880000074,890000000074,"102 Hill Road, Bandra West, Mumbai",2025-06-19,2025-2026,Active
+ADM/2025/9575,9575,Divya Bhatia,2005-04-01,B.Tech,Mechanical Engineering,1st Year,Semester 1,Archana Bhatia,Karan Bhatia,9880000075,890000000075,"A-501 Hiranandani, Powai, Mumbai",2025-06-20,2025-2026,Active
+ADM/2025/9576,9576,Vikas Rao,2005-05-02,B.Tech,Electrical Engineering,3rd Year,Semester 5,Akash Rao,Gaurav Rao,9880000076,890000000076,"88 Koramangala 4th Block, Bengaluru",2025-06-21,2025-2026,Active
+ADM/2025/9577,9577,Sneha Deshmukh,2005-06-03,MBA,Finance,1st Year,Semester 1,Ananya Deshmukh,Simran Deshmukh,9880000077,890000000077,"12th Main, Indiranagar, Bengaluru",2025-06-22,2025-2026,Active
+ADM/2025/9578,9578,Karan Trivedi,2005-07-04,MBA,Marketing,2nd Year,Semester 3,Kavya Trivedi,Rohan Trivedi,9880000078,890000000078,"Flat 405, Viman Nagar, Pune",2025-06-23,2025-2026,Active
+ADM/2025/9579,9579,Tanvi Choudhury,2005-08-05,BCA,Computer Applications,1st Year,Semester 1,Vikas Choudhury,Manish Choudhury,9880000079,890000000079,"C-84 Malviya Nagar, Jaipur",2025-06-24,2025-2026,Active
+ADM/2025/9580,9580,Abhishek Sharma,2005-01-06,BBA,Business Administration,1st Year,Semester 1,Megha Sharma,Megha Sharma,9880000080,890000000080,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-25,2025-2026,Active
+ADM/2025/9581,9581,Megha Singh,2005-02-07,MCA,Software Systems,2nd Year,Semester 3,Nisha Singh,Archana Singh,9880000081,890000000081,"123 Green Park, New Delhi",2025-06-26,2025-2026,Active
+ADM/2025/9582,9582,Rishabh Joshi,2005-03-08,B.Tech,Computer Science,1st Year,Semester 1,Varun Joshi,Nitin Joshi,9880000082,890000000082,"456 Vasant Kunj, New Delhi",2025-06-27,2025-2026,Active
+ADM/2025/9583,9583,Saurabh Bhatia,2005-04-09,B.Tech,Information Technology,2nd Year,Semester 3,Preeti Bhatia,Ishaan Bhatia,9880000083,890000000083,"789 Malviya Nagar, New Delhi",2025-06-28,2025-2026,Active
+ADM/2025/9584,9584,Swati Rao,2005-05-10,B.Tech,Mechanical Engineering,1st Year,Semester 1,Aditya Rao,Sneha Rao,9880000084,890000000084,"102 Hill Road, Bandra West, Mumbai",2025-06-01,2025-2026,Active
+ADM/2025/9585,9585,Gaurav Deshmukh,2005-06-11,B.Tech,Electrical Engineering,3rd Year,Semester 5,Manish Deshmukh,Swati Deshmukh,9880000085,890000000085,"A-501 Hiranandani, Powai, Mumbai",2025-06-02,2025-2026,Active
+ADM/2025/9586,9586,Nisha Trivedi,2005-07-12,MBA,Finance,1st Year,Semester 1,Tanvi Trivedi,Varun Trivedi,9880000086,890000000086,"88 Koramangala 4th Block, Bengaluru",2025-06-03,2025-2026,Active
+ADM/2025/9587,9587,Nikhil Choudhury,2005-08-13,MBA,Marketing,2nd Year,Semester 3,Swati Choudhury,Ananya Choudhury,9880000087,890000000087,"12th Main, Indiranagar, Bengaluru",2025-06-04,2025-2026,Active
+ADM/2025/9588,9588,Archana Sharma,2005-01-14,BCA,Computer Applications,1st Year,Semester 1,Tarun Sharma,Pooja Sharma,9880000088,890000000088,"Flat 405, Viman Nagar, Pune",2025-06-05,2025-2026,Active
+ADM/2025/9589,9589,Tarun Singh,2005-02-15,BBA,Business Administration,1st Year,Semester 1,Shweta Singh,Abhishek Singh,9880000089,890000000089,"C-84 Malviya Nagar, Jaipur",2025-06-06,2025-2026,Active
+ADM/2025/9590,9590,Payal Joshi,2005-03-16,MCA,Software Systems,2nd Year,Semester 3,Rohan Joshi,Nikhil Joshi,9880000090,890000000090,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-07,2025-2026,Active
+ADM/2025/9591,9591,Varun Bhatia,2005-04-17,B.Tech,Computer Science,1st Year,Semester 1,Siddharth Bhatia,Shweta Bhatia,9880000091,890000000091,"123 Green Park, New Delhi",2025-06-08,2025-2026,Active
+ADM/2025/9592,9592,Simran Rao,2005-05-18,B.Tech,Information Technology,2nd Year,Semester 3,Sneha Rao,Aditya Rao,9880000092,890000000092,"456 Vasant Kunj, New Delhi",2025-06-09,2025-2026,Active
+ADM/2025/9593,9593,Akash Deshmukh,2005-06-19,B.Tech,Mechanical Engineering,1st Year,Semester 1,Rishabh Deshmukh,Vikas Deshmukh,9880000093,890000000093,"789 Malviya Nagar, New Delhi",2025-06-10,2025-2026,Active
+ADM/2025/9594,9594,Shweta Trivedi,2005-07-20,B.Tech,Electrical Engineering,3rd Year,Semester 5,Nikhil Trivedi,Saurabh Trivedi,9880000094,890000000094,"102 Hill Road, Bandra West, Mumbai",2025-06-11,2025-2026,Active
+ADM/2025/9595,9595,Nitin Choudhury,2005-08-21,MBA,Finance,1st Year,Semester 1,Simran Choudhury,Payal Choudhury,9880000095,890000000095,"A-501 Hiranandani, Powai, Mumbai",2025-06-12,2025-2026,Active
+ADM/2025/9596,9596,Preeti Sharma,2005-01-22,MBA,Marketing,2nd Year,Semester 3,Aarav Sharma,Aarav Sharma,9880000096,890000000096,"88 Koramangala 4th Block, Bengaluru",2025-06-13,2025-2026,Active
+ADM/2025/9597,9597,Aarav Singh,2005-02-23,BCA,Computer Applications,1st Year,Semester 1,Ishaan Singh,Siddharth Singh,9880000097,890000000097,"12th Main, Indiranagar, Bengaluru",2025-06-14,2025-2026,Active
+ADM/2025/9598,9598,Ananya Joshi,2005-03-24,BBA,Business Administration,1st Year,Semester 1,Divya Joshi,Tanvi Joshi,9880000098,890000000098,"Flat 405, Viman Nagar, Pune",2025-06-15,2025-2026,Active
+ADM/2025/9599,9599,Rohan Bhatia,2005-04-25,MCA,Software Systems,2nd Year,Semester 3,Abhishek Bhatia,Nisha Bhatia,9880000099,890000000099,"C-84 Malviya Nagar, Jaipur",2025-06-16,2025-2026,Active
+ADM/2025/9600,9600,Priya Rao,2005-05-01,B.Tech,Computer Science,1st Year,Semester 1,Gaurav Rao,Akash Rao,9880000100,890000000100,"Vipul Khand, Gomti Nagar, Lucknow",2025-06-17,2025-2026,Active

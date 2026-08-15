@@ -29,6 +29,7 @@ class Student(Base):
     admission_date = Column(Date, default=date.today, nullable=False)
     academic_session = Column(String(20), nullable=False, index=True)
     status = Column(String(20), default="Active", nullable=False)  # Active / Inactive
+    photo_path = Column(String(255), nullable=True)  # Relative file path for persistent student photo
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     receipts = relationship("Receipt", back_populates="student", cascade="all, delete-orphan")
