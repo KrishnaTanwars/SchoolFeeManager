@@ -44,8 +44,8 @@ class FeeController:
     def get_applicable_categories(student: Any) -> List[FeeCategory]:
         """
         Returns active Fee Heads applicable to the given student based on:
-        Course, Branch, Academic Year, Semester, and Academic Session.
-        Falls back to all active fee heads if student parameters are unassigned.
+        Course Category (UG/PG), Course, Branch, Academic Year, Semester, and Academic Session.
+        Falls back to matching course category fee heads if specific course matches are not found.
         """
         db = get_db()
         try:
@@ -53,16 +53,26 @@ class FeeController:
             cats = query.all()
 
             matched = []
+            st_cat = getattr(student, "course_category", None)
             st_course = getattr(student, "course", None) or "All"
+            if not st_cat and st_course != "All":
+                st_cat = "PG" if ("master" in st_course.lower() or "mpharm" in st_course.lower() or "pg" in st_course.lower()) else "UG"
+            st_cat = st_cat or "UG"
+
             st_branch = getattr(student, "branch", None) or "All"
             st_year = getattr(student, "year", None) or "All"
             st_sem = getattr(student, "semester", None) or "All"
             st_session = getattr(student, "academic_session", None) or "All"
 
             for c in cats:
-                # Check course match
-                if c.course not in ("All", "UG", "PG") and st_course != "All" and c.course.lower() != st_course.lower():
+                c_crs = str(c.course or "").strip()
+                # Strict Category Isolation: If fee head is UG, match UG students; if PG, match PG students.
+                if c_crs.upper() in ("UG", "PG"):
+                    if c_crs.upper() != st_cat.upper():
+                        continue
+                elif c_crs != "All" and st_course != "All" and c_crs.lower() != st_course.lower():
                     continue
+
                 # Check branch match
                 if c.branch != "All" and st_branch != "All" and c.branch.lower() != st_branch.lower():
                     continue
@@ -79,7 +89,15 @@ class FeeController:
 
             for c in matched:
                 db.expunge(c)
-            return matched if matched else cats
+
+            if matched:
+                return matched
+
+            # Fallback: Filter all active fee heads matching category
+            category_fallback = [c for c in cats if c.course.upper() in (st_cat.upper(), "ALL")]
+            for c in category_fallback:
+                db.expunge(c)
+            return category_fallback if category_fallback else cats
         finally:
             db.close()
 
@@ -230,7 +248,7 @@ class FeeController:
 
     @staticmethod
     def seed_default_fee_heads():
-        """Seeds default 14 UG and 3 PG Fee Heads if they do not exist."""
+        """Seeds default UG and PG Fee Heads if they do not exist."""
         db = get_db()
         try:
             ug_heads = [
@@ -251,9 +269,20 @@ class FeeController:
             ]
 
             pg_heads = [
+                ("Admission Form Fee", 500.0),
                 ("PG Tuition Fee", 18000.0),
                 ("PG Development Fee", 5000.0),
-                ("PG Laboratory Usage Fee", 2500.0)
+                ("Social Gathering Fee", 500.0),
+                ("Sports Fee", 300.0),
+                ("Eligibility Fee", 400.0),
+                ("Identity Card Fee", 100.0),
+                ("SRTMU Exam Fee", 800.0),
+                ("SRTMU GRM / Photocopy Fee", 150.0),
+                ("PG Laboratory Deposit", 1000.0),
+                ("PG Club Fee", 200.0),
+                ("PG Laboratory Usage Fee", 2500.0),
+                ("Caution Money", 500.0),
+                ("Other Fine", 100.0)
             ]
 
             for name, amt in ug_heads:

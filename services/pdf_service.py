@@ -52,8 +52,8 @@ class PDFService:
         doc = SimpleDocTemplate(
             output_path,
             pagesize=A4,
-            leftMargin=10 * mm, rightMargin=10 * mm,
-            topMargin=10 * mm, bottomMargin=10 * mm
+            leftMargin=8 * mm, rightMargin=8 * mm,
+            topMargin=7 * mm, bottomMargin=7 * mm
         )
 
         styles = getSampleStyleSheet()
@@ -62,8 +62,8 @@ class PDFService:
             'SchoolSubtitle',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=8.5,
-            leading=11,
+            fontSize=8,
+            leading=10,
             textColor=colors.HexColor("#475569"),
             alignment=1
         )
@@ -71,33 +71,49 @@ class PDFService:
             'ReceiptBadge',
             parent=styles['Heading2'],
             fontName='Helvetica-Bold',
-            fontSize=11,
-            leading=14,
+            fontSize=10.5,
+            leading=13,
             textColor=colors.HexColor("#1e3a8a"),
             alignment=1
         )
+
+        # Dynamic font sizing based on fee item count for guaranteed 1-page A4 fit
+        item_count = len(receipt.items) if receipt.items else 1
+        font_sz = 7.5 if item_count > 12 else 8.0
+        leading_sz = 9.0 if item_count > 12 else 10.0
+        padding_sz = 1.2 if item_count > 12 else 1.8
+        spacer_sz = 1.2 * mm if item_count > 12 else 2.0 * mm
+
         label_bold = ParagraphStyle(
             'LabelBold',
             parent=styles['Normal'],
             fontName='Helvetica-Bold',
-            fontSize=8.5,
-            leading=11,
+            fontSize=font_sz,
+            leading=leading_sz,
             textColor=colors.HexColor("#1e293b")
         )
         label_val = ParagraphStyle(
             'LabelVal',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=8.5,
-            leading=11,
+            fontSize=font_sz,
+            leading=leading_sz,
             textColor=colors.HexColor("#334155")
+        )
+        label_val_bold = ParagraphStyle(
+            'LabelValBold',
+            parent=styles['Normal'],
+            fontName='Helvetica-Bold',
+            fontSize=font_sz,
+            leading=leading_sz,
+            textColor=colors.HexColor("#0f172a")
         )
         table_hdr = ParagraphStyle(
             'TableHdr',
             parent=styles['Normal'],
             fontName='Helvetica-Bold',
-            fontSize=8.5,
-            leading=11,
+            fontSize=font_sz,
+            leading=leading_sz,
             textColor=colors.white
         )
 
@@ -107,14 +123,14 @@ class PDFService:
         header_data = []
         if logo_path:
             try:
-                img = Image(logo_path, width=22*mm, height=22*mm)
-                header_data.append([img, Paragraph(f"<b><font size='13' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+                img = Image(logo_path, width=18*mm, height=18*mm)
+                header_data.append([img, Paragraph(f"<b><font size='12' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
             except Exception:
-                header_data.append([Paragraph(f"<b><font size='13' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+                header_data.append([Paragraph(f"<b><font size='12' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
         else:
-            header_data.append([Paragraph(f"<b><font size='13' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+            header_data.append([Paragraph(f"<b><font size='12' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
 
-        hdr_table = Table(header_data, colWidths=[190*mm] if not logo_path else [25*mm, 165*mm])
+        hdr_table = Table(header_data, colWidths=[194*mm] if not logo_path else [22*mm, 172*mm])
         hdr_table.setStyle(TableStyle([
             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
@@ -122,13 +138,13 @@ class PDFService:
             ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ]))
         story.append(hdr_table)
-        story.append(Spacer(1, 2 * mm))
+        story.append(Spacer(1, 1 * mm))
 
-        story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor("#1e3a8a"), spaceAfter=2*mm))
+        story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor("#1e3a8a"), spaceBefore=1*mm, spaceAfter=1*mm))
 
         # Receipt Title Badge
         story.append(Paragraph("FEE PAYMENT RECEIPT", badge_style))
-        story.append(Spacer(1, 2 * mm))
+        story.append(Spacer(1, spacer_sz))
 
         # Student & Receipt Details Table
         student = receipt.student
@@ -164,17 +180,19 @@ class PDFService:
             ]
         ]
 
-        info_table = Table(student_info_data, colWidths=[42*mm, 53*mm, 35*mm, 60*mm])
+        info_table = Table(student_info_data, colWidths=[40*mm, 57*mm, 35*mm, 62*mm])
         info_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f8fafc")),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 2.5),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+            ('TOPPADDING', (0,0), (-1,-1), 1.5),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+            ('LEFTPADDING', (0,0), (-1,-1), 4),
+            ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
         story.append(info_table)
-        story.append(Spacer(1, 3 * mm))
+        story.append(Spacer(1, spacer_sz))
 
         # Fee Items Table with 'Rs.' Notation (Prevents ■ square box rendering)
         fee_table_data = [
@@ -185,14 +203,14 @@ class PDFService:
             for idx, item in enumerate(receipt.items, 1):
                 fee_table_data.append([
                     Paragraph(str(idx), label_val),
-                    Paragraph(f"<b>{item.category_name}</b>", label_val),
-                    Paragraph(f"<b>{item.amount:,.2f}</b>", label_val)
+                    Paragraph(f"<b>{item.category_name}</b>", label_val_bold),
+                    Paragraph(f"<b>{item.amount:,.2f}</b>", label_val_bold)
                 ])
         else:
             fee_table_data.append([
                 Paragraph("1", label_val),
-                Paragraph("<b>Fee Collection</b>", label_val),
-                Paragraph(f"<b>{receipt.total_amount:,.2f}</b>", label_val)
+                Paragraph("<b>Fee Collection</b>", label_val_bold),
+                Paragraph(f"<b>{receipt.total_amount:,.2f}</b>", label_val_bold)
             ])
 
         summary_rows_count = 0
@@ -242,7 +260,7 @@ class PDFService:
             ])
         summary_rows_count += 1
 
-        fee_table = Table(fee_table_data, colWidths=[15*mm, 135*mm, 40*mm])
+        fee_table = Table(fee_table_data, colWidths=[12*mm, 142*mm, 40*mm])
         fee_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e3a8a")),
             ('ALIGN', (0,0), (0,-1), 'CENTER'),
@@ -250,25 +268,29 @@ class PDFService:
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
             ('BACKGROUND', (0, -summary_rows_count), (-1, -1), colors.HexColor("#eff6ff")),
-            ('TOPPADDING', (0,0), (-1,-1), 3),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+            ('TOPPADDING', (0,0), (-1,-1), padding_sz),
+            ('BOTTOMPADDING', (0,0), (-1,-1), padding_sz),
+            ('LEFTPADDING', (0,0), (-1,-1), 4),
+            ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
         story.append(fee_table)
-        story.append(Spacer(1, 3 * mm))
+        story.append(Spacer(1, spacer_sz))
 
         # Amount in Words Box
         words_box = [
             [Paragraph(f"<b>Amount Paid in Words:</b> {receipt.amount_in_words}", label_val)]
         ]
-        words_table = Table(words_box, colWidths=[190*mm])
+        words_table = Table(words_box, colWidths=[194*mm])
         words_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f1f5f9")),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
-            ('TOPPADDING', (0,0), (-1,-1), 4),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+            ('TOPPADDING', (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+            ('LEFTPADDING', (0,0), (-1,-1), 4),
+            ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
         story.append(words_table)
-        story.append(Spacer(1, 3 * mm))
+        story.append(Spacer(1, spacer_sz))
 
         # Payment Details Block (Dynamic Mode-Specific Fields)
         pay_details_lines = [f"<b>Payment Mode:</b> {receipt.payment_mode}"]
@@ -304,17 +326,19 @@ class PDFService:
         pay_details_str = " &nbsp;&nbsp;|&nbsp;&nbsp; ".join(pay_details_lines)
 
         pay_details_box = [
-            [Paragraph(f"<b>PAYMENT DETAILS</b><br/>{pay_details_str}", label_val)]
+            [Paragraph(f"<b>PAYMENT DETAILS:</b> {pay_details_str}", label_val)]
         ]
-        pay_details_table = Table(pay_details_box, colWidths=[190*mm])
+        pay_details_table = Table(pay_details_box, colWidths=[194*mm])
         pay_details_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f8fafc")),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#94a3b8")),
-            ('TOPPADDING', (0,0), (-1,-1), 4),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+            ('TOPPADDING', (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+            ('LEFTPADDING', (0,0), (-1,-1), 4),
+            ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
         story.append(pay_details_table)
-        story.append(Spacer(1, 5 * mm))
+        story.append(Spacer(1, spacer_sz))
 
         # Remarks & Signatures
         sig_data = [
@@ -323,12 +347,12 @@ class PDFService:
                 Paragraph("<b>Authorized Signatory / Cashier</b><br/><br/>______________________", label_val)
             ]
         ]
-        sig_table = Table(sig_data, colWidths=[120*mm, 70*mm])
+        sig_table = Table(sig_data, colWidths=[124*mm, 70*mm])
         sig_table.setStyle(TableStyle([
             ('ALIGN', (1,0), (1,0), 'RIGHT'),
             ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
-            ('TOPPADDING', (0,0), (-1,-1), 2),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+            ('TOPPADDING', (0,0), (-1,-1), 1),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 1),
         ]))
         story.append(sig_table)
 

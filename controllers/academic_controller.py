@@ -10,20 +10,12 @@ from utils.logger import logger
 class AcademicController:
     
     DEFAULT_COURSES = [
-        {"code": "BTECH", "name": "B.Tech", "course_type": "College", "duration_years": 4, "total_semesters": 8},
-        {"code": "MBA", "name": "MBA", "course_type": "College", "duration_years": 2, "total_semesters": 4},
-        {"code": "BCA", "name": "BCA", "course_type": "College", "duration_years": 3, "total_semesters": 6},
-        {"code": "BBA", "name": "BBA", "course_type": "College", "duration_years": 3, "total_semesters": 6},
-        {"code": "MCA", "name": "MCA", "course_type": "College", "duration_years": 2, "total_semesters": 4},
-        {"code": "CLASS10", "name": "Class 10", "course_type": "School", "duration_years": 1, "total_semesters": 0},
+        {"code": "BPHARM", "name": "Bachelor of Pharmacy", "course_type": "UG", "duration_years": 4, "total_semesters": 8},
+        {"code": "MPHARM", "name": "Master of Pharmacy", "course_type": "PG", "duration_years": 2, "total_semesters": 4},
     ]
 
     DEFAULT_BRANCHES = [
-        {"code": "CSE", "name": "Computer Science", "course_code": "BTECH"},
-        {"code": "ME", "name": "Mechanical Engineering", "course_code": "BTECH"},
-        {"code": "IT", "name": "Information Technology", "course_code": "BTECH"},
-        {"code": "FIN", "name": "Finance", "course_code": "MBA"},
-        {"code": "HR", "name": "Human Resource", "course_code": "MBA"},
+        {"code": "PHARM", "name": "Pharmacy", "course_code": None},
         {"code": "GEN", "name": "General", "course_code": None},
     ]
 
@@ -32,7 +24,6 @@ class AcademicController:
         {"code": "Y2", "name": "2nd", "order_no": 2},
         {"code": "Y3", "name": "3rd", "order_no": 3},
         {"code": "Y4", "name": "4th", "order_no": 4},
-        {"code": "Y5", "name": "5th", "order_no": 5},
     ]
 
     DEFAULT_SEMESTERS = [
@@ -51,11 +42,16 @@ class AcademicController:
         """Ensures default Courses, Branches, Academic Years, and Semesters are present and updated."""
         db = get_db()
         try:
-            # Seed Courses
-            if db.query(Course).count() == 0:
-                for c in cls.DEFAULT_COURSES:
+            # Seed or sync default courses (Bachelor of Pharmacy & Master of Pharmacy)
+            for c in cls.DEFAULT_COURSES:
+                existing = db.query(Course).filter(Course.name == c["name"]).first()
+                if not existing:
                     db.add(Course(**c))
-                db.commit()
+                else:
+                    existing.duration_years = c["duration_years"]
+                    existing.total_semesters = c["total_semesters"]
+                    existing.course_type = c["course_type"]
+            db.commit()
 
             # Seed Branches
             if db.query(Branch).count() == 0:
@@ -92,6 +88,36 @@ class AcademicController:
             logger.error(f"Error seeding academic masters: {e}")
 
     @classmethod
+    def get_course_categories(cls) -> List[str]:
+        """Returns course categories: ['UG', 'PG']."""
+        return ["UG", "PG"]
+
+    @classmethod
+    def get_courses_by_category(cls, category: str = "All") -> List[str]:
+        """Returns list of active course names filtered by category ('UG' or 'PG')."""
+        cls.seed_academic_masters_if_empty()
+        cat = category.strip().upper()
+        if cat in ("UG", "PG"):
+            if cat == "UG":
+                return ["Bachelor of Pharmacy"]
+            elif cat == "PG":
+                return ["Master of Pharmacy"]
+        db = get_db()
+        try:
+            query = db.query(Course).filter(Course.is_active == True)
+            if cat != "ALL":
+                query = query.filter(Course.course_type == cat)
+            courses = query.order_by(Course.id).all()
+            if courses:
+                return [c.name for c in courses]
+            return ["Bachelor of Pharmacy"] if cat == "UG" else ["Master of Pharmacy"] if cat == "PG" else ["Bachelor of Pharmacy", "Master of Pharmacy"]
+        except Exception as e:
+            logger.error(f"Error fetching courses by category: {e}")
+            return ["Bachelor of Pharmacy"] if cat == "UG" else ["Master of Pharmacy"] if cat == "PG" else ["Bachelor of Pharmacy", "Master of Pharmacy"]
+        finally:
+            db.close()
+
+    @classmethod
     def get_courses(cls) -> List[str]:
         """Returns list of active course names."""
         cls.seed_academic_masters_if_empty()
@@ -101,7 +127,9 @@ class AcademicController:
             return [c.name for c in courses]
         except Exception as e:
             logger.error(f"Error fetching courses: {e}")
-            return [c["name"] for c in cls.DEFAULT_COURSES]
+            return ["Bachelor of Pharmacy", "Master of Pharmacy"]
+        finally:
+            db.close()
 
     @classmethod
     def get_branches(cls, course_name: Optional[str] = None) -> List[str]:
@@ -115,30 +143,56 @@ class AcademicController:
         except Exception as e:
             logger.error(f"Error fetching branches: {e}")
             return [b["name"] for b in cls.DEFAULT_BRANCHES]
+        finally:
+            db.close()
 
     @classmethod
-    def get_years(cls) -> List[str]:
-        """Returns list of academic year names."""
+    def get_years(cls, course_name: Optional[str] = None) -> List[str]:
+        """Returns list of academic year names filtered by course duration."""
         cls.seed_academic_masters_if_empty()
+        max_years = 4
+        if course_name:
+            cn = course_name.lower()
+            if "master" in cn or "mpharm" in cn or "m.pharmacy" in cn or "pg" in cn:
+                max_years = 2
+            elif "bachelor" in cn or "bpharm" in cn or "b.pharmacy" in cn or "ug" in cn:
+                max_years = 4
+
         db = get_db()
         try:
-            years = db.query(AcademicYear).filter(AcademicYear.is_active == True).order_by(AcademicYear.order_no).all()
+            years = db.query(AcademicYear).filter(
+                AcademicYear.is_active == True,
+                AcademicYear.order_no <= max_years
+            ).order_by(AcademicYear.order_no).all()
             return [y.name for y in years]
         except Exception as e:
             logger.error(f"Error fetching academic years: {e}")
-            return [y["name"] for y in cls.DEFAULT_YEARS]
+            return [y["name"] for y in cls.DEFAULT_YEARS if y["order_no"] <= max_years]
+        finally:
+            db.close()
 
     @classmethod
-    def get_semesters(cls, total_semesters: Optional[int] = None) -> List[str]:
-        """Returns list of semester names (e.g. Semester 1 to Semester 8)."""
+    def get_semesters(cls, total_semesters: Optional[int] = None, course_name: Optional[str] = None) -> List[str]:
+        """Returns list of semester names filtered by course total semesters."""
         cls.seed_academic_masters_if_empty()
+        max_sem = total_semesters
+        if not max_sem and course_name:
+            cn = course_name.lower()
+            if "master" in cn or "mpharm" in cn or "m.pharmacy" in cn or "pg" in cn:
+                max_sem = 4
+            elif "bachelor" in cn or "bpharm" in cn or "b.pharmacy" in cn or "ug" in cn:
+                max_sem = 8
+
         db = get_db()
         try:
             query = db.query(Semester).filter(Semester.is_active == True).order_by(Semester.order_no)
-            if total_semesters and total_semesters > 0:
-                query = query.filter(Semester.order_no <= total_semesters)
+            if max_sem and max_sem > 0:
+                query = query.filter(Semester.order_no <= max_sem)
             semesters = query.all()
             return [s.name for s in semesters]
         except Exception as e:
             logger.error(f"Error fetching semesters: {e}")
-            return [s["name"] for s in cls.DEFAULT_SEMESTERS]
+            return [s["name"] for s in cls.DEFAULT_SEMESTERS if not max_sem or s["order_no"] <= max_sem]
+        finally:
+            db.close()
+

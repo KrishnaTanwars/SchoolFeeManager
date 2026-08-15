@@ -20,6 +20,7 @@ class Student(Base):
     class_name = Column(String(50), nullable=True, default="", index=True)
     section = Column(String(20), nullable=True)
     course = Column(String(100), nullable=True, index=True)
+    course_category = Column(String(20), nullable=True, default="UG", index=True)  # UG / PG
     branch = Column(String(100), nullable=True, index=True)
     year = Column(String(50), nullable=True, index=True) # 1st Year, 2nd Year, etc.
     semester = Column(String(50), nullable=True, index=True) # Semester 1, Semester 2, etc.

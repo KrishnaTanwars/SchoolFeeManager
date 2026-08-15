@@ -55,6 +55,11 @@ class AcademicFilterWidget(QFrame):
         layout.setContentsMargins(6, 4, 6, 4)
         layout.setSpacing(10)
 
+        # Category Combo
+        layout.addWidget(QLabel("Category:"))
+        self.cmb_category = QComboBox()
+        layout.addWidget(self.cmb_category)
+
         # Course Combo
         layout.addWidget(QLabel("Course:"))
         self.cmb_course = QComboBox()
@@ -91,6 +96,10 @@ class AcademicFilterWidget(QFrame):
 
         prefix = ["All"] if self.show_all_option else []
 
+        # Populate Category
+        self.cmb_category.clear()
+        self.cmb_category.addItems(prefix + ["UG", "PG"])
+
         # Populate Courses
         courses = AcademicController.get_courses()
         self.cmb_course.clear()
@@ -121,6 +130,7 @@ class AcademicFilterWidget(QFrame):
         self.block_all_signals(False)
 
     def block_all_signals(self, block: bool):
+        self.cmb_category.blockSignals(block)
         self.cmb_course.blockSignals(block)
         self.cmb_branch.blockSignals(block)
         self.cmb_year.blockSignals(block)
@@ -129,7 +139,8 @@ class AcademicFilterWidget(QFrame):
             self.cmb_session.blockSignals(block)
 
     def connect_signals(self):
-        self.cmb_course.currentTextChanged.connect(self.on_filter_changed)
+        self.cmb_category.currentTextChanged.connect(self.on_category_changed)
+        self.cmb_course.currentTextChanged.connect(self.on_course_changed)
         self.cmb_branch.currentTextChanged.connect(self.on_filter_changed)
         self.cmb_year.currentTextChanged.connect(self.on_filter_changed)
         self.cmb_semester.currentTextChanged.connect(self.on_filter_changed)
@@ -137,6 +148,37 @@ class AcademicFilterWidget(QFrame):
             self.cmb_session.currentTextChanged.connect(self.on_filter_changed)
             from services.session_service import session_manager
             session_manager.session_changed.connect(self.on_session_changed_signal)
+
+    def on_category_changed(self, cat_text: str):
+        self.block_all_signals(True)
+        prefix = ["All"] if self.show_all_option else []
+        courses = AcademicController.get_courses_by_category(cat_text)
+        self.cmb_course.clear()
+        self.cmb_course.addItems(prefix + courses)
+        self.block_all_signals(False)
+        self.on_course_changed(self.cmb_course.currentText())
+
+    def on_course_changed(self, course_text: str):
+        self.block_all_signals(True)
+        prefix = ["All"] if self.show_all_option else []
+        crs_val = "" if course_text == "All" else course_text
+        years = AcademicController.get_years(course_name=crs_val)
+        semesters = AcademicController.get_semesters(course_name=crs_val)
+
+        curr_yr = self.cmb_year.currentText()
+        self.cmb_year.clear()
+        self.cmb_year.addItems(prefix + years)
+        if curr_yr in years:
+            self.cmb_year.setCurrentText(curr_yr)
+
+        curr_sem = self.cmb_semester.currentText()
+        self.cmb_semester.clear()
+        self.cmb_semester.addItems(prefix + semesters)
+        if curr_sem in semesters:
+            self.cmb_semester.setCurrentText(curr_sem)
+
+        self.block_all_signals(False)
+        self.on_filter_changed()
 
     def on_session_changed_signal(self, new_session: str):
         if self.include_session:
@@ -147,6 +189,7 @@ class AcademicFilterWidget(QFrame):
         self.filters_changed.emit(filters)
 
     def get_filter_values(self) -> Dict[str, str]:
+        cat = self.cmb_category.currentText().strip()
         c = self.cmb_course.currentText().strip()
         b = self.cmb_branch.currentText().strip()
         y = self.cmb_year.currentText().strip()
@@ -154,6 +197,7 @@ class AcademicFilterWidget(QFrame):
         sess = self.cmb_session.currentText().strip() if self.include_session else "All"
 
         return {
+            "category": "" if cat == "All" else cat,
             "course": "" if c == "All" else c,
             "branch": "" if b == "All" else b,
             "year": "" if y == "All" else y,
@@ -164,6 +208,7 @@ class AcademicFilterWidget(QFrame):
     def reset_filters(self):
         self.block_all_signals(True)
         if self.show_all_option:
+            self.cmb_category.setCurrentText("All")
             self.cmb_course.setCurrentText("All")
             self.cmb_branch.setCurrentText("All")
             self.cmb_year.setCurrentText("All")

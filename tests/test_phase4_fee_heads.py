@@ -17,11 +17,12 @@ class TestPhase4FeeHeadsMaster(unittest.TestCase):
         init_db()
 
     def setUp(self):
-        self.db = get_db()
         FeeController.seed_default_fee_heads()
+        self.db = get_db()
 
     def tearDown(self):
-        self.db.close()
+        if hasattr(self, 'db') and self.db:
+            self.db.close()
 
     def test_01_default_seed_fee_heads(self):
         """Verifies seeding of 14 UG and 3 PG default fee heads."""

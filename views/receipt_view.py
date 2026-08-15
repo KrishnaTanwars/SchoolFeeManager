@@ -608,9 +608,13 @@ class ReceiptView(QWidget):
 
     # ---------------- COURSE & SEMESTER BASED FEE HEAD FILTERING ----------------
     def load_fee_heads_for_student(self, student):
+        st_cat = getattr(student, "course_category", None)
         st_course = str(student.course or "").strip()
+        if not st_cat and st_course:
+            st_cat = "PG" if ("master" in st_course.lower() or "mpharm" in st_course.lower() or "pg" in st_course.lower()) else "UG"
+        st_cat = st_cat or "UG"
         st_sem = str(getattr(student, "semester", "") or "").strip()
-        badge_text = st_course if st_course else "All"
+        badge_text = f"[{st_cat}] {st_course}" if st_course else f"[{st_cat}]"
         if st_sem:
             badge_text += f" ({st_sem})"
         self.lbl_course_badge.setText(f"Fee Heads Filter: <b>{badge_text}</b>")

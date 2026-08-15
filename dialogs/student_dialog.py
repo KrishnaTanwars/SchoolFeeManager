@@ -158,37 +158,39 @@ class StudentDialog(QDialog):
         self.dt_dob.setDate(QDate(1900, 1, 1))
         form_layout.addRow("Date of Birth *:", self.dt_dob)
 
-        # Course & Branch Row
-        course_branch_layout = QHBoxLayout()
-        course_branch_layout.setSpacing(10)
+        # Course Category, Course & Branch Section
+        cat_crs_layout = QHBoxLayout()
+        cat_crs_layout.setSpacing(10)
+
+        self.cmb_category = QComboBox()
+        self.cmb_category.setFixedHeight(32)
+        self.cmb_category.addItems(["UG", "PG"])
+        self.cmb_category.currentTextChanged.connect(self.on_category_changed)
+
         self.cmb_course = QComboBox()
         self.cmb_course.setFixedHeight(32)
-        self.cmb_course.setEditable(True)
-        self.cmb_course.addItems(AcademicController.get_courses())
+        self.cmb_course.addItems(AcademicController.get_courses_by_category("UG"))
+        self.cmb_course.currentTextChanged.connect(self.on_course_changed)
 
         self.cmb_branch = QComboBox()
         self.cmb_branch.setFixedHeight(32)
-        self.cmb_branch.setEditable(True)
         self.cmb_branch.addItems(AcademicController.get_branches())
 
-        course_branch_layout.addWidget(self.cmb_course, stretch=1)
-        course_branch_layout.addWidget(self.cmb_branch, stretch=1)
-        form_layout.addRow("Course & Branch *:", course_branch_layout)
+        cat_crs_layout.addWidget(self.cmb_category, stretch=1)
+        cat_crs_layout.addWidget(self.cmb_course, stretch=2)
+        cat_crs_layout.addWidget(self.cmb_branch, stretch=1)
+        form_layout.addRow("Category, Course & Branch *:", cat_crs_layout)
 
-        # Year & Semester Row (New Ordinal Format: 1st, 2nd, 1st Sem, etc.)
+        # Year & Semester Row (Ordinal Format: 1st, 2nd, 1st Sem, etc.)
         yr_sem_layout = QHBoxLayout()
         yr_sem_layout.setSpacing(10)
         self.cmb_year = QComboBox()
         self.cmb_year.setFixedHeight(32)
-        self.cmb_year.setEditable(True)
-        years = AcademicController.get_years()
-        self.cmb_year.addItems(["None"] + years)
 
         self.cmb_semester = QComboBox()
         self.cmb_semester.setFixedHeight(32)
-        self.cmb_semester.setEditable(True)
-        semesters = AcademicController.get_semesters()
-        self.cmb_semester.addItems(["None"] + semesters)
+
+        self.update_year_and_semester_options()
 
         yr_sem_layout.addWidget(self.cmb_year, stretch=1)
         yr_sem_layout.addWidget(self.cmb_semester, stretch=1)
@@ -335,6 +337,38 @@ class StudentDialog(QDialog):
             logger.error(f"Error processing student photo: {e}", exc_info=True)
             QMessageBox.critical(self, "Photo Error", f"Failed to save student photo: {str(e)}")
 
+    def on_category_changed(self, cat_text: str):
+        self.cmb_course.blockSignals(True)
+        self.cmb_course.clear()
+        courses = AcademicController.get_courses_by_category(cat_text)
+        self.cmb_course.addItems(courses)
+        self.cmb_course.blockSignals(False)
+        self.on_course_changed(self.cmb_course.currentText())
+
+    def on_course_changed(self, course_text: str):
+        self.update_year_and_semester_options()
+
+    def update_year_and_semester_options(self):
+        course_text = self.cmb_course.currentText() if hasattr(self, "cmb_course") else ""
+        years = AcademicController.get_years(course_name=course_text)
+        semesters = AcademicController.get_semesters(course_name=course_text)
+
+        self.cmb_year.blockSignals(True)
+        curr_yr = self.cmb_year.currentText()
+        self.cmb_year.clear()
+        self.cmb_year.addItems(["None"] + years)
+        if curr_yr in years:
+            self.cmb_year.setCurrentText(curr_yr)
+        self.cmb_year.blockSignals(False)
+
+        self.cmb_semester.blockSignals(True)
+        curr_sem = self.cmb_semester.currentText()
+        self.cmb_semester.clear()
+        self.cmb_semester.addItems(["None"] + semesters)
+        if curr_sem in semesters:
+            self.cmb_semester.setCurrentText(curr_sem)
+        self.cmb_semester.blockSignals(False)
+
     def remove_photo(self):
         self.current_photo_path = None
         self.update_photo_preview()
@@ -347,6 +381,12 @@ class StudentDialog(QDialog):
         self.txt_mother_name.setText(s.mother_name or "")
         self.current_photo_path = getattr(s, "photo_path", None)
         self.update_photo_preview()
+
+        cat = getattr(s, "course_category", None)
+        if not cat and s.course:
+            cat = "PG" if ("master" in s.course.lower() or "mpharm" in s.course.lower() or "pg" in s.course.lower()) else "UG"
+        if cat:
+            self.cmb_category.setCurrentText(cat)
 
         if getattr(s, "date_of_birth", None):
             self.dt_dob.setDate(QDate(s.date_of_birth.year, s.date_of_birth.month, s.date_of_birth.day))
@@ -386,6 +426,7 @@ class StudentDialog(QDialog):
         adm_no = self.txt_admission_no.text().strip()
         name = self.txt_name.text().strip()
         father_name = self.txt_father_name.text().strip()
+        category_name = self.cmb_category.currentText().strip()
         course_name = self.cmb_course.currentText().strip()
         mobile = self.txt_mobile.text().strip()
         aadhaar = self.txt_aadhaar.text().strip()
@@ -453,6 +494,7 @@ class StudentDialog(QDialog):
             "father_name": father_name,
             "mother_name": self.txt_mother_name.text().strip(),
             "date_of_birth": dob_date,
+            "course_category": category_name,
             "course": course_name,
             "branch": self.cmb_branch.currentText().strip(),
             "year": "" if yr == "None" else yr,

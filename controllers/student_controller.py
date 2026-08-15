@@ -122,6 +122,11 @@ class StudentController:
                 if existing_aadhaar:
                     return False, "This Aadhaar Number is already registered."
 
+            course_val = data.get("course", "").strip()
+            category_val = data.get("course_category", "").strip()
+            if not category_val:
+                category_val = "PG" if ("master" in course_val.lower() or "mpharm" in course_val.lower() or "pg" in course_val.lower()) else "UG"
+
             from services.session_service import session_manager
             student = Student(
                 admission_no=admission_no,
@@ -130,9 +135,10 @@ class StudentController:
                 father_name=data.get("father_name", "").strip(),
                 mother_name=data.get("mother_name", "").strip(),
                 date_of_birth=data.get("date_of_birth"),
-                class_name=data.get("class_name", "").strip() or data.get("course", "").strip(),
+                class_name=data.get("class_name", "").strip() or course_val,
                 section=data.get("section", "").strip(),
-                course=data.get("course", "").strip(),
+                course=course_val,
+                course_category=category_val,
                 branch=data.get("branch", "").strip(),
                 year=data.get("year", "").strip(),
                 semester=data.get("semester", "").strip(),
@@ -186,14 +192,20 @@ class StudentController:
                 if existing_aadhaar:
                     return False, "This Aadhaar Number is already registered."
 
+            course_val = data.get("course", student.course or "").strip()
+            category_val = data.get("course_category", getattr(student, "course_category", None) or "").strip()
+            if not category_val:
+                category_val = "PG" if ("master" in course_val.lower() or "mpharm" in course_val.lower() or "pg" in course_val.lower()) else "UG"
+
             student.roll_no = data.get("roll_no", "").strip()
             student.name = data.get("name", "").strip()
             student.father_name = data.get("father_name", "").strip()
             student.mother_name = data.get("mother_name", "").strip()
             student.date_of_birth = data.get("date_of_birth")
-            student.class_name = data.get("class_name", "").strip() or data.get("course", "").strip()
+            student.class_name = data.get("class_name", "").strip() or course_val
             student.section = data.get("section", "").strip()
-            student.course = data.get("course", "").strip()
+            student.course = course_val
+            student.course_category = category_val
             student.branch = data.get("branch", "").strip()
             student.year = data.get("year", "").strip()
             student.semester = data.get("semester", "").strip()

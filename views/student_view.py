@@ -154,7 +154,7 @@ class StudentView(QWidget):
         header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Session
         header.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Status
         header.setSectionResizeMode(7, QHeaderView.Fixed)           # Actions
-        self.table.setColumnWidth(7, 160)
+        self.table.setColumnWidth(7, 120)
 
         self.table.setAlternatingRowColors(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
@@ -249,7 +249,7 @@ class StudentView(QWidget):
             self.table.setItem(row_idx, 5, QTableWidgetItem(s.academic_session))
             self.table.setItem(row_idx, 6, QTableWidgetItem(s.status))
 
-            # Compact Icon Actions Container (👁️, 💰, ✏️, 🗑️)
+            # Compact Icon Actions Container (👁️ View, 💰 Ledger, ✏️ Edit) — Individual Delete Removed as requested
             action_widget = QWidget()
             act_layout = QHBoxLayout(action_widget)
             act_layout.setContentsMargins(2, 2, 2, 2)
@@ -276,17 +276,9 @@ class StudentView(QWidget):
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, st=s: self.edit_student(st))
 
-            btn_del = QPushButton("🗑️")
-            btn_del.setFixedSize(30, 28)
-            btn_del.setToolTip("Delete Student (Requires Admin Password)")
-            btn_del.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none;")
-            btn_del.setCursor(Qt.PointingHandCursor)
-            btn_del.clicked.connect(lambda _, st=s: self.delete_student(st))
-
             act_layout.addWidget(btn_view)
             act_layout.addWidget(btn_ledger)
             act_layout.addWidget(btn_edit)
-            act_layout.addWidget(btn_del)
             self.table.setCellWidget(row_idx, 7, action_widget)
 
         self.table.blockSignals(False)
@@ -416,30 +408,6 @@ class StudentView(QWidget):
             self.populate_filters()
             self.load_students()
 
-    def delete_student(self, student):
-        from dialogs.admin_auth_dialog import AdminAuthDialog
-        auth_dlg = AdminAuthDialog(
-            self,
-            action_title="Student Delete Protection",
-            action_context=f"Delete Student: '{student.name}' ({student.admission_no})",
-            module="Student Master"
-        )
-        if not auth_dlg.exec():
-            return
-
-        reply = QMessageBox.question(
-            self, "Confirm Delete Student",
-            f"Are you sure you want to delete student '{student.name}' ({student.admission_no})?\nThis action cannot be undone.",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-        )
-        if reply == QMessageBox.Yes:
-            success, msg = StudentController.delete_student(student.id)
-            if success:
-                QMessageBox.information(self, "Success", msg)
-                self.load_students()
-            else:
-                QMessageBox.critical(self, "Error", msg)
-
     def download_sample_csv(self):
         path, _ = QFileDialog.getSaveFileName(self, "Save Sample CSV Template", "sample_students_import.csv", "CSV Files (*.csv)")
         if path:
@@ -473,7 +441,7 @@ class StudentView(QWidget):
         if not action:
             return
 
-        headers = ["Admission / Enrollment No", "Student Name", "Date of Birth", "Class / Course", "Section", "Father Name", "Mother Name", "Mobile", "Aadhaar Number", "Address", "Date of Admission", "Session", "Status"]
+        headers = ["Admission / Enrollment No", "Student Name", "Student Photo", "Date of Birth", "Class / Course", "Section", "Father Name", "Mother Name", "Mobile", "Aadhaar Number", "Address", "Date of Admission", "Session", "Status"]
 
         if action in (act_filter_csv, act_filter_excel, act_filter_pdf):
             students = self.current_students
@@ -486,6 +454,7 @@ class StudentView(QWidget):
             [
                 s.admission_no,
                 s.name,
+                getattr(s, "photo_path", None) or "",
                 format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "",
                 s.class_name,
                 s.section or "",

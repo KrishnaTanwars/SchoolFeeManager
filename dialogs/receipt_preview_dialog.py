@@ -141,22 +141,22 @@ def generate_receipt_html(receipt: Receipt) -> str:
     <html>
     <head>
         <style>
-            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; margin: 0; padding: 12px; background-color: #f1f5f9; }}
-            .receipt-card {{ border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }}
-            .header-table {{ width: 100%; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 12px; }}
-            .school-title {{ color: #1e3a8a; font-size: 19px; font-weight: bold; margin: 0; text-align: center; }}
-            .school-subtitle {{ color: #475569; font-size: 11px; margin-top: 4px; text-align: center; }}
-            .badge-container {{ text-align: center; margin: 10px 0 14px 0; }}
-            .badge {{ background-color: #1e3a8a; color: #ffffff; padding: 5px 18px; font-weight: bold; font-size: 12px; border-radius: 4px; display: inline-block; letter-spacing: 1px; }}
-            .info-table {{ width: 100%; border-collapse: collapse; background-color: #f8fafc; border: 1px solid #cbd5e1; margin-bottom: 14px; font-size: 11px; }}
-            .info-table td {{ padding: 5px 8px; border: 1px solid #e2e8f0; }}
+            body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; margin: 0; padding: 4px; background-color: #f1f5f9; }}
+            .receipt-card {{ border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }}
+            .header-table {{ width: 100%; border-bottom: 2px solid #1e3a8a; padding-bottom: 4px; margin-bottom: 6px; }}
+            .school-title {{ color: #1e3a8a; font-size: 17px; font-weight: bold; margin: 0; text-align: center; }}
+            .school-subtitle {{ color: #475569; font-size: 10.5px; margin-top: 2px; text-align: center; }}
+            .badge-container {{ text-align: center; margin: 6px 0 8px 0; }}
+            .badge {{ background-color: #1e3a8a; color: #ffffff; padding: 4px 14px; font-weight: bold; font-size: 11px; border-radius: 4px; display: inline-block; letter-spacing: 1px; }}
+            .info-table {{ width: 100%; border-collapse: collapse; background-color: #f8fafc; border: 1px solid #cbd5e1; margin-bottom: 8px; font-size: 10.5px; }}
+            .info-table td {{ padding: 3px 6px; border: 1px solid #e2e8f0; }}
             .info-label {{ font-weight: bold; color: #334155; width: 18%; }}
             .info-val {{ color: #0f172a; width: 32%; }}
-            .fee-table {{ width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; border: 1px solid #cbd5e1; }}
-            .fee-table th {{ background-color: #1e3a8a; color: #ffffff; padding: 7px 8px; font-weight: bold; text-align: left; }}
-            .words-box {{ background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 7px 10px; font-size: 11px; border-radius: 4px; margin-bottom: 12px; }}
-            .payment-box {{ background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 7px 10px; font-size: 11px; border-radius: 4px; margin-bottom: 18px; color: #334155; }}
-            .sig-table {{ width: 100%; margin-top: 25px; font-size: 11px; color: #475569; }}
+            .fee-table {{ width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10.5px; border: 1px solid #cbd5e1; }}
+            .fee-table th {{ background-color: #1e3a8a; color: #ffffff; padding: 5px 6px; font-weight: bold; text-align: left; }}
+            .words-box {{ background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 5px 8px; font-size: 10.5px; border-radius: 4px; margin-bottom: 8px; }}
+            .payment-box {{ background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 5px 8px; font-size: 10.5px; border-radius: 4px; margin-bottom: 10px; color: #334155; }}
+            .sig-table {{ width: 100%; margin-top: 14px; font-size: 10.5px; color: #475569; }}
         </style>
     </head>
     <body>

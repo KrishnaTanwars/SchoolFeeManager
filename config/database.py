@@ -83,6 +83,8 @@ def run_migrations():
             student_cols = {row[1] for row in cursor.fetchall()}
             if "course" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN course VARCHAR(100);")
+            if "course_category" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN course_category VARCHAR(20) DEFAULT 'UG';")
             if "branch" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN branch VARCHAR(100);")
             if "year" not in student_cols:
@@ -95,6 +97,10 @@ def run_migrations():
                 cursor.execute("ALTER TABLE students ADD COLUMN aadhaar_number VARCHAR(12);")
             if "photo_path" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN photo_path VARCHAR(255);")
+
+            # Backfill student course_category based on course name
+            cursor.execute("UPDATE students SET course_category = 'PG' WHERE course_category IS NULL AND (LOWER(course) LIKE '%master%' OR LOWER(course) LIKE '%mpharm%' OR LOWER(course) LIKE '%pg%');")
+            cursor.execute("UPDATE students SET course_category = 'UG' WHERE course_category IS NULL OR course_category = '';")
 
             # Check fee_categories columns and indexes
             cursor.execute("PRAGMA table_info(fee_categories);")

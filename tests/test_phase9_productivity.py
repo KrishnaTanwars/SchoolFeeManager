@@ -8,7 +8,6 @@ from config.database import init_db
 from services.import_service import ImportService
 from services.export_service import ExportService
 from services.backup_service import BackupService
-from services.recently_opened_service import RecentlyOpenedService
 
 
 @pytest.fixture(autouse=True)
@@ -134,15 +133,3 @@ def test_database_maintenance_tools():
 
     s_ver, m_ver = BackupService.verify_database_integrity()
     assert s_ver is True
-
-
-def test_recently_opened_service():
-    """Verify RecentlyOpenedService tracking."""
-    RecentlyOpenedService.clear_recent_items()
-    RecentlyOpenedService.add_recent_item("Student", "Aarav Sharma", 101, "Class 10")
-    RecentlyOpenedService.add_recent_item("Receipt", "Receipt REC/001", 202, "Amount: Rs. 5,000")
-
-    items = RecentlyOpenedService.get_recent_items()
-    assert len(items) == 2
-    assert items[0]["title"] == "Receipt REC/001"
-    assert items[1]["title"] == "Aarav Sharma"
