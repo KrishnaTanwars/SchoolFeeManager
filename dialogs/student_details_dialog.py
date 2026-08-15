@@ -122,12 +122,112 @@ class StudentDetailsDialog(QDialog):
 
         main_layout.addWidget(grp_guardian)
 
+        # Fee Status Summary & Payment History Group Box
+        grp_fee = QGroupBox("Fee & Payment History Summary")
+        grp_fee.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
+        v_fee = QVBoxLayout(grp_fee)
+        v_fee.setSpacing(10)
+
+        # Calculate student fee metrics
+        from config.database import get_db
+        from models.receipt import Receipt
+        db = get_db()
+        receipts = []
+        tot_paid = 0.0
+        tot_billed = 0.0
+        curr_due = 0.0
+        try:
+            receipts = db.query(Receipt).filter(Receipt.student_id == s.id).order_by(Receipt.id.desc()).all()
+            for r in receipts:
+                tot_paid += (r.paid_amount or 0.0)
+                tot_billed += (r.total_amount or 0.0)
+            if receipts:
+                curr_due = receipts[0].due_amount or 0.0
+        except Exception:
+            pass
+        finally:
+            db.close()
+
+        cards_layout = QHBoxLayout()
+        cards_layout.setSpacing(10)
+
+        # Card 1: Total Paid
+        c1 = QFrame()
+        c1.setStyleSheet("background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 8px;")
+        v1 = QVBoxLayout(c1)
+        v1.setContentsMargins(6,6,6,6)
+        lbl_c1_t = QLabel("TOTAL PAID")
+        lbl_c1_t.setStyleSheet("font-size: 10px; font-weight: 700; color: #166534; border: none;")
+        lbl_c1_v = QLabel(f"₹ {tot_paid:,.2f}")
+        lbl_c1_v.setStyleSheet("font-size: 15px; font-weight: 800; color: #15803d; border: none;")
+        v1.addWidget(lbl_c1_t)
+        v1.addWidget(lbl_c1_v)
+
+        # Card 2: Total Billed
+        c2 = QFrame()
+        c2.setStyleSheet("background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px;")
+        v2 = QVBoxLayout(c2)
+        v2.setContentsMargins(6,6,6,6)
+        lbl_c2_t = QLabel("TOTAL BILLED")
+        lbl_c2_t.setStyleSheet("font-size: 10px; font-weight: 700; color: #1e40af; border: none;")
+        lbl_c2_v = QLabel(f"₹ {tot_billed:,.2f}")
+        lbl_c2_v.setStyleSheet("font-size: 15px; font-weight: 800; color: #1d4ed8; border: none;")
+        v2.addWidget(lbl_c2_t)
+        v2.addWidget(lbl_c2_v)
+
+        # Card 3: Outstanding Due
+        c3 = QFrame()
+        due_bg = "#fef2f2" if curr_due > 0 else "#f8fafc"
+        due_border = "#fecaca" if curr_due > 0 else "#cbd5e1"
+        due_fg = "#b91c1c" if curr_due > 0 else "#047857"
+        c3.setStyleSheet(f"background-color: {due_bg}; border: 1px solid {due_border}; border-radius: 6px; padding: 8px;")
+        v3 = QVBoxLayout(c3)
+        v3.setContentsMargins(6,6,6,6)
+        lbl_c3_t = QLabel("OUTSTANDING DUE")
+        lbl_c3_t.setStyleSheet(f"font-size: 10px; font-weight: 700; color: {due_fg}; border: none;")
+        lbl_c3_v = QLabel(f"₹ {curr_due:,.2f}" if curr_due > 0 else "₹ 0.00 (PAID)")
+        lbl_c3_v.setStyleSheet(f"font-size: 15px; font-weight: 800; color: {due_fg}; border: none;")
+        v3.addWidget(lbl_c3_t)
+        v3.addWidget(lbl_c3_v)
+
+        cards_layout.addWidget(c1)
+        cards_layout.addWidget(c2)
+        cards_layout.addWidget(c3)
+        v_fee.addLayout(cards_layout)
+
+        # Payment Receipts Mini Table
+        if receipts:
+            from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+            tbl_receipts = QTableWidget()
+            tbl_receipts.setColumnCount(5)
+            tbl_receipts.setHorizontalHeaderLabels(["Receipt No", "Date", "Session", "Mode", "Paid (₹)"])
+            tbl_receipts.setRowCount(len(receipts))
+            tbl_receipts.setFixedHeight(120)
+            tbl_receipts.verticalHeader().setVisible(False)
+            tbl_receipts.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+            tbl_receipts.setStyleSheet("QTableWidget { background-color: #ffffff; border: 1px solid #e2e8f0; font-size: 11px; } QHeaderView::section { font-weight: bold; background-color: #f1f5f9; }")
+
+            for row, r in enumerate(receipts):
+                tbl_receipts.setItem(row, 0, QTableWidgetItem(r.receipt_no))
+                tbl_receipts.setItem(row, 1, QTableWidgetItem(format_date(r.receipt_date)))
+                tbl_receipts.setItem(row, 2, QTableWidgetItem(r.academic_session or "N/A"))
+                tbl_receipts.setItem(row, 3, QTableWidgetItem(r.payment_mode or "Cash"))
+                tbl_receipts.setItem(row, 4, QTableWidgetItem(f"₹ {(r.paid_amount or 0.0):,.2f}"))
+
+            v_fee.addWidget(tbl_receipts)
+        else:
+            lbl_no_rec = QLabel("No past fee payment receipts recorded for this student.")
+            lbl_no_rec.setStyleSheet("font-size: 11px; color: #64748b; font-style: italic;")
+            v_fee.addWidget(lbl_no_rec)
+
+        main_layout.addWidget(grp_fee)
+
         # Action / Close Bar
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
 
-        btn_close = QPushButton("Close Details")
-        btn_close.setFixedWidth(120)
+        btn_close = QPushButton("Close Profile")
+        btn_close.setFixedWidth(130)
         btn_close.setFixedHeight(34)
         btn_close.setCursor(Qt.PointingHandCursor)
         btn_close.clicked.connect(self.accept)
@@ -143,3 +243,4 @@ class StudentDetailsDialog(QDialog):
         lbl.setWordWrap(True)
         lbl.setStyleSheet("font-weight: 600; color: #0f172a; border: none;")
         return lbl
+

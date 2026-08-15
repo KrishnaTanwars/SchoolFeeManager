@@ -82,6 +82,12 @@ class StudentView(QWidget):
         self.lbl_selected_count = QLabel("Selected: 0")
         self.lbl_selected_count.setStyleSheet("font-weight: bold; color: #1e3a8a; font-size: 13px; margin-left: 10px;")
 
+        self.btn_promote = QPushButton("🎓 Promote Student(s)")
+        self.btn_promote.setFixedHeight(36)
+        self.btn_promote.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; padding: 0 12px; border-radius: 4px;")
+        self.btn_promote.setCursor(Qt.PointingHandCursor)
+        self.btn_promote.clicked.connect(self.promote_selected_students)
+
         self.btn_bulk_delete = QPushButton("🗑️ Delete Selected")
         self.btn_bulk_delete.setFixedHeight(36)
         self.btn_bulk_delete.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; padding: 0 12px; border-radius: 4px;")
@@ -91,6 +97,7 @@ class StudentView(QWidget):
         filter_layout.addWidget(self.txt_search, stretch=3)
         filter_layout.addWidget(self.cmb_status_filter, stretch=1)
         filter_layout.addWidget(self.lbl_selected_count)
+        filter_layout.addWidget(self.btn_promote)
         filter_layout.addWidget(self.btn_bulk_delete)
         layout.addLayout(filter_layout)
 
@@ -439,9 +446,39 @@ class StudentView(QWidget):
             filter_str = "PDF Files (*.pdf)"
 
         path, _ = QFileDialog.getSaveFileName(self, f"Save {title}", "", filter_str)
-        if path:
-            success, msg = ExportService.export_data_by_format(title, headers, rows, fmt, filename_prefix="Students", output_path=path)
-            if success:
-                QMessageBox.information(self, "Export Successful", f"Exported {len(students)} student records to:\n{msg}")
+        if not path:
+            return
+
+        try:
+            if fmt == "csv":
+                ExportService.export_to_csv(headers, rows, path)
+            elif fmt == "excel":
+                ExportService.export_to_excel(headers, rows, path)
             else:
-                QMessageBox.critical(self, "Export Error", msg)
+                PDFService.generate_table_pdf(title, headers, rows, path)
+            QMessageBox.information(self, "Export Complete", f"Exported {len(rows)} records successfully:\n{path}")
+        except Exception as e:
+            QMessageBox.critical(self, "Export Failed", f"Failed to export data: {e}")
+
+    def promote_selected_students(self):
+        """Opens PromotionDialog for checked or selected students."""
+        selected_students = self.get_selected_students()
+        if not selected_students:
+            # Fallback to current row selection if no checkboxes checked
+            curr_row = self.table.currentRow()
+            if curr_row >= 0:
+                item = self.table.item(curr_row, 1)
+                if item:
+                    st = item.data(Qt.UserRole)
+                    if st:
+                        selected_students = [st]
+
+        if not selected_students:
+            QMessageBox.warning(self, "Selection Required", "Please check or select 1 or more students to promote.")
+            return
+
+        from dialogs.promotion_dialog import PromotionDialog
+        dlg = PromotionDialog(self, students=selected_students)
+        if dlg.exec() == QDialog.Accepted:
+            self.load_students()
+

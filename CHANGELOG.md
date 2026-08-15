@@ -2,6 +2,18 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.7.0] - Phase 2 Release (Advanced Student Management & Academic Promotion)
+
+### 🎓 Academic Promotion Engine & Advanced Student Management
+- **Transactional Academic Promotion Engine**: Created `PromotionService` delivering single and bulk student promotions. Supports standard B. Pharmacy 4-year/8-semester progression and M. Pharmacy 2-year/4-semester progression. Prevents invalid promotion attempts (such as PG Semester 5+). All operations wrapped in database transactions for 100% atomic rollback on error, with audit entries written to `AuditLog`.
+- **Bulk Promotion & Batch Dialog**: Added `"🎓 Promote Student(s)"` toolbar button in Student Directory with Select All / Deselect All support, dynamic Target Year/Semester calculation, live promotion preview table (Student Name, Admission No, Current -> Target), and Admin Password confirmation guard.
+- **Enhanced Student Profile (`StudentDetailsDialog`)**: Integrated Fee Summary Card (Total Billed, Total Paid, Remaining Due) and interactive Receipt History Payment Table into Student Details profile modal.
+- **Hardened Duplicate Validation**: Enforced strict uniqueness validation for Admission Number and Aadhaar Number on student creation and update (excluding current student ID during edit).
+- **Student Photo Management**: Enhanced photo upload/preview/storage/removal in `StudentDialog`, embedding student photo in profile modal and Student Profile PDFs (`generate_student_profile_pdf`).
+- **A4 1-Page Fee Receipt Layout**: Optimized ReportLab PDF page margins, header spacing, and student table padding, ensuring both UG (14 fee heads) and PG (4 fee heads) receipts fit on **EXACTLY 1 A4 PAGE**.
+
+---
+
 ## [2.6.0] - Phase 1 Release (Stability & Core Reliability)
 
 ### 🎯 Core Transaction Reliability & Workflow Hardening

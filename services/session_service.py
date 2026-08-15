@@ -85,6 +85,14 @@ class SessionManager:
             db.close()
 
     @classmethod
+    def get_active_session(cls) -> str:
+        return cls.get_current_session()
+
+    @classmethod
+    def set_active_session(cls, session_name: str) -> tuple[bool, str]:
+        return cls.set_current_session(session_name)
+
+    @classmethod
     def get_all_sessions(cls) -> List[str]:
         """Returns list of all session names."""
         db = get_db()
@@ -98,3 +106,6 @@ class SessionManager:
             return ["2024-2025"]
         finally:
             db.close()
+
+session_manager = SessionManager()
+

@@ -173,6 +173,14 @@ class StudentController:
             if not student:
                 return False, "Student record not found."
 
+            # Admission No Duplicate Check
+            new_adm = data.get("admission_no", "").strip() if data.get("admission_no") else ""
+            if new_adm and new_adm != student.admission_no:
+                existing_adm = db.query(Student).filter(Student.admission_no == new_adm, Student.id != student_id).first()
+                if existing_adm:
+                    return False, f"Admission Number '{new_adm}' is already registered."
+                student.admission_no = new_adm
+
             # Aadhaar Validation & Duplicate Check
             aadhaar = data.get("aadhaar_number", "").strip() if data.get("aadhaar_number") else ""
             if aadhaar:

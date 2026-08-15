@@ -53,7 +53,7 @@ class PDFService:
             output_path,
             pagesize=A4,
             leftMargin=8 * mm, rightMargin=8 * mm,
-            topMargin=7 * mm, bottomMargin=7 * mm
+            topMargin=5 * mm, bottomMargin=5 * mm
         )
 
         styles = getSampleStyleSheet()
@@ -62,8 +62,8 @@ class PDFService:
             'SchoolSubtitle',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=8,
-            leading=10,
+            fontSize=7.5,
+            leading=9,
             textColor=colors.HexColor("#475569"),
             alignment=1
         )
@@ -71,18 +71,29 @@ class PDFService:
             'ReceiptBadge',
             parent=styles['Heading2'],
             fontName='Helvetica-Bold',
-            fontSize=10.5,
-            leading=13,
+            fontSize=10,
+            leading=12,
             textColor=colors.HexColor("#1e3a8a"),
             alignment=1
         )
 
         # Dynamic font sizing based on fee item count for guaranteed 1-page A4 fit
         item_count = len(receipt.items) if receipt.items else 1
-        font_sz = 7.5 if item_count > 12 else 8.0
-        leading_sz = 9.0 if item_count > 12 else 10.0
-        padding_sz = 1.2 if item_count > 12 else 1.8
-        spacer_sz = 1.2 * mm if item_count > 12 else 2.0 * mm
+        if item_count >= 12:
+            font_sz = 7.0
+            leading_sz = 8.2
+            padding_sz = 0.8
+            spacer_sz = 0.8 * mm
+        elif item_count >= 8:
+            font_sz = 7.5
+            leading_sz = 9.0
+            padding_sz = 1.0
+            spacer_sz = 1.0 * mm
+        else:
+            font_sz = 8.0
+            leading_sz = 10.0
+            padding_sz = 1.5
+            spacer_sz = 1.5 * mm
 
         label_bold = ParagraphStyle(
             'LabelBold',
@@ -123,14 +134,14 @@ class PDFService:
         header_data = []
         if logo_path:
             try:
-                img = Image(logo_path, width=18*mm, height=18*mm)
-                header_data.append([img, Paragraph(f"<b><font size='12' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+                img = Image(logo_path, width=15*mm, height=15*mm)
+                header_data.append([img, Paragraph(f"<b><font size='11' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
             except Exception:
-                header_data.append([Paragraph(f"<b><font size='12' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+                header_data.append([Paragraph(f"<b><font size='11' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
         else:
-            header_data.append([Paragraph(f"<b><font size='12' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
+            header_data.append([Paragraph(f"<b><font size='11' color='#1e3a8a'>{school_name}</font></b><br/>{school_addr}<br/>Ph: {school_phone} | Email: {school_email}", subtitle_style)])
 
-        hdr_table = Table(header_data, colWidths=[194*mm] if not logo_path else [22*mm, 172*mm])
+        hdr_table = Table(header_data, colWidths=[194*mm] if not logo_path else [18*mm, 176*mm])
         hdr_table.setStyle(TableStyle([
             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
@@ -138,9 +149,9 @@ class PDFService:
             ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ]))
         story.append(hdr_table)
-        story.append(Spacer(1, 1 * mm))
+        story.append(Spacer(1, 0.5 * mm))
 
-        story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor("#1e3a8a"), spaceBefore=1*mm, spaceAfter=1*mm))
+        story.append(HRFlowable(width="100%", thickness=1.0, color=colors.HexColor("#1e3a8a"), spaceBefore=0.5*mm, spaceAfter=0.5*mm))
 
         # Receipt Title Badge
         story.append(Paragraph("FEE PAYMENT RECEIPT", badge_style))
@@ -180,14 +191,14 @@ class PDFService:
             ]
         ]
 
-        info_table = Table(student_info_data, colWidths=[40*mm, 57*mm, 35*mm, 62*mm])
+        info_table = Table(student_info_data, colWidths=[46*mm, 51*mm, 37*mm, 60*mm])
         info_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f8fafc")),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 1.5),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+            ('TOPPADDING', (0,0), (-1,-1), 1.0),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 1.0),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
             ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
@@ -284,8 +295,8 @@ class PDFService:
         words_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f1f5f9")),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
-            ('TOPPADDING', (0,0), (-1,-1), 2),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+            ('TOPPADDING', (0,0), (-1,-1), 1.5),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
             ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
@@ -332,8 +343,8 @@ class PDFService:
         pay_details_table.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f8fafc")),
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#94a3b8")),
-            ('TOPPADDING', (0,0), (-1,-1), 2),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+            ('TOPPADDING', (0,0), (-1,-1), 1.5),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
             ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))
@@ -351,8 +362,8 @@ class PDFService:
         sig_table.setStyle(TableStyle([
             ('ALIGN', (1,0), (1,0), 'RIGHT'),
             ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
-            ('TOPPADDING', (0,0), (-1,-1), 1),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 1),
+            ('TOPPADDING', (0,0), (-1,-1), 0),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ]))
         story.append(sig_table)
 

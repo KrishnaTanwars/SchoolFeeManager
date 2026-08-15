@@ -158,8 +158,7 @@ class AcademicFilterWidget(QFrame):
         self.cmb_semester.currentTextChanged.connect(self.on_filter_changed)
         if self.include_session:
             self.cmb_session.currentTextChanged.connect(self.on_filter_changed)
-            from services.session_service import session_manager
-            session_manager.session_changed.connect(self.on_session_changed_signal)
+
 
     def on_category_changed(self, cat_text: str):
         self.block_all_signals(True)
