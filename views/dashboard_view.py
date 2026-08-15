@@ -83,7 +83,7 @@ class DashboardView(QWidget):
 
         layout.addWidget(actions_group)
 
-        # Lower Split: Recent Receipts Ledger (Left) + Student Analytics (Right)
+        # Lower Split: Recent Receipts Ledger (Expanded) + Student Analytics (Right)
         bottom_split = QHBoxLayout()
         bottom_split.setSpacing(15)
 
@@ -108,7 +108,7 @@ class DashboardView(QWidget):
         apply_responsive_table_formatting(self.table_recent)
 
         recent_layout.addWidget(self.table_recent)
-        bottom_split.addWidget(recent_group, stretch=2)
+        bottom_split.addWidget(recent_group, stretch=3)
 
         # Student Analytics by Course Section
         analytics_group = QGroupBox("Student Statistics by Course")
@@ -125,44 +125,7 @@ class DashboardView(QWidget):
         analytics_layout.addWidget(self.table_analytics)
         bottom_split.addWidget(analytics_group, stretch=1)
 
-        layout.addLayout(bottom_split)
-
-        # Recent Activity & Recently Opened Split Section (Section 10 & 11)
-        activity_split = QHBoxLayout()
-        activity_split.setSpacing(15)
-
-        # Recent Activity (Audit Log Widget)
-        act_group = QGroupBox("📜  Recent System Activity (Last 20 Events)")
-        v_act = QVBoxLayout(act_group)
-        v_act.setContentsMargins(10, 10, 10, 10)
-
-        self.table_recent_activity = QTableWidget()
-        self.table_recent_activity.setColumnCount(4)
-        self.table_recent_activity.setHorizontalHeaderLabels(["Timestamp", "User", "Action", "Description Details"])
-        self.table_recent_activity.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
-        self.table_recent_activity.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
-        self.table_recent_activity.setAlternatingRowColors(True)
-        apply_responsive_table_formatting(self.table_recent_activity)
-
-        v_act.addWidget(self.table_recent_activity)
-        activity_split.addWidget(act_group, stretch=2)
-
-        # Recently Opened Quick Access
-        rec_opened_group = QGroupBox("📌  Recently Opened Items")
-        v_rec_opened = QVBoxLayout(rec_opened_group)
-        v_rec_opened.setContentsMargins(10, 10, 10, 10)
-
-        self.table_recently_opened = QTableWidget()
-        self.table_recently_opened.setColumnCount(3)
-        self.table_recently_opened.setHorizontalHeaderLabels(["Type", "Title / Item", "Time"])
-        self.table_recently_opened.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_recently_opened.setAlternatingRowColors(True)
-        apply_responsive_table_formatting(self.table_recently_opened)
-
-        v_rec_opened.addWidget(self.table_recently_opened)
-        activity_split.addWidget(rec_opened_group, stretch=1)
-
-        layout.addLayout(activity_split, stretch=1)
+        layout.addLayout(bottom_split, stretch=1)
 
         scroll.setWidget(container)
         main_vbox.addWidget(scroll)
@@ -172,7 +135,7 @@ class DashboardView(QWidget):
     def refresh_dashboard(self):
         try:
             # Recent Receipts
-            recent_receipts = ReceiptController.get_all_receipts()[:10]
+            recent_receipts = ReceiptController.get_all_receipts()[:15]
             self.table_recent.setRowCount(len(recent_receipts))
 
             for row_idx, r in enumerate(recent_receipts):
@@ -219,32 +182,9 @@ class DashboardView(QWidget):
             for r_idx, stat in enumerate(course_stats):
                 self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat["course_name"]))
                 self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(f"{stat['student_count']} Students"))
-
-            # Recent Activity Widget (Last 20 Audit Events)
-            from controllers.settings_controller import SettingsController
-            audit_logs = SettingsController.get_audit_logs(limit=20)
-            self.table_recent_activity.setRowCount(len(audit_logs))
-
-            for idx, l in enumerate(audit_logs):
-                self.table_recent_activity.setItem(idx, 0, QTableWidgetItem(f"{l['date']} {l['time']}"))
-                self.table_recent_activity.setItem(idx, 1, QTableWidgetItem(l["user"]))
-                self.table_recent_activity.setItem(idx, 2, QTableWidgetItem(l["action"]))
-                self.table_recent_activity.setItem(idx, 3, QTableWidgetItem(l["details"]))
-
-            # Recently Opened Widget
-            from services.recently_opened_service import RecentlyOpenedService
-            recent_items = RecentlyOpenedService.get_recent_items(limit=10)
-            self.table_recently_opened.setRowCount(len(recent_items))
-
-            for idx, item in enumerate(recent_items):
-                self.table_recently_opened.setItem(idx, 0, QTableWidgetItem(item["category"]))
-                self.table_recently_opened.setItem(idx, 1, QTableWidgetItem(item["title"]))
-                self.table_recently_opened.setItem(idx, 2, QTableWidgetItem(item["timestamp"]))
         except Exception:
             pass
 
     def view_receipt(self, receipt):
-        from services.recently_opened_service import RecentlyOpenedService
-        RecentlyOpenedService.add_recent_item("Receipt", f"Receipt {receipt.receipt_no}", receipt.id, f"Amount: {format_currency(receipt.total_amount)}")
         dlg = ReceiptPreviewDialog(self, receipt)
         dlg.exec()

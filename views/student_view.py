@@ -71,7 +71,7 @@ class StudentView(QWidget):
 
         self.txt_search = QLineEdit()
         self.txt_search.setFixedHeight(36)
-        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Course, Branch, Semester, Mobile...")
+        self.txt_search.setPlaceholderText("🔍 Search by Adm No, Student Name, Aadhaar, Course, Branch, Mobile...")
         self.txt_search.textChanged.connect(self.load_students)
 
         self.cmb_status_filter = QComboBox()
@@ -79,33 +79,47 @@ class StudentView(QWidget):
         self.cmb_status_filter.addItems(["Active Only", "All Status", "Inactive Only"])
         self.cmb_status_filter.currentIndexChanged.connect(self.load_students)
 
-        filter_layout.addWidget(self.txt_search, stretch=4)
+        self.lbl_selected_count = QLabel("Selected: 0")
+        self.lbl_selected_count.setStyleSheet("font-weight: bold; color: #1e3a8a; font-size: 13px; margin-left: 10px;")
+
+        self.btn_bulk_delete = QPushButton("🗑️ Delete Selected")
+        self.btn_bulk_delete.setFixedHeight(36)
+        self.btn_bulk_delete.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; padding: 0 12px; border-radius: 4px;")
+        self.btn_bulk_delete.setCursor(Qt.PointingHandCursor)
+        self.btn_bulk_delete.clicked.connect(self.delete_selected_students)
+
+        filter_layout.addWidget(self.txt_search, stretch=3)
         filter_layout.addWidget(self.cmb_status_filter, stretch=1)
+        filter_layout.addWidget(self.lbl_selected_count)
+        filter_layout.addWidget(self.btn_bulk_delete)
         layout.addLayout(filter_layout)
 
         # ERP Student Table
         self.table = QTableWidget()
-        self.table.setColumnCount(7)
+        self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels([
-            "Admission No.", "Student Name", "Course / Branch", "Year / Semester",
-            "Session", "Status", "Actions"
+            "☐", "Admission / Enrollment No.", "Student Name", "Course / Branch",
+            "Year / Semester", "Session", "Status", "Actions"
         ])
         
         self.table.setWordWrap(True)
         header = self.table.horizontalHeader()
         header.setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        header.sectionClicked.connect(self.on_header_section_clicked)
         
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Admission No.
-        header.setSectionResizeMode(1, QHeaderView.Stretch)          # Student Name
-        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Course / Branch
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents) # Year / Semester
-        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Session
-        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Status
-        header.setSectionResizeMode(6, QHeaderView.Fixed)           # Actions
-        self.table.setColumnWidth(6, 160)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Checkbox
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents) # Adm No
+        header.setSectionResizeMode(2, QHeaderView.Stretch)          # Name
+        header.setSectionResizeMode(3, QHeaderView.Stretch)          # Course/Branch
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Yr/Sem
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Session
+        header.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Status
+        header.setSectionResizeMode(7, QHeaderView.Fixed)           # Actions
+        self.table.setColumnWidth(7, 120)
 
         self.table.setAlternatingRowColors(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.table.itemChanged.connect(self.on_item_changed)
         self.table.itemDoubleClicked.connect(self.on_row_double_clicked)
         apply_responsive_table_formatting(self.table)
 
@@ -136,18 +150,27 @@ class StudentView(QWidget):
             semester_filter=academic_filters.get("semester") or "All"
         )
 
+        self.table.blockSignals(True)
         self.table.setRowCount(len(self.current_students))
 
         for row_idx, s in enumerate(self.current_students):
+            # Column 0: Checkbox
+            chk_item = QTableWidgetItem()
+            chk_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            chk_item.setCheckState(Qt.Unchecked)
+            chk_item.setData(Qt.UserRole, s)
+            self.table.setItem(row_idx, 0, chk_item)
+
+            # Column 1: Admission No
             item_adm = QTableWidgetItem(s.admission_no)
             item_adm.setData(Qt.UserRole, s)
-            self.table.setItem(row_idx, 0, item_adm)
-            self.table.setItem(row_idx, 1, QTableWidgetItem(s.name))
+            self.table.setItem(row_idx, 1, item_adm)
+            self.table.setItem(row_idx, 2, QTableWidgetItem(s.name))
             
             course_branch = s.course or "General"
             if getattr(s, "branch", None):
                 course_branch += f" ({s.branch})"
-            self.table.setItem(row_idx, 2, QTableWidgetItem(course_branch))
+            self.table.setItem(row_idx, 3, QTableWidgetItem(course_branch))
 
             yr_sem_parts = []
             if getattr(s, "year", None):
@@ -155,12 +178,12 @@ class StudentView(QWidget):
             if getattr(s, "semester", None):
                 yr_sem_parts.append(s.semester)
             yr_sem_str = " - ".join(yr_sem_parts) if yr_sem_parts else "N/A"
-            self.table.setItem(row_idx, 3, QTableWidgetItem(yr_sem_str))
+            self.table.setItem(row_idx, 4, QTableWidgetItem(yr_sem_str))
 
-            self.table.setItem(row_idx, 4, QTableWidgetItem(s.academic_session))
-            self.table.setItem(row_idx, 5, QTableWidgetItem(s.status))
+            self.table.setItem(row_idx, 5, QTableWidgetItem(s.academic_session))
+            self.table.setItem(row_idx, 6, QTableWidgetItem(s.status))
 
-            # Compact Icon Actions Container (👁️, 💰, ✏️, 🗑️)
+            # Compact Actions Widget (View, Ledger, Edit - NO DELETE)
             action_widget = QWidget()
             act_layout = QHBoxLayout(action_widget)
             act_layout.setContentsMargins(2, 2, 2, 2)
@@ -168,7 +191,7 @@ class StudentView(QWidget):
 
             btn_view = QPushButton("👁️")
             btn_view.setFixedSize(30, 28)
-            btn_view.setToolTip("View Complete Student Record")
+            btn_view.setToolTip("View Complete Student Profile")
             btn_view.setStyleSheet("background-color: #0f766e; color: #ffffff; font-weight: bold; border-radius: 4px; border: none;")
             btn_view.setCursor(Qt.PointingHandCursor)
             btn_view.clicked.connect(lambda _, st=s: self.view_student_details(st))
@@ -187,26 +210,117 @@ class StudentView(QWidget):
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, st=s: self.edit_student(st))
 
-            btn_del = QPushButton("🗑️")
-            btn_del.setFixedSize(30, 28)
-            btn_del.setToolTip("Delete Student (Requires Admin Password)")
-            btn_del.setStyleSheet("background-color: #dc2626; color: #ffffff; font-weight: bold; border-radius: 4px; border: none;")
-            btn_del.setCursor(Qt.PointingHandCursor)
-            btn_del.clicked.connect(lambda _, st=s: self.delete_student(st))
-
             act_layout.addWidget(btn_view)
             act_layout.addWidget(btn_ledger)
             act_layout.addWidget(btn_edit)
-            act_layout.addWidget(btn_del)
-            self.table.setCellWidget(row_idx, 6, action_widget)
+            self.table.setCellWidget(row_idx, 7, action_widget)
+
+        self.table.blockSignals(False)
+        self.update_selection_counter()
+        self.update_header_checkbox_text(self.is_all_selected())
 
     def on_row_double_clicked(self, item):
         row = item.row()
-        adm_item = self.table.item(row, 0)
+        adm_item = self.table.item(row, 1)
         if adm_item:
             student = adm_item.data(Qt.UserRole)
             if student:
                 self.view_student_details(student)
+
+    def select_all_students(self):
+        self.table.blockSignals(True)
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 0)
+            if item:
+                item.setCheckState(Qt.Checked)
+        self.table.blockSignals(False)
+        self.update_header_checkbox_text(True)
+        self.update_selection_counter()
+
+    def deselect_all_students(self):
+        self.table.blockSignals(True)
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 0)
+            if item:
+                item.setCheckState(Qt.Unchecked)
+        self.table.blockSignals(False)
+        self.update_header_checkbox_text(False)
+        self.update_selection_counter()
+
+    def on_header_section_clicked(self, logical_index: int):
+        if logical_index == 0:
+            if self.is_all_selected():
+                self.deselect_all_students()
+            else:
+                self.select_all_students()
+
+    def is_all_selected(self) -> bool:
+        count = self.table.rowCount()
+        if count == 0:
+            return False
+        for row in range(count):
+            item = self.table.item(row, 0)
+            if not item or item.checkState() != Qt.Checked:
+                return False
+        return True
+
+    def update_header_checkbox_text(self, checked: bool):
+        hdr_item = self.table.horizontalHeaderItem(0)
+        if hdr_item:
+            hdr_item.setText("☑" if checked else "☐")
+
+    def on_item_changed(self, item):
+        if item.column() == 0:
+            self.update_selection_counter()
+            self.update_header_checkbox_text(self.is_all_selected())
+
+    def update_selection_counter(self):
+        selected_count = sum(
+            1 for row in range(self.table.rowCount())
+            if self.table.item(row, 0) and self.table.item(row, 0).checkState() == Qt.Checked
+        )
+        self.lbl_selected_count.setText(f"Selected: {selected_count}")
+
+    def delete_selected_students(self):
+        selected_students = []
+        for row in range(self.table.rowCount()):
+            chk_item = self.table.item(row, 0)
+            if chk_item and chk_item.checkState() == Qt.Checked:
+                student = chk_item.data(Qt.UserRole)
+                if student:
+                    selected_students.append(student)
+
+        if not selected_students:
+            QMessageBox.warning(self, "No Selection", "No students selected.\nPlease select at least one student to delete.")
+            return
+
+        from dialogs.admin_auth_dialog import AdminAuthDialog
+        count = len(selected_students)
+        auth_dlg = AdminAuthDialog(
+            self,
+            action_title="Bulk Student Delete Protection",
+            action_context=f"Bulk Delete {count} Selected Student(s)",
+            module="Student Master"
+        )
+        if not auth_dlg.exec():
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Confirm Bulk Delete Students",
+            f"Are you sure you want to delete {count} selected student(s)?\n\nThis action cannot be undone.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            student_ids = [s.id for s in selected_students]
+            success, msg, deleted_count = StudentController.delete_students_bulk(student_ids)
+            if success:
+                QMessageBox.information(self, "Bulk Delete Success", msg)
+                self.load_students()
+            else:
+                QMessageBox.critical(self, "Bulk Delete Error", msg)
 
     def view_student_details(self, student):
         dlg = StudentDetailsDialog(self, student)
@@ -285,7 +399,7 @@ class StudentView(QWidget):
         if not action:
             return
 
-        headers = ["Admission No", "Roll No", "Student Name", "Class", "Section", "Father Name", "Mother Name", "Mobile", "Address", "Date of Admission", "Session", "Status"]
+        headers = ["Admission / Enrollment No", "Student Name", "Student Photo", "Date of Birth", "Class / Course", "Section", "Father Name", "Mother Name", "Mobile", "Aadhaar Number", "Address", "Date of Admission", "Session", "Status"]
 
         if action in (act_filter_csv, act_filter_excel, act_filter_pdf):
             students = self.current_students
@@ -295,7 +409,22 @@ class StudentView(QWidget):
             title = "Student Directory (Entire Database)"
 
         rows = [
-            [s.admission_no, s.roll_no or "", s.name, s.class_name, s.section or "", s.father_name, s.mother_name or "", s.mobile, s.address or "", format_date(s.admission_date), s.academic_session, s.status]
+            [
+                s.admission_no,
+                s.name,
+                getattr(s, "photo_path", None) or "",
+                format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "",
+                s.class_name,
+                s.section or "",
+                s.father_name,
+                s.mother_name or "",
+                s.mobile,
+                getattr(s, "aadhaar_number", None) or "",
+                s.address or "",
+                format_date(s.admission_date),
+                s.academic_session,
+                s.status
+            ]
             for s in students
         ]
 

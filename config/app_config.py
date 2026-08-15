@@ -65,12 +65,13 @@ else:
     REPORTS_DIR = WRITABLE_BASE / "reports"
     CACHE_DIR = WRITABLE_BASE / "cache"
     TEMP_DIR = WRITABLE_BASE / "temp"
+    STUDENT_PHOTOS_DIR = WRITABLE_BASE / "student_photos"
 
 ASSETS_DIR = BASE_DIR / "assets"
 ICONS_DIR = ASSETS_DIR / "icons"
 STYLES_DIR = ASSETS_DIR / "styles"
 
-for d in [DATA_DIR, LOG_DIR, BACKUP_DIR, EXPORTS_DIR, SETTINGS_DIR, REPORTS_DIR, CACHE_DIR, TEMP_DIR]:
+for d in [DATA_DIR, LOG_DIR, BACKUP_DIR, EXPORTS_DIR, SETTINGS_DIR, REPORTS_DIR, CACHE_DIR, TEMP_DIR, STUDENT_PHOTOS_DIR]:
     try:
         d.mkdir(parents=True, exist_ok=True)
     except Exception:
@@ -106,7 +107,7 @@ def _load_version() -> str:
             return vfile.read_text(encoding="utf-8").strip()
         except Exception:
             pass
-    return "2.3.0"
+    return "2.6.0"
 
 # Application Metadata
 APP_NAME = "School Fee ERP"

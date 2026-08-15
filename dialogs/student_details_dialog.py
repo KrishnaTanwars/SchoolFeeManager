@@ -9,13 +9,17 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from utils.helpers import format_date
 
+from pathlib import Path
+from PySide6.QtGui import QPixmap
+from config.app_config import STUDENT_PHOTOS_DIR
+
 class StudentDetailsDialog(QDialog):
     def __init__(self, parent=None, student=None):
         super().__init__(parent)
         self.student = student
-        self.setWindowTitle(f"Student Details — {student.name if student else ''}")
-        self.setMinimumSize(500, 420)
-        self.resize(580, 520)
+        self.setWindowTitle(f"Student Profile — {student.name if student else ''}")
+        self.setMinimumSize(520, 480)
+        self.resize(600, 560)
         self.setup_ui()
 
     def setup_ui(self):
@@ -44,15 +48,32 @@ class StudentDetailsDialog(QDialog):
         hdr_frame.setStyleSheet("background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px;")
         hdr_layout = QHBoxLayout(hdr_frame)
 
-        lbl_avatar = QLabel("👨‍🎓")
-        lbl_avatar.setStyleSheet("font-size: 32px; border: none;")
-        hdr_layout.addWidget(lbl_avatar)
+        lbl_photo = QLabel()
+        lbl_photo.setFixedSize(70, 85)
+        lbl_photo.setAlignment(Qt.AlignCenter)
+        has_photo = False
+        if getattr(s, "photo_path", None):
+            photo_file = STUDENT_PHOTOS_DIR / s.photo_path
+            if not photo_file.exists():
+                photo_file = Path(s.photo_path)
+            if photo_file.exists():
+                pix = QPixmap(str(photo_file))
+                if not pix.isNull():
+                    scaled_pix = pix.scaled(70, 85, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    lbl_photo.setPixmap(scaled_pix)
+                    lbl_photo.setStyleSheet("border: 1px solid #1e3a8a; border-radius: 4px; background: #ffffff;")
+                    has_photo = True
+        if not has_photo:
+            lbl_photo.setText("👨‍🎓")
+            lbl_photo.setStyleSheet("font-size: 32px; border: 1px dashed #cbd5e1; border-radius: 4px; background: #ffffff;")
+
+        hdr_layout.addWidget(lbl_photo)
 
         title_v = QVBoxLayout()
         lbl_name = QLabel(s.name)
         lbl_name.setWordWrap(True)
         lbl_name.setStyleSheet("font-size: 18px; font-weight: 800; color: #1e3a8a; border: none;")
-        lbl_sub = QLabel(f"Adm. No: {s.admission_no}  |  Course: {s.course or 'General'}  |  Semester: {getattr(s, 'semester', None) or 'N/A'}")
+        lbl_sub = QLabel(f"Adm / Enroll No: {s.admission_no}  |  Course: {s.course or 'General'}  |  Semester: {getattr(s, 'semester', None) or 'N/A'}")
         lbl_sub.setWordWrap(True)
         lbl_sub.setStyleSheet("font-size: 12px; font-weight: 600; color: #64748b; border: none;")
         title_v.addWidget(lbl_name)
@@ -75,9 +96,10 @@ class StudentDetailsDialog(QDialog):
         f_academic = QFormLayout(grp_academic)
         f_academic.setSpacing(8)
 
-        f_academic.addRow("Admission Number:", self._val_label(s.admission_no))
-        f_academic.addRow("Roll Number:", self._val_label(s.roll_no or "N/A"))
+        f_academic.addRow("Admission / Enrollment No:", self._val_label(s.admission_no))
         f_academic.addRow("Student Name:", self._val_label(s.name))
+        f_academic.addRow("Date of Birth:", self._val_label(format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "N/A"))
+        f_academic.addRow("Aadhaar Number:", self._val_label(getattr(s, "aadhaar_number", None) or "N/A"))
         f_academic.addRow("Course / Program:", self._val_label(getattr(s, "course", None) or "General"))
         f_academic.addRow("Branch / Department:", self._val_label(getattr(s, "branch", None) or "General"))
         f_academic.addRow("Academic Year:", self._val_label(getattr(s, "year", None) or "N/A"))

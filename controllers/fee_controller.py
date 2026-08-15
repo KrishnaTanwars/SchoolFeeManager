@@ -230,30 +230,31 @@ class FeeController:
 
     @staticmethod
     def seed_default_fee_heads():
-        """Seeds default 14 UG and 3 PG Fee Heads if they do not exist."""
+        """Seeds official 14 UG and 4 PG Fee Heads with exact college-provided spellings."""
         db = get_db()
         try:
             ug_heads = [
-                ("Admission Form Fee", 500.0),
-                ("UG Tuition Fee", 12000.0),
-                ("UG Development Fee", 3000.0),
-                ("Social Gathering Fee", 500.0),
-                ("Sports Fee", 300.0),
-                ("Eligibility Fee", 400.0),
-                ("Identity Card Fee", 100.0),
-                ("SRTMU Exam Fee", 800.0),
-                ("SRTMU GRM / Photocopy Fee", 150.0),
-                ("UG Laboratory Deposit", 1000.0),
-                ("UG Club Fee", 200.0),
-                ("UG Laboratory Charges", 1500.0),
-                ("Caution Money", 500.0),
-                ("Other Fine", 100.0)
+                ("ADMISSION FORM FEE", 500.0),
+                ("UG TUTION FEE", 12000.0),
+                ("UG DEVELOPMENT FEE", 3000.0),
+                ("SOCIAL GATHERING FEE", 500.0),
+                ("SPORT FEE", 300.0),
+                ("ELIGIBILTY FEE", 400.0),
+                ("IDENTITY CARD FEE", 100.0),
+                ("SRTMU EXAM FEE", 800.0),
+                ("SRTMU GRM/PHOTOCOPY FEE", 150.0),
+                ("UG LABORATORY DEPOSIT", 1000.0),
+                ("UG CLUB FEES", 200.0),
+                ("UG LABROTARY CHARGES", 1500.0),
+                ("CAUTION MONEY", 500.0),
+                ("OTHER FINE", 100.0)
             ]
 
             pg_heads = [
-                ("PG Tuition Fee", 18000.0),
-                ("PG Development Fee", 5000.0),
-                ("PG Laboratory Usage Fee", 2500.0)
+                ("ADMISSION FORM FEE", 500.0),
+                ("PG TUTION FEE", 18000.0),
+                ("PG DEVELOPMENT FEE", 5000.0),
+                ("PG LABORATORY USAGES", 2500.0)
             ]
 
             for name, amt in ug_heads:
@@ -267,7 +268,7 @@ class FeeController:
                     db.add(FeeCategory(name=name, course="PG", default_amount=amt, is_active=True))
 
             db.commit()
-            logger.info("Default UG and PG fee heads seeded successfully.")
+            logger.info("Default official UG and PG fee heads seeded successfully.")
         except Exception as e:
             db.rollback()
             logger.error(f"Failed to seed default fee heads: {e}", exc_info=True)

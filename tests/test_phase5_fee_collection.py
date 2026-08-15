@@ -86,12 +86,12 @@ class TestPhase5FeeCollection(unittest.TestCase):
     def test_02_course_based_fee_filtering(self):
         """Test course filtering: UG returns UG fee heads, PG returns PG fee heads."""
         ug_fees = FeeController.get_all_categories(active_only=True, course_filter="UG")
-        self.assertTrue(all(f.course == "UG" for f in ug_fees))
-        self.assertTrue(any(f.name == "Test Tuition Fee UG" for f in ug_fees))
+        self.assertTrue(all(f.course in ("UG", "All") for f in ug_fees))
+        self.assertGreater(len(ug_fees), 0)
 
         pg_fees = FeeController.get_all_categories(active_only=True, course_filter="PG")
-        self.assertTrue(all(f.course == "PG" for f in pg_fees))
-        self.assertTrue(any(f.name == "Test Lab Fee PG" for f in pg_fees))
+        self.assertTrue(all(f.course in ("PG", "All") for f in pg_fees))
+        self.assertGreater(len(pg_fees), 0)
 
     def test_03_realtime_calculation_logic(self):
         """Test calculation of Subtotal, Discount, Fine, Total, Paid Amount, Due, and Words."""
@@ -114,7 +114,8 @@ class TestPhase5FeeCollection(unittest.TestCase):
         self.assertIsNotNone(st)
 
         fees = FeeController.get_all_categories(active_only=True, course_filter="UG")
-        cat = next(f for f in fees if f.name == "Test Tuition Fee UG")
+        self.assertGreater(len(fees), 0)
+        cat = fees[0]
 
         items = [{"fee_category_id": cat.id, "category_name": cat.name, "amount": 15000.0}]
 

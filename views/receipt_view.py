@@ -593,7 +593,7 @@ class ReceiptView(QWidget):
         self.lbl_adm_no.setText("-")
         self.lbl_name.setText("-")
         self.lbl_course.setText("-")
-        self.lbl_class.setText("-")
+        self.lbl_yr_sem.setText("-")
         self.lbl_father.setText("-")
         self.lbl_mobile.setText("-")
         self.lbl_session.setText("-")

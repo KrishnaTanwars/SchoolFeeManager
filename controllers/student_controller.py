@@ -57,7 +57,7 @@ class StudentController:
                     or_(
                         Student.name.ilike(pattern),
                         Student.admission_no.ilike(pattern),
-                        Student.roll_no.ilike(pattern),
+                        Student.aadhaar_number.ilike(pattern),
                         Student.father_name.ilike(pattern),
                         Student.mother_name.ilike(pattern),
                         Student.mobile.ilike(pattern),
@@ -113,6 +113,15 @@ class StudentController:
             if existing:
                 return False, f"Admission Number '{admission_no}' is already registered."
 
+            # Aadhaar Validation & Duplicate Check
+            aadhaar = data.get("aadhaar_number", "").strip() if data.get("aadhaar_number") else ""
+            if aadhaar:
+                if not aadhaar.isdigit() or len(aadhaar) != 12:
+                    return False, "Aadhaar Number must be exactly 12 numeric digits."
+                existing_aadhaar = db.query(Student).filter(Student.aadhaar_number == aadhaar).first()
+                if existing_aadhaar:
+                    return False, "This Aadhaar Number is already registered."
+
             student = Student(
                 admission_no=admission_no,
                 roll_no=data.get("roll_no", "").strip(),
@@ -128,6 +137,9 @@ class StudentController:
                 mobile=data.get("mobile", "").strip(),
                 address=data.get("address", "").strip(),
                 admission_date=data.get("admission_date"),
+                date_of_birth=data.get("date_of_birth"),
+                aadhaar_number=aadhaar or None,
+                photo_path=data.get("photo_path"),
                 academic_session=data.get("academic_session", "2024-2025"),
                 status="Active"
             )
@@ -161,6 +173,18 @@ class StudentController:
             if not student:
                 return False, "Student record not found."
 
+            # Aadhaar Validation & Duplicate Check
+            aadhaar = data.get("aadhaar_number", "").strip() if data.get("aadhaar_number") else ""
+            if aadhaar:
+                if not aadhaar.isdigit() or len(aadhaar) != 12:
+                    return False, "Aadhaar Number must be exactly 12 numeric digits."
+                existing_aadhaar = db.query(Student).filter(
+                    Student.aadhaar_number == aadhaar,
+                    Student.id != student_id
+                ).first()
+                if existing_aadhaar:
+                    return False, "This Aadhaar Number is already registered."
+
             student.roll_no = data.get("roll_no", "").strip()
             student.name = data.get("name", "").strip()
             student.father_name = data.get("father_name", "").strip()
@@ -173,7 +197,13 @@ class StudentController:
             student.semester = data.get("semester", "").strip()
             student.mobile = data.get("mobile", "").strip()
             student.address = data.get("address", "").strip()
-            student.admission_date = data.get("admission_date")
+            if "admission_date" in data:
+                student.admission_date = data.get("admission_date")
+            if "date_of_birth" in data:
+                student.date_of_birth = data.get("date_of_birth")
+            student.aadhaar_number = aadhaar or None
+            if "photo_path" in data:
+                student.photo_path = data.get("photo_path")
             student.academic_session = data.get("academic_session", student.academic_session)
             student.status = data.get("status", student.status)
 
@@ -193,6 +223,46 @@ class StudentController:
             db.rollback()
             logger.error(f"Error updating student {student_id}: {e}", exc_info=True)
             return False, f"Failed to update student: {str(e)}"
+        finally:
+            db.close()
+
+    @staticmethod
+    def delete_students_bulk(student_ids: List[int]) -> tuple[bool, str, int]:
+        """Bulk deletes student records. Returns (success: bool, message: str, count: int)."""
+        if not student_ids:
+            return False, "No student IDs provided for bulk deletion.", 0
+        db = get_db()
+        try:
+            students = db.query(Student).filter(Student.id.in_(student_ids)).all()
+            count = len(students)
+            if count == 0:
+                return False, "No matching student records found for deletion.", 0
+
+            for st in students:
+                db.delete(st)
+
+            db.commit()
+
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Students Deleted",
+                module="Student Master",
+                details=f"Successfully bulk deleted {count} student records (IDs: {student_ids})",
+                status="Success"
+            )
+            logger.info(f"Bulk deleted {count} students.")
+            return True, f"Successfully deleted {count} selected student(s).", count
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error bulk deleting students: {e}", exc_info=True)
+            from services.security_service import SecurityService
+            SecurityService.log_audit(
+                action="Bulk Student Delete Failed",
+                module="Student Master",
+                details=f"Failed to bulk delete {len(student_ids)} students: {str(e)}",
+                status="Failed"
+            )
+            return False, f"Cannot delete selected student(s) with associated fee receipts. {str(e)}", 0
         finally:
             db.close()
 

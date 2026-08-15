@@ -189,6 +189,8 @@ class ImportService:
                 adm_no = row.get("Admission Number") or row.get("Admission No") or row.get("Adm No") or ""
                 roll_no = row.get("Roll Number") or row.get("Roll No") or ""
                 name = row.get("Student Name") or row.get("Name") or ""
+                dob_str = row.get("Date of Birth") or row.get("Date Of Birth") or row.get("DOB") or row.get("dob") or ""
+                aadhaar_num = row.get("Aadhaar Number") or row.get("Aadhaar No") or row.get("Aadhaar") or row.get("aadhaar") or ""
                 cls_name = row.get("Class") or row.get("Class Name") or "Degree College"
                 sec = row.get("Section") or "A"
                 crs = row.get("Course") or "General"
@@ -285,11 +287,22 @@ class ImportService:
                         "Suggested Fix": "; ".join(suggested_fixes)
                     })
 
+                parsed_dob = None
+                if dob_str.strip():
+                    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%Y/%m/%d"):
+                        try:
+                            parsed_dob = datetime.strptime(dob_str.strip(), fmt).date()
+                            break
+                        except ValueError:
+                            pass
+
                 parsed_items.append({
                     "row_num": row_num,
                     "admission_no": adm_no.strip(),
                     "roll_no": roll_no.strip(),
                     "name": name.strip(),
+                    "date_of_birth": parsed_dob,
+                    "aadhaar_number": aadhaar_num.strip() if aadhaar_num.strip() else None,
                     "class_name": cls_name.strip(),
                     "section": sec.strip() or "A",
                     "course": crs.strip(),
@@ -340,6 +353,8 @@ class ImportService:
                     admission_no=item["admission_no"],
                     roll_no=item["roll_no"],
                     name=item["name"],
+                    date_of_birth=item.get("date_of_birth"),
+                    aadhaar_number=item.get("aadhaar_number"),
                     class_name=item.get("course") or item.get("class_name") or "",
                     section=item.get("section", ""),
                     course=item.get("course", "General"),
