@@ -19,15 +19,19 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\EduLedger\SchoolFeeERP
+DisableWelcomePage=no
 DisableDirPage=no
+DisableProgramGroupPage=no
+DisableReadyPage=no
 AlwaysShowDirOnReadyPage=yes
+AlwaysShowGroupOnReadyPage=yes
 UsePreviousAppDir=no
 UsePreviousGroup=no
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=License.txt
 OutputDir=dist_installer
-OutputBaseFilename=SchoolFeeERP_Setup_v2.6.0
+OutputBaseFilename=SchoolFeeERP_Setup_v3.0.0
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
@@ -175,8 +179,8 @@ var
 begin
   LicenseValidated := False;
 
-  { Create Custom License Activation Page after License Agreement Page (wpLicense) }
-  LicensePage := CreateCustomPage(wpLicense, 'License Activation Key', 'This software requires a valid enterprise license key before installation.');
+  { Create Custom License Activation Page right after Welcome Page (wpWelcome) }
+  LicensePage := CreateCustomPage(wpWelcome, 'Enterprise License Activation Key', 'This software requires a valid enterprise license key before installation.');
 
   { Prompt Label }
   PromptLabel := TNewStaticText.Create(LicensePage);
