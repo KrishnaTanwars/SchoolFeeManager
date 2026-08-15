@@ -35,9 +35,16 @@ class DashboardView(QWidget):
 
         # Header Title Banner
         hdr_layout = QHBoxLayout()
-        title_lbl = QLabel("Executive Dashboard & Key Performance Indicators")
+        title_lbl = QLabel("Executive Dashboard")
         title_lbl.setStyleSheet("font-size: 20px; font-weight: 800; color: #1e3a8a;")
+        
+        from services.session_service import SessionManager
+        curr_sess = SessionManager.get_current_session()
+        self.lbl_session_context = QLabel(f"Academic Session: <b>{curr_sess}</b>")
+        self.lbl_session_context.setStyleSheet("font-size: 12px; font-weight: 700; color: #1e3a8a; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 4px; padding: 4px 10px;")
+        
         hdr_layout.addWidget(title_lbl)
+        hdr_layout.addWidget(self.lbl_session_context)
         hdr_layout.addStretch()
 
         self.btn_refresh = QPushButton("🔄  Refresh Data")
@@ -46,6 +53,8 @@ class DashboardView(QWidget):
         hdr_layout.addWidget(self.btn_refresh)
 
         layout.addLayout(hdr_layout)
+
+        SessionManager.register_listener(self.on_global_session_changed)
 
         # Quick Management Actions (Main Navigation Hub at Top)
         actions_group = QGroupBox("Quick Management Actions")
@@ -180,10 +189,16 @@ class DashboardView(QWidget):
             self.table_analytics.setRowCount(len(course_stats))
 
             for r_idx, stat in enumerate(course_stats):
-                self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat["course_name"]))
-                self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(f"{stat['student_count']} Students"))
+                self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat.get("course", "Unknown")))
+                self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(str(stat.get("count", 0))))
         except Exception:
             pass
+
+    def on_global_session_changed(self, new_session: str):
+        if hasattr(self, "lbl_session_context"):
+            self.lbl_session_context.setText(f"Academic Session: <b>{new_session}</b>")
+        self.refresh_dashboard()
+
 
     def view_receipt(self, receipt):
         dlg = ReceiptPreviewDialog(self, receipt)

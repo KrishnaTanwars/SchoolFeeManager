@@ -2,6 +2,16 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.8.0] - Phase 3 Release (Complete Academic & Session Management)
+
+### 🏫 Academic Session Master & Real-Time Global Synchronization
+- **Session Master Management (`services/session_service.py`)**: Added `add_session()`, `set_current_session()`, `get_all_sessions()`, and callback listener registration allowing dynamic addition and switching of academic sessions (e.g. `2024-2025`, `2025-2026`, `2026-2027`).
+- **Real-Time Global UI Sync (`views/main_window.py`)**: Connected global session listener to dynamically update the top header academic session indicator badge across all views whenever the active session is switched.
+- **Explicit Session Context**: Enhanced Student Directory, Fee Collection, Receipt History, and Reports views to display clear session context badges (`Academic Session: 2026-2027`).
+- **Historical Session Data Isolation**: Secured historical session receipts, financial ledgers, and student records, preventing accidental modification of past session transactions while working in the current active session.
+
+---
+
 ## [2.7.0] - Phase 2 Release (Advanced Student Management & Academic Promotion)
 
 ### 🎓 Academic Promotion Engine & Advanced Student Management

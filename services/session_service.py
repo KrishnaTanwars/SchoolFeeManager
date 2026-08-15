@@ -93,6 +93,31 @@ class SessionManager:
         return cls.set_current_session(session_name)
 
     @classmethod
+    def add_session(cls, session_name: str) -> tuple[bool, str]:
+        """Adds a new academic session to the database if it doesn't already exist."""
+        if not session_name or not session_name.strip():
+            return False, "Session name cannot be empty."
+
+        s_name = session_name.strip()
+        db = get_db()
+        try:
+            existing = db.query(AcademicSession).filter(AcademicSession.session_name == s_name).first()
+            if existing:
+                return False, f"Academic Session '{s_name}' already exists."
+
+            new_s = AcademicSession(session_name=s_name, is_current=False)
+            db.add(new_s)
+            db.commit()
+            logger.info(f"Added new academic session: {s_name}")
+            return True, f"Academic Session '{s_name}' added successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error adding academic session: {e}")
+            return False, f"Failed to add session: {str(e)}"
+        finally:
+            db.close()
+
+    @classmethod
     def get_all_sessions(cls) -> List[str]:
         """Returns list of all session names."""
         db = get_db()
