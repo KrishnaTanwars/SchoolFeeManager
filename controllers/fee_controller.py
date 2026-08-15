@@ -118,10 +118,12 @@ class FeeController:
             target_course = course if course else "All"
             existing = db.query(FeeCategory).filter(
                 FeeCategory.name.ilike(name),
-                FeeCategory.course == target_course
+                FeeCategory.course == target_course,
+                FeeCategory.semester == (semester if semester else "All"),
+                FeeCategory.academic_session == (academic_session if academic_session else "All")
             ).first()
             if existing:
-                return False, f"Fee Head '{name}' already exists for course '{target_course}'."
+                return False, f"Fee Head '{name}' already exists for {target_course} ({semester}, {academic_session})."
 
             cat = FeeCategory(
                 name=name,
@@ -168,17 +170,28 @@ class FeeController:
             if not name:
                 return False, "Description / Fee Head Name is required."
 
+            branch = data.get("branch", cat.branch or "All").strip()
+            academic_year = data.get("academic_year", cat.academic_year or "All").strip()
+            semester = data.get("semester", cat.semester or "All").strip()
+            academic_session = data.get("academic_session", cat.academic_session or "All").strip()
+
             # Duplicate check
             existing = db.query(FeeCategory).filter(
                 FeeCategory.name.ilike(name),
                 FeeCategory.course == course,
+                FeeCategory.semester == semester,
+                FeeCategory.academic_session == academic_session,
                 FeeCategory.id != cat_id
             ).first()
             if existing:
-                return False, f"Fee Head '{name}' already exists under {course} course."
+                return False, f"Fee Head '{name}' already exists under {course} ({semester}, {academic_session})."
 
             cat.name = name
             cat.course = course
+            cat.branch = branch
+            cat.academic_year = academic_year
+            cat.semester = semester
+            cat.academic_session = academic_session
             cat.default_amount = max(0.0, default_amount)
             cat.is_active = is_active
             cat.description = description

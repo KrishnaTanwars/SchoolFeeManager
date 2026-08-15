@@ -2,6 +2,17 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [2.9.0] - Phase 4 Release (Advanced Fee Management)
+
+### 💳 Multi-Dimensional Fee Engine & Semester-Based Management
+- **Course, Category, Year, Semester & Session Mapping (`controllers/fee_controller.py`)**: Enabled precise fee head configuration mapped to `Course + Category (UG/PG) + Year + Semester + Academic Session`.
+- **UG vs PG Fee Structure Isolation**: Ensured B. Pharmacy (UG 14-heads) and M. Pharmacy (PG 4-heads) fee configurations remain completely independent across all semesters.
+- **Duplicate Fee Head Prevention**: Added validation blocking duplicate fee head names under the exact same course/semester/session tuple.
+- **Advanced Fee Management UI (`views/fee_category_view.py`)**: Updated Fee Structure Portal with course/category/semester/session filtering controls, enable/disable fee head toggles, and live fee subtotal preview calculations.
+- **Automated Collection Auto-Loading (`views/receipt_view.py`)**: Integrated automatic fee head loading matching student's specific academic profile.
+
+---
+
 ## [2.8.0] - Phase 3 Release (Complete Academic & Session Management)
 
 ### 🏫 Academic Session Master & Real-Time Global Synchronization
