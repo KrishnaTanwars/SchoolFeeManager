@@ -175,8 +175,8 @@ var
 begin
   LicenseValidated := False;
 
-  { Create Custom License Activation Page after Destination Folder Selection (wpSelectDir) }
-  LicensePage := CreateCustomPage(wpSelectDir, 'License Activation', 'This software requires a valid license key before installation.');
+  { Create Custom License Activation Page after License Agreement Page (wpLicense) }
+  LicensePage := CreateCustomPage(wpLicense, 'License Activation Key', 'This software requires a valid enterprise license key before installation.');
 
   { Prompt Label }
   PromptLabel := TNewStaticText.Create(LicensePage);
@@ -220,6 +220,15 @@ begin
   StatusLabel.WordWrap := True;
   StatusLabel.Font.Size := 9;
   StatusLabel.Caption := '';
+end;
+
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  Result := False;
+  if PageID = LicensePage.ID then
+  begin
+    Result := False; { NEVER skip the license key activation page }
+  end;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
