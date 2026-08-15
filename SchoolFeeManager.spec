@@ -24,7 +24,7 @@ hiddenimports = [
     'reportlab.lib.pagesizes',
     'reportlab.platypus',
     'reportlab.lib.colors',
-] + collect_submodules('shiboken6') + collect_submodules('reportlab') + collect_submodules('sqlalchemy')
+] + collect_submodules('reportlab') + collect_submodules('sqlalchemy')
 
 a = Analysis(
     ['main.py'],

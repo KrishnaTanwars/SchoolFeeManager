@@ -1,0 +1,12 @@
+COMMERCIAL SOFTWARE LICENSE AGREEMENT
+
+School Fee Management System v1.0 (Enterprise Edition)
+Copyright (c) 2026. All Rights Reserved.
+
+This software product, including executable files, source files, documentation, and database schemas, is licensed for commercial installation and operation by authorized educational institutions (Schools, Colleges, Private Institutes, Coaching Centers).
+
+TERMS OF USE:
+1. Grant of License: The purchasing organization is granted a non-exclusive, non-transferable license to install and run the software on authorized Windows workstations.
+2. Proprietary Rights: All rights, title, and intellectual property in and to the software remain exclusively with the development team.
+3. No Reverse Engineering: Licensees may not decompile, reverse engineer, or disassemble the executable software binary without authorization.
+4. Warranty & Support: Standard technical support covers database backups, software configuration, and routine operational inquiries.
