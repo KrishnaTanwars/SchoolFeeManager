@@ -597,11 +597,83 @@ class PDFService:
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 4),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+            ('TOPPADDING', (0,0), (-1,-1), 3),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 3),
         ]))
         story.append(guardian_table)
-        story.append(Spacer(1, 5 * mm))
+        story.append(Spacer(1, 4 * mm))
+
+        # Fee Status & Payment History Summary Section
+        story.append(Paragraph("<b>FEE & PAYMENT HISTORY SUMMARY</b>", sec_hdr_style))
+        story.append(Spacer(1, 1.5 * mm))
+
+        from config.database import get_db
+        from models.receipt import Receipt
+        db = get_db()
+        tot_paid = 0.0
+        tot_billed = 0.0
+        curr_due = 0.0
+        receipts = []
+        try:
+            receipts = db.query(Receipt).filter(Receipt.student_id == student.id).order_by(Receipt.id.desc()).all()
+            for r in receipts:
+                tot_paid += (r.paid_amount or 0.0)
+                tot_billed += (r.total_amount or 0.0)
+            if receipts:
+                curr_due = receipts[0].due_amount or 0.0
+        except Exception as ex:
+            logger.warning(f"Error loading fee summary for profile PDF: {ex}")
+        finally:
+            db.close()
+
+        due_text_color = "#b91c1c" if curr_due > 0 else "#166534"
+        due_val_str = f"Rs. {curr_due:,.2f}" if curr_due > 0 else "Rs. 0.00 (PAID)"
+
+        fee_summary_data = [
+            [
+                Paragraph("<b>TOTAL BILLED:</b>", lbl_bold), Paragraph(f"<b>Rs. {tot_billed:,.2f}</b>", lbl_val),
+                Paragraph("<b>TOTAL PAID:</b>", lbl_bold), Paragraph(f"<b><font color='#166534'>Rs. {tot_paid:,.2f}</font></b>", lbl_val),
+                Paragraph("<b>OUTSTANDING DUE:</b>", lbl_bold), Paragraph(f"<b><font color='{due_text_color}'>{due_val_str}</font></b>", lbl_val)
+            ]
+        ]
+        fee_summary_table = Table(fee_summary_data, colWidths=[28*mm, 34*mm, 26*mm, 34*mm, 32*mm, 32*mm])
+        fee_summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#f1f5f9")),
+            ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
+            ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('TOPPADDING', (0,0), (-1,-1), 3),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ]))
+        story.append(fee_summary_table)
+        story.append(Spacer(1, 2 * mm))
+
+        if receipts:
+            tbl_hdr_style = ParagraphStyle('TblHdr', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7.5, leading=9, textColor=colors.white)
+            tbl_cell_style = ParagraphStyle('TblCell', parent=styles['Normal'], fontName='Helvetica', fontSize=7.5, leading=9, textColor=colors.HexColor("#1e293b"))
+            
+            rec_headers = ["Receipt No", "Date", "Session", "Payment Mode", "Amount Paid (Rs.)"]
+            rec_table_data = [[Paragraph(f"<b>{h}</b>", tbl_hdr_style) for h in rec_headers]]
+            for r in receipts[:3]:
+                rec_table_data.append([
+                    Paragraph(r.receipt_no, tbl_cell_style),
+                    Paragraph(format_date(r.receipt_date), tbl_cell_style),
+                    Paragraph(r.academic_session or "N/A", tbl_cell_style),
+                    Paragraph(r.payment_mode or "Cash", tbl_cell_style),
+                    Paragraph(f"Rs. {(r.paid_amount or 0.0):,.2f}", tbl_cell_style)
+                ])
+
+            rec_table = Table(rec_table_data, colWidths=[40*mm, 30*mm, 35*mm, 35*mm, 46*mm])
+            rec_table.setStyle(TableStyle([
+                ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e3a8a")),
+                ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
+                ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('TOPPADDING', (0,0), (-1,-1), 2),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+            ]))
+            story.append(rec_table)
+        story.append(Spacer(1, 4 * mm))
 
         # Declaration & Signature Block
         dec_text = (
@@ -609,7 +681,7 @@ class PDFService:
             "to the best of my knowledge and belief. I agree to abide by all rules and regulations of the institution."
         )
         story.append(Paragraph(f"<i><font color='#475569' size='8'>{dec_text}</font></i>", lbl_val))
-        story.append(Spacer(1, 14 * mm))
+        story.append(Spacer(1, 10 * mm))
 
         sig_data = [
             [

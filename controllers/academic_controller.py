@@ -33,14 +33,14 @@ class AcademicController:
     ]
 
     DEFAULT_SEMESTERS = [
-        {"code": "SEM1", "name": "Semester 1", "order_no": 1},
-        {"code": "SEM2", "name": "Semester 2", "order_no": 2},
-        {"code": "SEM3", "name": "Semester 3", "order_no": 3},
-        {"code": "SEM4", "name": "Semester 4", "order_no": 4},
-        {"code": "SEM5", "name": "Semester 5", "order_no": 5},
-        {"code": "SEM6", "name": "Semester 6", "order_no": 6},
-        {"code": "SEM7", "name": "Semester 7", "order_no": 7},
-        {"code": "SEM8", "name": "Semester 8", "order_no": 8},
+        {"code": "SEM1", "name": "1 Sem", "order_no": 1},
+        {"code": "SEM2", "name": "2 Sem", "order_no": 2},
+        {"code": "SEM3", "name": "3 Sem", "order_no": 3},
+        {"code": "SEM4", "name": "4 Sem", "order_no": 4},
+        {"code": "SEM5", "name": "5 Sem", "order_no": 5},
+        {"code": "SEM6", "name": "6 Sem", "order_no": 6},
+        {"code": "SEM7", "name": "7 Sem", "order_no": 7},
+        {"code": "SEM8", "name": "8 Sem", "order_no": 8},
     ]
 
     @classmethod
@@ -128,7 +128,7 @@ class AcademicController:
 
     @classmethod
     def get_semesters(cls, total_semesters: Optional[int] = None, course_name: Optional[str] = None) -> List[str]:
-        """Returns list of semester names (e.g. Semester 1 to Semester 8)."""
+        """Returns list of semester names (e.g. 1 Sem to 8 Sem)."""
         cls.seed_academic_masters_if_empty()
         if course_name in ("M. Pharmacy", "MPHARM", "PG", "MBA"):
             total_semesters = 4
@@ -158,7 +158,7 @@ class AcademicController:
         if is_pg:
             if year in ("3rd Year", "4th Year", "5th Year"):
                 return False, f"Course '{course}' (PG) is a 2-Year program. '{year}' is invalid."
-            if semester in ("Semester 5", "Semester 6", "Semester 7", "Semester 8", "5th Sem", "6th Sem", "7th Sem", "8th Sem"):
+            if semester in ("Semester 5", "Semester 6", "Semester 7", "Semester 8", "5th Sem", "6th Sem", "7th Sem", "8th Sem", "5 Sem", "6 Sem", "7 Sem", "8 Sem"):
                 return False, f"Course '{course}' (PG) has maximum 4 Semesters. '{semester}' is invalid."
                 
         return True, ""

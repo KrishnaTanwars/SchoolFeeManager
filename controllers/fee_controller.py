@@ -242,6 +242,55 @@ class FeeController:
             db.close()
 
     @staticmethod
+    def delete_categories_bulk(cat_ids: List[int]) -> Tuple[bool, str, int]:
+        """Bulk deletes multiple Fee Categories by ID."""
+        db = get_db()
+        try:
+            if not cat_ids:
+                return False, "No Fee Heads selected.", 0
+
+            cats = db.query(FeeCategory).filter(FeeCategory.id.in_(cat_ids)).all()
+            if not cats:
+                return False, "Selected Fee Heads not found.", 0
+
+            deleted_count = 0
+            deleted_names = []
+            failed_names = []
+
+            for cat in cats:
+                cat_name = cat.name
+                try:
+                    db.delete(cat)
+                    db.flush()
+                    deleted_count += 1
+                    deleted_names.append(cat_name)
+                except Exception:
+                    failed_names.append(cat_name)
+
+            db.commit()
+
+            from services.security_service import SecurityService
+            if deleted_count > 0:
+                SecurityService.log_audit(
+                    action="Bulk Fee Heads Deleted",
+                    module="Fee Heads",
+                    details=f"Bulk deleted {deleted_count} Fee Head(s): {', '.join(deleted_names[:5])}",
+                    status="Success"
+                )
+                logger.info(f"Bulk deleted {deleted_count} fee head(s).")
+
+            if failed_names:
+                return True, f"Deleted {deleted_count} fee head(s). Failed to delete {len(failed_names)} fee head(s) in use by active receipts: {', '.join(failed_names)}", deleted_count
+
+            return True, f"Successfully deleted {deleted_count} fee head(s).", deleted_count
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error bulk deleting fee categories: {e}", exc_info=True)
+            return False, f"Database error while deleting fee heads: {str(e)}", 0
+        finally:
+            db.close()
+
+    @staticmethod
     def seed_default_fee_heads():
         """Seeds official 14 UG and 4 PG Fee Heads with exact college-provided spellings."""
         db = get_db()

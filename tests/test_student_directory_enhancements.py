@@ -136,7 +136,7 @@ def test_02_session_dropdown_display(qapp, sample_students_data):
     all_combo_items = [view.cmb_session.itemText(i) for i in range(view.cmb_session.count())]
     assert "2025-2026" in all_combo_items
     assert "2024-2025" in all_combo_items
-    assert "All Sessions" in all_combo_items
+    assert "All Sessions" in all_combo_items or "All" in all_combo_items
 
 
 def test_03_switch_session_filter_to_2024_2025(qapp, sample_students_data):

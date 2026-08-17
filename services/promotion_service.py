@@ -14,20 +14,32 @@ from utils.logger import logger
 class PromotionService:
     # Progression Maps
     UG_SEMESTER_MAP = {
-        "Semester 1": ("1st Year", "Semester 2"),
-        "Semester 2": ("2nd Year", "Semester 3"),
-        "Semester 3": ("2nd Year", "Semester 4"),
-        "Semester 4": ("3rd Year", "Semester 5"),
-        "Semester 5": ("3rd Year", "Semester 6"),
-        "Semester 6": ("4th Year", "Semester 7"),
-        "Semester 7": ("4th Year", "Semester 8"),
+        "1 Sem": ("1st Year", "2 Sem"),
+        "2 Sem": ("2nd Year", "3 Sem"),
+        "3 Sem": ("2nd Year", "4 Sem"),
+        "4 Sem": ("3rd Year", "5 Sem"),
+        "5 Sem": ("3rd Year", "6 Sem"),
+        "6 Sem": ("4th Year", "7 Sem"),
+        "7 Sem": ("4th Year", "8 Sem"),
+        "8 Sem": ("Graduated", "Completed"),
+        "Semester 1": ("1st Year", "2 Sem"),
+        "Semester 2": ("2nd Year", "3 Sem"),
+        "Semester 3": ("2nd Year", "4 Sem"),
+        "Semester 4": ("3rd Year", "5 Sem"),
+        "Semester 5": ("3rd Year", "6 Sem"),
+        "Semester 6": ("4th Year", "7 Sem"),
+        "Semester 7": ("4th Year", "8 Sem"),
         "Semester 8": ("Graduated", "Completed"),
     }
 
     PG_SEMESTER_MAP = {
-        "Semester 1": ("1st Year", "Semester 2"),
-        "Semester 2": ("2nd Year", "Semester 3"),
-        "Semester 3": ("2nd Year", "Semester 4"),
+        "1 Sem": ("1st Year", "2 Sem"),
+        "2 Sem": ("2nd Year", "3 Sem"),
+        "3 Sem": ("2nd Year", "4 Sem"),
+        "4 Sem": ("Graduated", "Completed"),
+        "Semester 1": ("1st Year", "2 Sem"),
+        "Semester 2": ("2nd Year", "3 Sem"),
+        "Semester 3": ("2nd Year", "4 Sem"),
         "Semester 4": ("Graduated", "Completed"),
     }
 
@@ -44,13 +56,13 @@ class PromotionService:
         if "M. PHARM" in course_clean or "PG" in course_clean or "MASTER" in course_clean:
             if sem_clean in cls.PG_SEMESTER_MAP:
                 return cls.PG_SEMESTER_MAP[sem_clean]
-            return "2nd Year", "Semester 4"
+            return "2nd Year", "4 Sem"
 
         # UG Course (B. Pharmacy)
         if sem_clean in cls.UG_SEMESTER_MAP:
             return cls.UG_SEMESTER_MAP[sem_clean]
 
-        return "2nd Year", "Semester 3"
+        return "2nd Year", "3 Sem"
 
     @classmethod
     def validate_promotion(cls, student: Student, target_sem: str) -> Tuple[bool, str]:

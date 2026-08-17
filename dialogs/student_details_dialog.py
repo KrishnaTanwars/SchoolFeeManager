@@ -224,19 +224,55 @@ class StudentDetailsDialog(QDialog):
 
         # Action / Close Bar
         btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(10)
         btn_layout.addStretch()
 
+        from PySide6.QtWidgets import QMessageBox
+        self.btn_print = QPushButton("🖨️  Print Single-Page Profile (PDF)")
+        self.btn_print.setFixedHeight(36)
+        self.btn_print.setStyleSheet("background-color: #1e3a8a; color: #ffffff; font-weight: bold; padding: 0 14px; border-radius: 4px;")
+        self.btn_print.setCursor(Qt.PointingHandCursor)
+        self.btn_print.clicked.connect(self.print_profile_pdf)
+
         btn_close = QPushButton("Close Profile")
-        btn_close.setFixedWidth(130)
-        btn_close.setFixedHeight(34)
+        btn_close.setFixedWidth(120)
+        btn_close.setFixedHeight(36)
         btn_close.setCursor(Qt.PointingHandCursor)
         btn_close.clicked.connect(self.accept)
 
+        btn_layout.addWidget(self.btn_print)
         btn_layout.addWidget(btn_close)
         main_layout.addLayout(btn_layout)
 
         scroll.setWidget(container)
         dialog_vbox.addWidget(scroll)
+
+    def print_profile_pdf(self):
+        if not self.student:
+            return
+        try:
+            from services.pdf_service import PDFService
+            from PySide6.QtWidgets import QMessageBox
+            pdf_path = PDFService.generate_student_profile_pdf(self.student)
+
+            import os, sys
+            if sys.platform == "win32":
+                os.startfile(pdf_path)
+            elif sys.platform == "darwin":
+                import subprocess
+                subprocess.Popen(["open", pdf_path])
+            else:
+                import subprocess
+                subprocess.Popen(["xdg-open", pdf_path])
+
+            QMessageBox.information(
+                self,
+                "Profile PDF Generated",
+                f"Student Profile (Single-Page PDF) generated successfully:\n\n{pdf_path}\n\nThe PDF has been opened in your system's default PDF viewer."
+            )
+        except Exception as e:
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.critical(self, "PDF Generation Error", f"Failed to generate profile PDF:\n{str(e)}")
 
     def _val_label(self, text: str) -> QLabel:
         lbl = QLabel(text)

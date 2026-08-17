@@ -21,6 +21,18 @@ class StudentView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
+        from services.session_service import SessionManager
+        SessionManager.register_listener(self.on_active_session_changed)
+
+    def on_active_session_changed(self, new_session: str):
+        if hasattr(self, "academic_filter") and hasattr(self.academic_filter, "cmb_session"):
+            idx = self.academic_filter.cmb_session.findText(new_session)
+            if idx >= 0:
+                self.academic_filter.cmb_session.setCurrentIndex(idx)
+
+    @property
+    def cmb_session(self):
+        return getattr(self.academic_filter, "cmb_session", None)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
@@ -183,7 +195,10 @@ class StudentView(QWidget):
             if getattr(s, "year", None):
                 yr_sem_parts.append(s.year)
             if getattr(s, "semester", None):
-                yr_sem_parts.append(s.semester)
+                sem_disp = str(s.semester)
+                if sem_disp.startswith("Semester "):
+                    sem_disp = sem_disp.replace("Semester ", "") + " Sem"
+                yr_sem_parts.append(sem_disp)
             yr_sem_str = " - ".join(yr_sem_parts) if yr_sem_parts else "N/A"
             self.table.setItem(row_idx, 4, QTableWidgetItem(yr_sem_str))
 
@@ -288,7 +303,8 @@ class StudentView(QWidget):
         )
         self.lbl_selected_count.setText(f"Selected: {selected_count}")
 
-    def delete_selected_students(self):
+    def get_selected_students(self):
+        """Returns a list of Student objects currently checked in the table."""
         selected_students = []
         for row in range(self.table.rowCount()):
             chk_item = self.table.item(row, 0)
@@ -296,7 +312,10 @@ class StudentView(QWidget):
                 student = chk_item.data(Qt.UserRole)
                 if student:
                     selected_students.append(student)
+        return selected_students
 
+    def delete_selected_students(self):
+        selected_students = self.get_selected_students()
         if not selected_students:
             QMessageBox.warning(self, "No Selection", "No students selected.\nPlease select at least one student to delete.")
             return

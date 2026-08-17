@@ -1,8 +1,8 @@
 # Release Status — EduLedger ERP
 
 ## Current Release Summary
-- **Current System Version**: `v2.3.0`
-- **Release Phase**: Phase X — Academic Structure Refactor (Semester & Year Based ERP)
+- **Current System Version**: `v3.2.0`
+- **Release Phase**: Hotfix — Database Schema Auto-Migration Guard (`course_category`)
 - **Target OS Platform**: Windows 10 / Windows 11 (64-bit)
 - **Deployment Status**: **PRODUCTION READY**
 

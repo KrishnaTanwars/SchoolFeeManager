@@ -68,7 +68,7 @@ class PromotionDialog(QDialog):
 
         # Populate Semesters
         self.cmb_sem = QComboBox()
-        self.cmb_sem.addItems(["Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8", "Completed"])
+        self.cmb_sem.addItems(["1 Sem", "2 Sem", "3 Sem", "4 Sem", "5 Sem", "6 Sem", "7 Sem", "8 Sem", "Completed"])
 
         # Calculate initial recommendation based on first student
         if self.students:

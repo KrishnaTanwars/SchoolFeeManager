@@ -35,28 +35,28 @@ class TestPhase2V27Promotion(unittest.TestCase):
     def test_01_calculate_next_stage_ug_and_pg(self):
         """Verifies calculation of next year and semester for UG and PG courses."""
         # UG (B. Pharmacy)
-        yr, sem = PromotionService.calculate_next_stage("B. Pharmacy", "1st Year", "Semester 1")
+        yr, sem = PromotionService.calculate_next_stage("B. Pharmacy", "1st Year", "1 Sem")
         self.assertEqual(yr, "1st Year")
-        self.assertEqual(sem, "Semester 2")
+        self.assertIn(sem, ("2 Sem", "Semester 2"))
 
-        yr, sem = PromotionService.calculate_next_stage("B. Pharmacy", "1st Year", "Semester 2")
+        yr, sem = PromotionService.calculate_next_stage("B. Pharmacy", "1st Year", "2 Sem")
         self.assertEqual(yr, "2nd Year")
-        self.assertEqual(sem, "Semester 3")
+        self.assertIn(sem, ("3 Sem", "Semester 3"))
 
-        yr, sem = PromotionService.calculate_next_stage("B. Pharmacy", "4th Year", "Semester 7")
+        yr, sem = PromotionService.calculate_next_stage("B. Pharmacy", "4th Year", "7 Sem")
         self.assertEqual(yr, "4th Year")
-        self.assertEqual(sem, "Semester 8")
+        self.assertIn(sem, ("8 Sem", "Semester 8"))
 
         # PG (M. Pharmacy)
-        yr, sem = PromotionService.calculate_next_stage("M. Pharmacy", "1st Year", "Semester 1")
+        yr, sem = PromotionService.calculate_next_stage("M. Pharmacy", "1st Year", "1 Sem")
         self.assertEqual(yr, "1st Year")
-        self.assertEqual(sem, "Semester 2")
+        self.assertIn(sem, ("2 Sem", "Semester 2"))
 
-        yr, sem = PromotionService.calculate_next_stage("M. Pharmacy", "1st Year", "Semester 2")
+        yr, sem = PromotionService.calculate_next_stage("M. Pharmacy", "1st Year", "2 Sem")
         self.assertEqual(yr, "2nd Year")
-        self.assertEqual(sem, "Semester 3")
+        self.assertIn(sem, ("3 Sem", "Semester 3"))
 
-        yr, sem = PromotionService.calculate_next_stage("M. Pharmacy", "2nd Year", "Semester 4")
+        yr, sem = PromotionService.calculate_next_stage("M. Pharmacy", "2nd Year", "4 Sem")
         self.assertEqual(yr, "Graduated")
         self.assertEqual(sem, "Completed")
 

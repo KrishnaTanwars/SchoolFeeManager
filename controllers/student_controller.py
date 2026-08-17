@@ -352,20 +352,28 @@ class StudentController:
             db.close()
 
     @staticmethod
-    def get_student_counts_by_course() -> List[Dict[str, Any]]:
-        """Returns student count breakdown by Course (future compatible)."""
+    def get_student_counts_by_course(session_filter: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Returns student count breakdown by Course."""
         db = get_db()
         try:
-            # Uses course if populated, falls back to class_name
             course_col = func.coalesce(Student.course, Student.class_name)
-            results = db.query(
+            query = db.query(
                 course_col,
                 func.count(Student.id)
-            ).filter(Student.status == "Active")\
-             .group_by(course_col).all()
+            ).filter(Student.status == "Active")
+
+            if session_filter and session_filter != "All":
+                query = query.filter(Student.academic_session == session_filter)
+
+            results = query.group_by(course_col).all()
 
             return [
-                {"course_name": r[0] or "General", "student_count": r[1] or 0}
+                {
+                    "course": r[0] or "General",
+                    "course_name": r[0] or "General",
+                    "count": r[1] or 0,
+                    "student_count": r[1] or 0
+                }
                 for r in results
             ]
         finally:

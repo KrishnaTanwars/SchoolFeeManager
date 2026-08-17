@@ -2,6 +2,7 @@
 
 | Version | Release Date | Release Name | Core Features / Enhancements | Status |
 | :--- | :--- | :--- | :--- | :--- |
+| **v3.2.0** | 2026-08-17 | Production Hotfix — Database Schema Auto-Migration Fix | Added missing `course_category` column auto-migration check in `run_migrations()` (`config/database.py`) to prevent `OperationalError: no such column: students_1.course_category` on existing database upgrades. | **Released** |
 | **v2.4.0** | 2026-08-14 | Final Production Release — License Activation Guard | Mandatory Inno Setup License Key Activation Page, SHA-256 hash & modular checksum validation layer, complete responsive screen scaling across all desktop resolutions, full QA suite | **Released** |
 | **v2.3.0** | 2026-08-13 | Phase X — Academic Structure Refactor | Semester & Year support for Colleges & Schools, Course/Branch/Semester Fee Heads, AcademicFilterWidget, PDF Receipt metadata, 350 seeded receipts | **Released** |
 | **v2.2.0** | 2026-08-13 | Phase X — Enterprise Overlay Sidebar | Floating overlay navigation, zero main layout shifts, 200ms mouse leave delay, pin mode toggle, ESC key shortcut, Windows 11 elevation drop shadow | **Released** |

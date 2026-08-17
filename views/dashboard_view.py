@@ -185,14 +185,22 @@ class DashboardView(QWidget):
 
             # Student Analytics by Course
             from controllers.student_controller import StudentController
-            course_stats = StudentController.get_student_counts_by_course()
+            from services.session_service import SessionManager
+            curr_sess = SessionManager.get_current_session()
+            course_stats = StudentController.get_student_counts_by_course(session_filter=curr_sess)
+            if not course_stats:
+                course_stats = StudentController.get_student_counts_by_course(session_filter=None)
+
             self.table_analytics.setRowCount(len(course_stats))
 
             for r_idx, stat in enumerate(course_stats):
-                self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(stat.get("course", "Unknown")))
-                self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(str(stat.get("count", 0))))
-        except Exception:
-            pass
+                c_name = stat.get("course") or stat.get("course_name") or "General"
+                c_cnt = stat.get("count") if stat.get("count") is not None else stat.get("student_count", 0)
+                self.table_analytics.setItem(r_idx, 0, QTableWidgetItem(str(c_name)))
+                self.table_analytics.setItem(r_idx, 1, QTableWidgetItem(str(c_cnt)))
+        except Exception as e:
+            from utils.logger import logger
+            logger.error(f"Error refreshing dashboard: {e}", exc_info=True)
 
     def on_global_session_changed(self, new_session: str):
         if hasattr(self, "lbl_session_context"):

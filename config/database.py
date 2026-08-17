@@ -81,6 +81,8 @@ def run_migrations():
             # Check students columns
             cursor.execute("PRAGMA table_info(students);")
             student_cols = {row[1] for row in cursor.fetchall()}
+            if "course_category" not in student_cols:
+                cursor.execute("ALTER TABLE students ADD COLUMN course_category VARCHAR(20) DEFAULT 'UG';")
             if "course" not in student_cols:
                 cursor.execute("ALTER TABLE students ADD COLUMN course VARCHAR(100);")
             if "branch" not in student_cols:

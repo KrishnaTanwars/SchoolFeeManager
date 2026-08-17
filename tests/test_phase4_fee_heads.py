@@ -124,5 +124,21 @@ class TestPhase4FeeHeadsMaster(unittest.TestCase):
         del_succ, del_msg = FeeController.delete_category(temp_id)
         self.assertTrue(del_succ)
 
+    def test_06_bulk_delete_fee_heads(self):
+        """Verifies bulk deletion of multiple fee heads in one operation."""
+        FeeController.create_category({"name": "Bulk Fee Head 1", "course": "UG", "default_amount": 100.0})
+        FeeController.create_category({"name": "Bulk Fee Head 2", "course": "UG", "default_amount": 200.0})
+
+        c1 = FeeController.get_all_categories(search_query="Bulk Fee Head 1")
+        c2 = FeeController.get_all_categories(search_query="Bulk Fee Head 2")
+
+        self.assertEqual(len(c1), 1)
+        self.assertEqual(len(c2), 1)
+
+        ids = [c1[0].id, c2[0].id]
+        succ, msg, del_cnt = FeeController.delete_categories_bulk(ids)
+        self.assertTrue(succ)
+        self.assertEqual(del_cnt, 2)
+
 if __name__ == "__main__":
     unittest.main()
