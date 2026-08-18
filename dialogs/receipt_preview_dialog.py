@@ -93,10 +93,10 @@ def generate_receipt_html(receipt: Receipt) -> str:
                 <td class="info-val">{receipt.receipt_date.strftime('%d-%m-%Y')}</td>
             </tr>
             <tr>
-                <td class="info-label">Adm / Enroll No:</td>
+                <td class="info-label">Admission No:</td>
                 <td class="info-val"><b>{st.admission_no}</b></td>
-                <td class="info-label">Academic Session:</td>
-                <td class="info-val">{receipt.academic_session}</td>
+                <td class="info-label">Enrollment No:</td>
+                <td class="info-val"><b>{getattr(st, "enrollment_no", None) or "N/A"}</b></td>
             </tr>
             <tr>
                 <td class="info-label">Student Name:</td>

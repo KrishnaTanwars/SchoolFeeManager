@@ -12,6 +12,18 @@ class SessionManager:
     _listeners: List[Callable[[str], None]] = []
     _cached_session: Optional[str] = None
 
+    class _SignalEmitter:
+        def connect(self, callback):
+            SessionManager.register_listener(callback)
+        def disconnect(self, callback):
+            SessionManager.unregister_listener(callback)
+
+    session_changed = _SignalEmitter()
+
+    @classmethod
+    def refresh(cls):
+        cls._cached_session = None
+
     @classmethod
     def register_listener(cls, callback: Callable[[str], None]):
         if callback not in cls._listeners:
@@ -71,6 +83,12 @@ class SessionManager:
             else:
                 target = AcademicSession(session_name=s_name, is_current=True)
                 db.add(target)
+
+            from models.settings import SchoolInformation
+            info = db.query(SchoolInformation).first()
+            if info:
+                info.current_session = s_name
+
             db.commit()
             
             cls._cached_session = s_name

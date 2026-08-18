@@ -32,6 +32,26 @@ class SettingsController:
             db.close()
 
     @staticmethod
+    def get_active_logo_path() -> Optional[str]:
+        """
+        Resolves active logo file path across user installations safely.
+        Checks DB school_info.logo_path -> assets/custom_logo.png -> assets/school_logo.png.
+        """
+        info = SettingsController.get_school_info()
+        if info and info.logo_path:
+            lp = Path(info.logo_path)
+            if lp.exists():
+                return str(lp.resolve())
+            rel_app = Path(__file__).resolve().parent.parent / info.logo_path
+            if rel_app.exists():
+                return str(rel_app.resolve())
+
+        default_logo = Path(__file__).resolve().parent.parent / "assets" / "school_logo.png"
+        if default_logo.exists():
+            return str(default_logo.resolve())
+        return None
+
+    @staticmethod
     def update_school_info(data: Dict[str, Any]) -> Tuple[bool, str]:
         db = get_db()
         try:

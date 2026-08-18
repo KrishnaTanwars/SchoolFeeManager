@@ -359,10 +359,21 @@ class SettingsView(QWidget):
         p_layout.addWidget(scroll)
 
     def select_logo(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Select School Logo Image", "", "Images (*.png *.jpg *.jpeg)")
+        path, _ = QFileDialog.getOpenFileName(self, "Select School Logo Image", "", "Images (*.png *.jpg *.jpeg *.webp)")
         if path:
-            self.logo_path_selected = path
-            self.lbl_logo_path.setText(Path(path).name)
+            try:
+                import shutil
+                assets_dir = Path(__file__).resolve().parent.parent / "assets"
+                assets_dir.mkdir(parents=True, exist_ok=True)
+                ext = Path(path).suffix
+                target_logo = assets_dir / f"school_logo{ext}"
+                shutil.copy2(path, target_logo)
+                rel_path = f"assets/school_logo{ext}"
+                self.logo_path_selected = rel_path
+                self.lbl_logo_path.setText(target_logo.name)
+            except Exception as e:
+                self.logo_path_selected = path
+                self.lbl_logo_path.setText(Path(path).name)
 
     def load_school_info(self):
         info = SettingsController.get_school_info()

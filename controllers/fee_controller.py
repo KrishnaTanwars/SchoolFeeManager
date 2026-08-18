@@ -58,11 +58,20 @@ class FeeController:
             st_year = getattr(student, "year", None) or "All"
             st_sem = getattr(student, "semester", None) or "All"
             st_session = getattr(student, "academic_session", None) or "All"
+            st_cat = getattr(student, "course_category", None)
+            if not st_cat:
+                st_cat = "PG" if ("M." in st_course or "PG" in st_course or "MBA" in st_course or "MCA" in st_course) else "UG"
 
             for c in cats:
-                # Check course match
-                if c.course not in ("All", "UG", "PG") and st_course != "All" and c.course.lower() != st_course.lower():
-                    continue
+                # Check course category / course match
+                if c.course not in ("All", ""):
+                    c_crs_upper = c.course.upper()
+                    if c_crs_upper in ("UG", "PG"):
+                        if st_cat.upper() != c_crs_upper:
+                            continue
+                    elif st_course != "All" and c.course.lower() != st_course.lower():
+                        continue
+
                 # Check branch match
                 if c.branch != "All" and st_branch != "All" and c.branch.lower() != st_branch.lower():
                     continue

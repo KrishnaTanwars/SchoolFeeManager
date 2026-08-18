@@ -42,12 +42,8 @@ class PDFService:
         school_phone = school_info.phone if school_info else "+91 98765 43210, 011-26123456"
         school_email = school_info.email if school_info else "accounts@dpsschool.edu.in"
 
-        # Determine Logo File Path
-        logo_path = school_info.logo_path if (school_info and school_info.logo_path and Path(school_info.logo_path).exists()) else None
-        if not logo_path:
-            default_logo = Path(__file__).resolve().parent.parent / "assets" / "school_logo.png"
-            if default_logo.exists():
-                logo_path = str(default_logo)
+        # Determine Logo File Path via SettingsController
+        logo_path = SettingsController.get_active_logo_path()
 
         doc = SimpleDocTemplate(
             output_path,
@@ -77,23 +73,23 @@ class PDFService:
             alignment=1
         )
 
-        # Dynamic font sizing based on fee item count for guaranteed 1-page A4 fit
+        # Dynamic font sizing & cell padding based on fee item count for 1-page A4 fit with full vertical fill
         item_count = len(receipt.items) if receipt.items else 1
-        if item_count >= 12:
-            font_sz = 7.0
-            leading_sz = 8.2
-            padding_sz = 0.8
-            spacer_sz = 0.8 * mm
-        elif item_count >= 8:
+        if item_count >= 14:
             font_sz = 7.5
-            leading_sz = 9.0
-            padding_sz = 1.0
+            leading_sz = 8.8
+            padding_sz = 2.0
             spacer_sz = 1.0 * mm
-        else:
+        elif item_count >= 8:
             font_sz = 8.0
-            leading_sz = 10.0
-            padding_sz = 1.5
-            spacer_sz = 1.5 * mm
+            leading_sz = 9.5
+            padding_sz = 3.0
+            spacer_sz = 2.0 * mm
+        else:
+            font_sz = 8.5
+            leading_sz = 11.0
+            padding_sz = 5.5
+            spacer_sz = 3.5 * mm
 
         label_bold = ParagraphStyle(
             'LabelBold',
@@ -157,7 +153,7 @@ class PDFService:
         story.append(Paragraph("FEE PAYMENT RECEIPT", badge_style))
         story.append(Spacer(1, spacer_sz))
 
-        # Student & Receipt Details Table
+        # Student & Receipt Details Table (Separate Admission & Enrollment Numbers)
         student = receipt.student
         course_str = getattr(receipt, "course", None) or (getattr(student, "course", None) if student else None) or "General"
         branch_str = getattr(receipt, "branch", None) or (getattr(student, "branch", None) if student else None) or "General"
@@ -165,6 +161,7 @@ class PDFService:
         sem_str = getattr(receipt, "semester", None) or (getattr(student, "semester", None) if student else None) or "N/A"
         st_name = getattr(student, "name", "N/A") if student else "N/A"
         adm_no = getattr(student, "admission_no", "N/A") if student else "N/A"
+        enr_no = getattr(student, "enrollment_no", None) or "N/A"
         father_name = getattr(student, "father_name", "N/A") if student else "N/A"
         mobile_num = getattr(student, "mobile", "N/A") if student else "N/A"
 
@@ -174,8 +171,8 @@ class PDFService:
                 Paragraph("<b>Date:</b>", label_bold), Paragraph(format_date(receipt.receipt_date), label_val)
             ],
             [
-                Paragraph("<b>Admission / Enrollment No:</b>", label_bold), Paragraph(adm_no, label_val),
-                Paragraph("<b>Academic Session:</b>", label_bold), Paragraph(receipt.academic_session, label_val)
+                Paragraph("<b>Admission No:</b>", label_bold), Paragraph(adm_no, label_val),
+                Paragraph("<b>Enrollment No:</b>", label_bold), Paragraph(enr_no, label_val)
             ],
             [
                 Paragraph("<b>Student Name:</b>", label_bold), Paragraph(st_name, label_val),
@@ -186,7 +183,7 @@ class PDFService:
                 Paragraph("<b>Father's Name:</b>", label_bold), Paragraph(father_name, label_val)
             ],
             [
-                Paragraph("<b>Mobile No:</b>", label_bold), Paragraph(mobile_num, label_val),
+                Paragraph("<b>Academic Session:</b>", label_bold), Paragraph(receipt.academic_session, label_val),
                 Paragraph("<b>Payment Mode:</b>", label_bold), Paragraph(receipt.payment_mode, label_val)
             ]
         ]
@@ -409,12 +406,8 @@ class PDFService:
         school_phone = school_info.phone if school_info else "+91 98765 43210, 011-26123456"
         school_email = school_info.email if school_info else "info@dpsschool.edu.in"
 
-        # Determine Logo Path
-        logo_path = school_info.logo_path if (school_info and school_info.logo_path and Path(school_info.logo_path).exists()) else None
-        if not logo_path:
-            default_logo = Path(__file__).resolve().parent.parent / "assets" / "school_logo.png"
-            if default_logo.exists():
-                logo_path = str(default_logo)
+        # Determine Logo Path via SettingsController
+        logo_path = SettingsController.get_active_logo_path()
 
         doc = SimpleDocTemplate(
             output_path,

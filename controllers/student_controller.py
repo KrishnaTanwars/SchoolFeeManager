@@ -8,6 +8,7 @@ from config.database import get_db
 from models.student import Student
 from models.audit import AuditLog
 from controllers.auth_controller import AuthController
+from services.session_service import SessionManager
 from utils.logger import logger
 
 class StudentController:
@@ -57,6 +58,7 @@ class StudentController:
                     or_(
                         Student.name.ilike(pattern),
                         Student.admission_no.ilike(pattern),
+                        Student.enrollment_no.ilike(pattern),
                         Student.aadhaar_number.ilike(pattern),
                         Student.father_name.ilike(pattern),
                         Student.mother_name.ilike(pattern),
@@ -74,6 +76,39 @@ class StudentController:
             for s in students:
                 db.expunge(s)
             return students
+        finally:
+            db.close()
+
+    @staticmethod
+    def get_next_admission_no() -> str:
+        """
+        Calculates and returns the next auto-incremented Admission Number based on existing records.
+        Example: ADM/2026/0001, ADM/2026/0002...
+        """
+        import re
+        from datetime import datetime
+        db = get_db()
+        try:
+            records = db.query(Student.admission_no).all()
+            curr_year = datetime.now().year
+            prefix = f"ADM/{curr_year}/"
+            max_num = 0
+
+            for (adm_no,) in records:
+                if not adm_no:
+                    continue
+                # Match ending digits
+                match = re.search(r'(\d+)$', adm_no.strip())
+                if match:
+                    num = int(match.group(1))
+                    if num > max_num:
+                        max_num = num
+
+            next_num = max_num + 1
+            return f"{prefix}{next_num:04d}"
+        except Exception as e:
+            logger.warning(f"Error computing next admission no: {e}")
+            return f"ADM/{datetime.now().year}/0001"
         finally:
             db.close()
 
@@ -122,15 +157,20 @@ class StudentController:
                 if existing_aadhaar:
                     return False, "This Aadhaar Number is already registered."
 
+            crs_name = data.get("course", "").strip()
+            cat_val = data.get("course_category") or ("PG" if "M." in crs_name or "PG" in crs_name or "MBA" in crs_name or "MCA" in crs_name else "UG")
+
             student = Student(
                 admission_no=admission_no,
+                enrollment_no=data.get("enrollment_no", "").strip() or None,
                 roll_no=data.get("roll_no", "").strip(),
                 name=data.get("name", "").strip(),
                 father_name=data.get("father_name", "").strip(),
                 mother_name=data.get("mother_name", "").strip(),
-                class_name=data.get("class_name", "").strip() or data.get("course", "").strip(),
+                class_name=data.get("class_name", "").strip() or crs_name,
                 section=data.get("section", "").strip(),
-                course=data.get("course", "").strip(),
+                course=crs_name,
+                course_category=cat_val,
                 branch=data.get("branch", "").strip(),
                 year=data.get("year", "").strip(),
                 semester=data.get("semester", "").strip(),
@@ -140,7 +180,7 @@ class StudentController:
                 date_of_birth=data.get("date_of_birth"),
                 aadhaar_number=aadhaar or None,
                 photo_path=data.get("photo_path"),
-                academic_session=data.get("academic_session", "2024-2025"),
+                academic_session=data.get("academic_session", "").strip() or SessionManager.get_current_session(),
                 status="Active"
             )
             db.add(student)
@@ -193,6 +233,9 @@ class StudentController:
                 if existing_aadhaar:
                     return False, "This Aadhaar Number is already registered."
 
+            if "enrollment_no" in data:
+                student.enrollment_no = data.get("enrollment_no", "").strip() or None
+
             student.roll_no = data.get("roll_no", "").strip()
             student.name = data.get("name", "").strip()
             student.father_name = data.get("father_name", "").strip()
@@ -200,6 +243,10 @@ class StudentController:
             student.class_name = data.get("class_name", "").strip() or data.get("course", "").strip()
             student.section = data.get("section", "").strip()
             student.course = data.get("course", "").strip()
+            if "course_category" in data:
+                student.course_category = data.get("course_category")
+            else:
+                student.course_category = "PG" if "M." in student.course or "PG" in student.course or "MBA" in student.course or "MCA" in student.course else "UG"
             student.branch = data.get("branch", "").strip()
             student.year = data.get("year", "").strip()
             student.semester = data.get("semester", "").strip()

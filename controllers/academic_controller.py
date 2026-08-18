@@ -100,6 +100,11 @@ class AcademicController:
             return [c["name"] for c in cls.DEFAULT_COURSES]
 
     @classmethod
+    def get_courses_by_category(cls, category: str) -> List[str]:
+        """Returns list of course names for a given category (UG / PG)."""
+        return cls.get_courses(course_type=category)
+
+    @classmethod
     def get_branches(cls, course_name: Optional[str] = None) -> List[str]:
         """Returns list of branch names, optionally filtered by course."""
         cls.seed_academic_masters_if_empty()
@@ -116,8 +121,11 @@ class AcademicController:
     def get_years(cls, course_name: Optional[str] = None) -> List[str]:
         """Returns list of academic year names."""
         cls.seed_academic_masters_if_empty()
-        if course_name in ("M. Pharmacy", "MPHARM", "PG", "MBA"):
+        if course_name in ("M. Pharmacy", "MPHARM", "PG", "MBA", "MCA"):
             return ["1st Year", "2nd Year"]
+        if course_name in ("B. Pharmacy", "BPHARM", "B.Tech", "BTECH", "UG"):
+            return ["1st Year", "2nd Year", "3rd Year", "4th Year"]
+
         db = get_db()
         try:
             years = db.query(AcademicYear).filter(AcademicYear.is_active == True).order_by(AcademicYear.order_no).all()

@@ -53,12 +53,45 @@ class ExportService:
 
             try:
                 import openpyxl
+                from openpyxl.styles import Font
+                from config.app_config import STUDENT_PHOTOS_DIR
+
                 wb = openpyxl.Workbook()
                 ws = wb.active
                 ws.title = "EduLedger Data Export"
                 ws.append(headers)
-                for row in rows:
-                    ws.append([str(c) for c in row])
+
+                # Identify photo column index if present
+                photo_col_idx = -1
+                for idx, h in enumerate(headers):
+                    if h.lower() in ("student photo", "photo link", "photo path", "photo"):
+                        photo_col_idx = idx
+                        break
+
+                font_hyperlink = Font(color="0000FF", underline="single")
+
+                for row_data in rows:
+                    row_cells = [str(c) if c is not None else "" for c in row_data]
+                    ws.append(row_cells)
+                    curr_row_idx = ws.max_row
+
+                    if photo_col_idx >= 0 and photo_col_idx < len(row_data):
+                        raw_photo = str(row_data[photo_col_idx]).strip() if row_data[photo_col_idx] else ""
+                        if raw_photo:
+                            photo_file = STUDENT_PHOTOS_DIR / raw_photo
+                            if not photo_file.exists():
+                                photo_file = Path(raw_photo)
+                            
+                            if photo_file.exists():
+                                cell = ws.cell(row=curr_row_idx, column=photo_col_idx + 1)
+                                file_uri = photo_file.resolve().as_uri()
+                                cell.value = f"View Photo ({photo_file.name})"
+                                cell.hyperlink = file_uri
+                                cell.font = font_hyperlink
+                            else:
+                                cell = ws.cell(row=curr_row_idx, column=photo_col_idx + 1)
+                                cell.value = raw_photo or "No Photo"
+
                 wb.save(output_path)
             except ImportError:
                 # Fallback to UTF-8-SIG TSV format which Excel opens directly

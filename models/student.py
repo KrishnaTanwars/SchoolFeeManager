@@ -12,6 +12,7 @@ class Student(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     admission_no = Column(String(50), unique=True, nullable=False, index=True)
+    enrollment_no = Column(String(50), nullable=True, index=True)
     roll_no = Column(String(20), nullable=True)
     name = Column(String(100), nullable=False, index=True)
     father_name = Column(String(100), nullable=False)
@@ -29,11 +30,8 @@ class Student(Base):
     address = Column(Text, nullable=True)
     admission_date = Column(Date, default=date.today, nullable=False)
     academic_session = Column(String(20), nullable=False, index=True)
-    date_of_birth = Column(Date, nullable=True)
-    aadhaar_number = Column(String(12), nullable=True, index=True)
-    photo_path = Column(String(255), nullable=True)
-    status = Column(String(20), default="Active", nullable=False)  # Active / Inactive
     photo_path = Column(String(255), nullable=True)  # Relative file path for persistent student photo
+    status = Column(String(20), default="Active", nullable=False)  # Active / Inactive
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     receipts = relationship("Receipt", back_populates="student", cascade="all, delete-orphan")

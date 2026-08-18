@@ -76,10 +76,18 @@ class StudentDialog(QDialog):
         form_layout = QFormLayout(group)
         form_layout.setSpacing(10)
 
-        # Admission / Enrollment Number
+        # Admission Number (Auto-Incremented)
         self.txt_admission_no = QLineEdit()
-        self.txt_admission_no.setPlaceholderText("e.g. ADM/2025/001")
-        form_layout.addRow("Admission / Enrollment No *:", self.txt_admission_no)
+        self.txt_admission_no.setPlaceholderText("e.g. ADM/2026/0001")
+        if not self.student:
+            auto_adm = StudentController.get_next_admission_no()
+            self.txt_admission_no.setText(auto_adm)
+        form_layout.addRow("Admission Number *:", self.txt_admission_no)
+
+        # Enrollment Number (Manual Entry)
+        self.txt_enrollment_no = QLineEdit()
+        self.txt_enrollment_no.setPlaceholderText("e.g. ENR2026889 (Optional / Manual)")
+        form_layout.addRow("Enrollment Number:", self.txt_enrollment_no)
 
         # Student Name
         self.txt_name = QLineEdit()
@@ -92,6 +100,7 @@ class StudentDialog(QDialog):
         self.dt_dob.setCalendarPopup(True)
         self.dt_dob.setDisplayFormat("dd-MM-yyyy")
         self.dt_dob.setDate(QDate(2005, 1, 1))
+        self.dt_dob.setMaximumDate(QDate.currentDate())
         form_layout.addRow("Date of Birth:", self.dt_dob)
 
         # Aadhaar Number
@@ -243,6 +252,7 @@ class StudentDialog(QDialog):
     def load_student_data(self):
         s = self.student
         self.txt_admission_no.setText(s.admission_no)
+        self.txt_enrollment_no.setText(getattr(s, "enrollment_no", "") or "")
         self.txt_name.setText(s.name)
         self.txt_father_name.setText(s.father_name)
         self.txt_mother_name.setText(s.mother_name or "")
@@ -269,13 +279,14 @@ class StudentDialog(QDialog):
 
     def save_student(self):
         adm_no = self.txt_admission_no.text().strip()
+        enr_no = self.txt_enrollment_no.text().strip()
         name = self.txt_name.text().strip()
         father_name = self.txt_father_name.text().strip()
         course_name = self.cmb_course.currentText().strip()
         mobile = self.txt_mobile.text().strip()
 
         if not adm_no:
-            QMessageBox.warning(self, "Validation Error", "Admission / Enrollment Number is required.")
+            QMessageBox.warning(self, "Validation Error", "Admission Number is required.")
             self.txt_admission_no.setFocus()
             return
         if not name:
@@ -314,6 +325,7 @@ class StudentDialog(QDialog):
 
         data = {
             "admission_no": adm_no,
+            "enrollment_no": enr_no,
             "roll_no": "",
             "name": name,
             "father_name": father_name,

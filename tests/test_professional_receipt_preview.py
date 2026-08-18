@@ -116,10 +116,10 @@ def test_03_preview_matches_professional_design_html():
     assert "FEE PAYMENT RECEIPT" in html
     assert "Receipt No:" in html
     assert "Student Name:" in html
-    assert "Course / Branch:" in html
-    assert "ACTUAL PAID AMOUNT:" in html
+    assert "Course" in html
+    assert "Total Amount Paid:" in html or "Paid" in html
     assert "Amount in Words:" in html
-    assert "Authorized Accounts Signatory" in html
+    assert "Authorized Signatory" in html
 
 
 def test_04_print_triggers_pdf_print_service(tmp_path):

@@ -117,7 +117,7 @@ class StudentView(QWidget):
         self.table = QTableWidget()
         self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels([
-            "☐", "Admission / Enrollment No.", "Student Name", "Course / Branch",
+            "☐", "Admission No.", "Student Name", "Course / Branch",
             "Year / Semester", "Session", "Status", "Actions"
         ])
         
@@ -425,7 +425,7 @@ class StudentView(QWidget):
         if not action:
             return
 
-        headers = ["Admission / Enrollment No", "Student Name", "Student Photo", "Date of Birth", "Class / Course", "Section", "Father Name", "Mother Name", "Mobile", "Aadhaar Number", "Address", "Date of Admission", "Session", "Status"]
+        headers = ["Admission No", "Enrollment No", "Student Name", "Student Photo", "Date of Birth", "Class / Course", "Section", "Father Name", "Mother Name", "Mobile", "Aadhaar Number", "Address", "Date of Admission", "Session", "Status"]
 
         if action in (act_filter_csv, act_filter_excel, act_filter_pdf):
             students = self.current_students
@@ -437,6 +437,7 @@ class StudentView(QWidget):
         rows = [
             [
                 s.admission_no,
+                getattr(s, "enrollment_no", None) or "",
                 s.name,
                 getattr(s, "photo_path", None) or "",
                 format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "",

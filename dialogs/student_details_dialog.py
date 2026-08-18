@@ -73,7 +73,7 @@ class StudentDetailsDialog(QDialog):
         lbl_name = QLabel(s.name)
         lbl_name.setWordWrap(True)
         lbl_name.setStyleSheet("font-size: 18px; font-weight: 800; color: #1e3a8a; border: none;")
-        lbl_sub = QLabel(f"Adm / Enroll No: {s.admission_no}  |  Course: {s.course or 'General'}  |  Semester: {getattr(s, 'semester', None) or 'N/A'}")
+        lbl_sub = QLabel(f"Adm No: {s.admission_no}  |  Enroll No: {getattr(s, 'enrollment_no', None) or 'N/A'}  |  Course: {s.course or 'General'}  |  Semester: {getattr(s, 'semester', None) or 'N/A'}")
         lbl_sub.setWordWrap(True)
         lbl_sub.setStyleSheet("font-size: 12px; font-weight: 600; color: #64748b; border: none;")
         title_v.addWidget(lbl_name)
@@ -96,7 +96,8 @@ class StudentDetailsDialog(QDialog):
         f_academic = QFormLayout(grp_academic)
         f_academic.setSpacing(8)
 
-        f_academic.addRow("Admission / Enrollment No:", self._val_label(s.admission_no))
+        f_academic.addRow("Admission Number:", self._val_label(s.admission_no))
+        f_academic.addRow("Enrollment Number:", self._val_label(getattr(s, "enrollment_no", None) or "N/A"))
         f_academic.addRow("Student Name:", self._val_label(s.name))
         f_academic.addRow("Date of Birth:", self._val_label(format_date(getattr(s, "date_of_birth", None)) if getattr(s, "date_of_birth", None) else "N/A"))
         f_academic.addRow("Aadhaar Number:", self._val_label(getattr(s, "aadhaar_number", None) or "N/A"))

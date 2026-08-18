@@ -187,6 +187,7 @@ class ImportService:
 
                 # Field mapping extraction with flexible column names
                 adm_no = row.get("Admission Number") or row.get("Admission No") or row.get("Adm No") or ""
+                enr_no = row.get("Enrollment Number") or row.get("Enrollment No") or row.get("Enroll No") or ""
                 roll_no = row.get("Roll Number") or row.get("Roll No") or ""
                 name = row.get("Student Name") or row.get("Name") or ""
                 dob_str = row.get("Date of Birth") or row.get("Date Of Birth") or row.get("DOB") or row.get("dob") or ""
@@ -299,6 +300,7 @@ class ImportService:
                 parsed_items.append({
                     "row_num": row_num,
                     "admission_no": adm_no.strip(),
+                    "enrollment_no": enr_no.strip() if enr_no.strip() else None,
                     "roll_no": roll_no.strip(),
                     "name": name.strip(),
                     "date_of_birth": parsed_dob,
@@ -351,6 +353,7 @@ class ImportService:
 
                 student = Student(
                     admission_no=item["admission_no"],
+                    enrollment_no=item.get("enrollment_no"),
                     roll_no=item["roll_no"],
                     name=item["name"],
                     date_of_birth=item.get("date_of_birth"),
