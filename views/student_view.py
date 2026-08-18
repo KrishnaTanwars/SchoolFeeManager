@@ -413,13 +413,43 @@ class StudentView(QWidget):
         from PySide6.QtGui import QCursor
 
         menu = QMenu(self)
-        act_filter_csv = menu.addAction("📥 Export Current Filtered List (CSV)")
-        act_filter_excel = menu.addAction("📊 Export Current Filtered List (Excel)")
-        act_filter_pdf = menu.addAction("📄 Export Current Filtered List (PDF)")
+        menu.setStyleSheet("""
+            QMenu {
+                background-color: #1e293b;
+                color: #ffffff;
+                border: 1px solid #334155;
+                border-radius: 8px;
+                padding: 6px;
+            }
+            QMenu::item {
+                background-color: transparent;
+                color: #ffffff;
+                padding: 8px 24px 8px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+            QMenu::item:selected {
+                background-color: #2563eb;
+                color: #ffffff;
+            }
+            QMenu::item:disabled {
+                color: #64748b;
+            }
+            QMenu::separator {
+                height: 1px;
+                background-color: #334155;
+                margin: 4px 6px;
+            }
+        """)
+
+        act_filter_csv = menu.addAction("📥  Export Current Filtered List (CSV)")
+        act_filter_excel = menu.addAction("📊  Export Current Filtered List (Excel)")
+        act_filter_pdf = menu.addAction("📄  Export Current Filtered List (PDF)")
         menu.addSeparator()
-        act_db_csv = menu.addAction("📥 Export Entire Database (CSV)")
-        act_db_excel = menu.addAction("📊 Export Entire Database (Excel)")
-        act_db_pdf = menu.addAction("📄 Export Entire Database (PDF)")
+        act_db_csv = menu.addAction("📥  Export Entire Database (CSV)")
+        act_db_excel = menu.addAction("📊  Export Entire Database (Excel)")
+        act_db_pdf = menu.addAction("📄  Export Entire Database (PDF)")
 
         action = menu.exec(QCursor.pos())
         if not action:
@@ -471,12 +501,17 @@ class StudentView(QWidget):
 
         try:
             if fmt == "csv":
-                ExportService.export_to_csv(headers, rows, path)
+                success, msg = ExportService.export_to_csv(headers, rows, output_path=path)
             elif fmt == "excel":
-                ExportService.export_to_excel(headers, rows, path)
+                success, msg = ExportService.export_to_excel(headers, rows, output_path=path)
             else:
                 PDFService.generate_table_pdf(title, headers, rows, path)
-            QMessageBox.information(self, "Export Complete", f"Exported {len(rows)} records successfully:\n{path}")
+                success, msg = True, path
+
+            if success:
+                QMessageBox.information(self, "Export Complete", f"Exported {len(rows)} records successfully:\n{path}")
+            else:
+                QMessageBox.critical(self, "Export Failed", f"Failed to export data: {msg}")
         except Exception as e:
             QMessageBox.critical(self, "Export Failed", f"Failed to export data: {e}")
 

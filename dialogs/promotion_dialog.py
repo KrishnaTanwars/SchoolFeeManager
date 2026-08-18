@@ -165,7 +165,7 @@ class PromotionDialog(QDialog):
             return
 
         # Authenticate Admin Password
-        if not AuthController.verify_admin_password(password):
+        if not AuthController.verify_admin_password(password, module="Academic Promotion"):
             QMessageBox.critical(self, "Authentication Failed", "Invalid Administrator Password. Promotion cancelled.")
             self.txt_admin_password.clear()
             self.txt_admin_password.setFocus()

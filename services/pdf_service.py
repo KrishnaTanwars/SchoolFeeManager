@@ -79,17 +79,22 @@ class PDFService:
             font_sz = 7.5
             leading_sz = 8.8
             padding_sz = 2.0
-            spacer_sz = 1.0 * mm
-        elif item_count >= 8:
+            spacer_sz = 1.2 * mm
+        elif item_count >= 10:
             font_sz = 8.0
             leading_sz = 9.5
-            padding_sz = 3.0
-            spacer_sz = 2.0 * mm
-        else:
+            padding_sz = 3.5
+            spacer_sz = 2.5 * mm
+        elif item_count >= 6:
             font_sz = 8.5
-            leading_sz = 11.0
-            padding_sz = 5.5
-            spacer_sz = 3.5 * mm
+            leading_sz = 10.5
+            padding_sz = 5.2
+            spacer_sz = 4.0 * mm
+        else:
+            font_sz = 9.0
+            leading_sz = 11.5
+            padding_sz = 7.5
+            spacer_sz = 6.0 * mm
 
         label_bold = ParagraphStyle(
             'LabelBold',

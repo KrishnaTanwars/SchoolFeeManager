@@ -71,6 +71,11 @@ class AuthController:
         return cls._current_user is not None and cls._current_user.role in ("Admin", "Administrator")
 
     @classmethod
+    def verify_admin_password(cls, password: str, module: Optional[str] = "General") -> bool:
+        from services.security_service import SecurityService
+        return SecurityService.verify_admin_password(password, module=module)
+
+    @classmethod
     def get_all_users(cls) -> List[User]:
         db = get_db()
         try:

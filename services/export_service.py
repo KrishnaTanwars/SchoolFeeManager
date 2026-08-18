@@ -77,20 +77,33 @@ class ExportService:
 
                     if photo_col_idx >= 0 and photo_col_idx < len(row_data):
                         raw_photo = str(row_data[photo_col_idx]).strip() if row_data[photo_col_idx] else ""
-                        if raw_photo:
-                            photo_file = STUDENT_PHOTOS_DIR / raw_photo
-                            if not photo_file.exists():
-                                photo_file = Path(raw_photo)
+                        cell = ws.cell(row=curr_row_idx, column=photo_col_idx + 1)
+                        
+                        if raw_photo and raw_photo.lower() not in ("none", "null", "no photo", "-", "n/a"):
+                            # Robust path resolution across project structures
+                            photo_file = None
+                            candidates = [
+                                STUDENT_PHOTOS_DIR / raw_photo,
+                                STUDENT_PHOTOS_DIR / Path(raw_photo).name,
+                                Path(raw_photo),
+                                Path(__file__).resolve().parent.parent / raw_photo,
+                                Path(__file__).resolve().parent.parent / "student_photos" / Path(raw_photo).name
+                            ]
+                            for cand in candidates:
+                                if cand.exists():
+                                    photo_file = cand.resolve()
+                                    break
                             
-                            if photo_file.exists():
-                                cell = ws.cell(row=curr_row_idx, column=photo_col_idx + 1)
-                                file_uri = photo_file.resolve().as_uri()
-                                cell.value = f"View Photo ({photo_file.name})"
-                                cell.hyperlink = file_uri
-                                cell.font = font_hyperlink
-                            else:
-                                cell = ws.cell(row=curr_row_idx, column=photo_col_idx + 1)
-                                cell.value = raw_photo or "No Photo"
+                            if not photo_file:
+                                # Default to resolved URI target under STUDENT_PHOTOS_DIR
+                                photo_file = (STUDENT_PHOTOS_DIR / Path(raw_photo).name).resolve()
+
+                            file_uri = photo_file.as_uri()
+                            cell.value = f"View Photo ({Path(raw_photo).name})"
+                            cell.hyperlink = file_uri
+                            cell.font = font_hyperlink
+                        else:
+                            cell.value = "No Photo"
 
                 wb.save(output_path)
             except ImportError:
