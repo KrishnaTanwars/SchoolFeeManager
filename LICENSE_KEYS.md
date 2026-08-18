@@ -1,6 +1,6 @@
 # EduLedger ERP — Authorized Production License Keys
 
-Below is the list of authorized production license keys pre-configured in the Windows Installer Setup (`SchoolFeeERP_Setup_v2.4.0.exe` / `installer.iss`).
+Below is the list of authorized production license keys pre-configured in the Windows Installer Setup (`SchoolFeeERP_Setup_v3.3.0.exe` / `installer.iss`).
 
 ---
 

@@ -73,28 +73,39 @@ class PDFService:
             alignment=1
         )
 
-        # Dynamic font sizing & cell padding based on fee item count for 1-page A4 fit with full vertical fill
+        # Continuous mathematical vertical layout scaling to span full A4 page top-to-bottom
         item_count = len(receipt.items) if receipt.items else 1
-        if item_count >= 14:
-            font_sz = 7.5
-            leading_sz = 8.8
+        
+        if item_count >= 24:
+            font_sz = 6.8
+            leading_sz = 8.0
             padding_sz = 2.0
-            spacer_sz = 1.2 * mm
-        elif item_count >= 10:
+            info_padding = 1.0
+            spacer_sz = 1.0 * mm
+        elif item_count >= 18:
+            font_sz = 7.2
+            leading_sz = 8.5
+            padding_sz = 4.0
+            info_padding = 1.8
+            spacer_sz = 1.8 * mm
+        elif item_count >= 12:
             font_sz = 8.0
-            leading_sz = 9.5
-            padding_sz = 3.5
-            spacer_sz = 2.5 * mm
-        elif item_count >= 6:
+            leading_sz = 9.8
+            padding_sz = 8.5
+            info_padding = 3.0
+            spacer_sz = 3.5 * mm
+        elif item_count >= 7:
             font_sz = 8.5
             leading_sz = 10.5
-            padding_sz = 5.2
-            spacer_sz = 4.0 * mm
+            padding_sz = 12.0
+            info_padding = 4.0
+            spacer_sz = 5.0 * mm
         else:
             font_sz = 9.0
             leading_sz = 11.5
-            padding_sz = 7.5
-            spacer_sz = 6.0 * mm
+            padding_sz = 16.0
+            info_padding = 5.5
+            spacer_sz = 6.5 * mm
 
         label_bold = ParagraphStyle(
             'LabelBold',
@@ -199,8 +210,8 @@ class PDFService:
             ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 1.0),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 1.0),
+            ('TOPPADDING', (0,0), (-1,-1), info_padding),
+            ('BOTTOMPADDING', (0,0), (-1,-1), info_padding),
             ('LEFTPADDING', (0,0), (-1,-1), 4),
             ('RIGHTPADDING', (0,0), (-1,-1), 4),
         ]))

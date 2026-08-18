@@ -5,7 +5,7 @@ Student Master Management View with Fixed Action Button Layout and Zero-Clipping
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox,
     QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox,
-    QFileDialog
+    QFileDialog, QDialog
 )
 from PySide6.QtCore import Qt
 from controllers.student_controller import StudentController

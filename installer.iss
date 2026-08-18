@@ -2,7 +2,7 @@
 ; Professional Enterprise Windows Installer with License Activation Guard
 
 #ifndef MyAppVersion
-#define MyAppVersion "3.2.0"
+#define MyAppVersion "3.3.0"
 #endif
 
 #define MyAppName "School Fee ERP"
