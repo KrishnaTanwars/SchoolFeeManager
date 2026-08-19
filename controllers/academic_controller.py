@@ -301,6 +301,23 @@ class AcademicController:
             return False, f"Failed to update course status: {e}"
 
     @classmethod
+    def set_course_status(cls, course_id: int, is_active: bool) -> tuple[bool, str]:
+        """Sets active/inactive status of a course."""
+        db = get_db()
+        try:
+            course = db.query(Course).filter(Course.id == course_id).first()
+            if not course:
+                return False, "Course not found."
+            course.is_active = is_active
+            db.commit()
+            status_str = "Active" if is_active else "Inactive"
+            return True, f"Course '{course.name}' set to {status_str}."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error setting course status: {e}")
+            return False, f"Failed to set course status: {e}"
+
+    @classmethod
     def delete_course(cls, course_id: int) -> tuple[bool, str]:
         """Deletes a course if not in use."""
         db = get_db()
@@ -400,6 +417,23 @@ class AcademicController:
             db.rollback()
             logger.error(f"Error toggling branch status: {e}")
             return False, f"Failed to update branch status: {e}"
+
+    @classmethod
+    def set_branch_status(cls, branch_id: int, is_active: bool) -> tuple[bool, str]:
+        """Sets active/inactive status of a branch."""
+        db = get_db()
+        try:
+            branch = db.query(Branch).filter(Branch.id == branch_id).first()
+            if not branch:
+                return False, "Branch not found."
+            branch.is_active = is_active
+            db.commit()
+            status_str = "Active" if is_active else "Inactive"
+            return True, f"Branch '{branch.name}' set to {status_str}."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error setting branch status: {e}")
+            return False, f"Failed to set branch status: {e}"
 
     @classmethod
     def delete_branch(cls, branch_id: int) -> tuple[bool, str]:

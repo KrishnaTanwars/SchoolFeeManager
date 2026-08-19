@@ -9,6 +9,7 @@ import sqlite3
 import subprocess
 from pathlib import Path
 from datetime import datetime
+from typing import List
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QTextEdit,
@@ -586,21 +587,68 @@ class SettingsView(QWidget):
         tab_crs = QWidget()
         vbox_tab1 = QVBoxLayout(tab_crs)
         vbox_tab1.setContentsMargins(6, 6, 6, 6)
+        vbox_tab1.setSpacing(8)
 
+        # Course Action Toolbar
         hdr_crs = QHBoxLayout()
-        hdr_crs.addWidget(QLabel("Configure course programs, academic level, degree awarded, duration, semesters, and fees:"))
-        hdr_crs.addStretch()
+        hdr_crs.setSpacing(8)
+
+        self.chk_course_select_all = QCheckBox("Select All")
+        self.chk_course_select_all.setStyleSheet("font-weight: bold; font-size: 12px; color: #1e3a8a;")
+        self.chk_course_select_all.toggled.connect(self.toggle_select_all_courses)
+
+        self.lbl_course_selected_count = QLabel("Selected: 0")
+        self.lbl_course_selected_count.setStyleSheet("font-weight: bold; color: #475569; font-size: 12px;")
+
+        self.btn_course_bulk_active = QPushButton("⚡ Mark Selected Active")
+        self.btn_course_bulk_active.setStyleSheet("background-color: #059669; color: white; font-weight: bold; font-size: 11px; padding: 5px 10px; border-radius: 4px;")
+        self.btn_course_bulk_active.setCursor(Qt.PointingHandCursor)
+        self.btn_course_bulk_active.clicked.connect(lambda: self.bulk_set_course_status(True))
+
+        self.btn_course_bulk_inactive = QPushButton("⏸ Mark Selected Inactive")
+        self.btn_course_bulk_inactive.setStyleSheet("background-color: #d97706; color: white; font-weight: bold; font-size: 11px; padding: 5px 10px; border-radius: 4px;")
+        self.btn_course_bulk_inactive.setCursor(Qt.PointingHandCursor)
+        self.btn_course_bulk_inactive.clicked.connect(lambda: self.bulk_set_course_status(False))
+
+        self.btn_course_bulk_delete = QPushButton("🗑 Delete Selected")
+        self.btn_course_bulk_delete.setStyleSheet("background-color: #dc2626; color: white; font-weight: bold; font-size: 11px; padding: 5px 10px; border-radius: 4px;")
+        self.btn_course_bulk_delete.setCursor(Qt.PointingHandCursor)
+        self.btn_course_bulk_delete.clicked.connect(self.bulk_delete_courses)
 
         self.btn_add_course = QPushButton("+ Add New Course Program")
         self.btn_add_course.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 5px;")
+        self.btn_add_course.setCursor(Qt.PointingHandCursor)
         self.btn_add_course.clicked.connect(self.add_course)
+
+        hdr_crs.addWidget(self.chk_course_select_all)
+        hdr_crs.addWidget(self.lbl_course_selected_count)
+        hdr_crs.addWidget(self.btn_course_bulk_active)
+        hdr_crs.addWidget(self.btn_course_bulk_inactive)
+        hdr_crs.addWidget(self.btn_course_bulk_delete)
+        hdr_crs.addStretch()
         hdr_crs.addWidget(self.btn_add_course)
         vbox_tab1.addLayout(hdr_crs)
 
+        # Course Table (11 Columns: Checkbox, ID, Code, Name, Type, Department, Duration, Semesters, Baseline Fee, Status, Actions)
         self.table_courses = QTableWidget()
-        self.table_courses.setColumnCount(10)
-        self.table_courses.setHorizontalHeaderLabels(["ID", "Code", "Course Name", "Type", "Department", "Duration", "Semesters", "Baseline Fee", "Status", "Actions"])
-        self.table_courses.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_courses.setColumnCount(11)
+        self.table_courses.setHorizontalHeaderLabels([
+            "☐", "ID", "Code", "Course Name", "Type", "Department", "Duration", "Semesters", "Baseline Fee", "Status", "Actions"
+        ])
+        
+        header_crs = self.table_courses.horizontalHeader()
+        header_crs.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Checkbox
+        header_crs.setSectionResizeMode(1, QHeaderView.ResizeToContents) # ID
+        header_crs.setSectionResizeMode(2, QHeaderView.ResizeToContents) # Code
+        header_crs.setSectionResizeMode(3, QHeaderView.Stretch)          # Name
+        header_crs.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Type
+        header_crs.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Dept
+        header_crs.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Duration
+        header_crs.setSectionResizeMode(7, QHeaderView.ResizeToContents) # Semesters
+        header_crs.setSectionResizeMode(8, QHeaderView.ResizeToContents) # Fee
+        header_crs.setSectionResizeMode(9, QHeaderView.ResizeToContents) # Status
+        header_crs.setSectionResizeMode(10, QHeaderView.ResizeToContents) # Actions
+        self.table_courses.itemChanged.connect(self.update_course_selection_count)
         apply_responsive_table_formatting(self.table_courses)
         vbox_tab1.addWidget(self.table_courses)
 
@@ -610,21 +658,64 @@ class SettingsView(QWidget):
         tab_br = QWidget()
         vbox_tab2 = QVBoxLayout(tab_br)
         vbox_tab2.setContentsMargins(6, 6, 6, 6)
+        vbox_tab2.setSpacing(8)
 
+        # Branch Action Toolbar
         hdr_br = QHBoxLayout()
-        hdr_br.addWidget(QLabel("Configure specialization branches linked to academic course programs:"))
-        hdr_br.addStretch()
+        hdr_br.setSpacing(8)
+
+        self.chk_branch_select_all = QCheckBox("Select All")
+        self.chk_branch_select_all.setStyleSheet("font-weight: bold; font-size: 12px; color: #1e3a8a;")
+        self.chk_branch_select_all.toggled.connect(self.toggle_select_all_branches)
+
+        self.lbl_branch_selected_count = QLabel("Selected: 0")
+        self.lbl_branch_selected_count.setStyleSheet("font-weight: bold; color: #475569; font-size: 12px;")
+
+        self.btn_branch_bulk_active = QPushButton("⚡ Mark Selected Active")
+        self.btn_branch_bulk_active.setStyleSheet("background-color: #059669; color: white; font-weight: bold; font-size: 11px; padding: 5px 10px; border-radius: 4px;")
+        self.btn_branch_bulk_active.setCursor(Qt.PointingHandCursor)
+        self.btn_branch_bulk_active.clicked.connect(lambda: self.bulk_set_branch_status(True))
+
+        self.btn_branch_bulk_inactive = QPushButton("⏸ Mark Selected Inactive")
+        self.btn_branch_bulk_inactive.setStyleSheet("background-color: #d97706; color: white; font-weight: bold; font-size: 11px; padding: 5px 10px; border-radius: 4px;")
+        self.btn_branch_bulk_inactive.setCursor(Qt.PointingHandCursor)
+        self.btn_branch_bulk_inactive.clicked.connect(lambda: self.bulk_set_branch_status(False))
+
+        self.btn_branch_bulk_delete = QPushButton("🗑 Delete Selected")
+        self.btn_branch_bulk_delete.setStyleSheet("background-color: #dc2626; color: white; font-weight: bold; font-size: 11px; padding: 5px 10px; border-radius: 4px;")
+        self.btn_branch_bulk_delete.setCursor(Qt.PointingHandCursor)
+        self.btn_branch_bulk_delete.clicked.connect(self.bulk_delete_branches)
 
         self.btn_add_branch = QPushButton("+ Add New Branch")
         self.btn_add_branch.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 5px;")
+        self.btn_add_branch.setCursor(Qt.PointingHandCursor)
         self.btn_add_branch.clicked.connect(self.add_branch)
+
+        hdr_br.addWidget(self.chk_branch_select_all)
+        hdr_br.addWidget(self.lbl_branch_selected_count)
+        hdr_br.addWidget(self.btn_branch_bulk_active)
+        hdr_br.addWidget(self.btn_branch_bulk_inactive)
+        hdr_br.addWidget(self.btn_branch_bulk_delete)
+        hdr_br.addStretch()
         hdr_br.addWidget(self.btn_add_branch)
         vbox_tab2.addLayout(hdr_br)
 
+        # Branch Table (7 Columns: Checkbox, ID, Code, Branch Name, Linked Course, Status, Actions)
         self.table_branches = QTableWidget()
-        self.table_branches.setColumnCount(6)
-        self.table_branches.setHorizontalHeaderLabels(["ID", "Code", "Branch Name", "Linked Course", "Status", "Actions"])
-        self.table_branches.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_branches.setColumnCount(7)
+        self.table_branches.setHorizontalHeaderLabels([
+            "☐", "ID", "Code", "Branch Name", "Linked Course", "Status", "Actions"
+        ])
+
+        header_br = self.table_branches.horizontalHeader()
+        header_br.setSectionResizeMode(0, QHeaderView.ResizeToContents) # Checkbox
+        header_br.setSectionResizeMode(1, QHeaderView.ResizeToContents) # ID
+        header_br.setSectionResizeMode(2, QHeaderView.ResizeToContents) # Code
+        header_br.setSectionResizeMode(3, QHeaderView.Stretch)          # Branch Name
+        header_br.setSectionResizeMode(4, QHeaderView.ResizeToContents) # Course
+        header_br.setSectionResizeMode(5, QHeaderView.ResizeToContents) # Status
+        header_br.setSectionResizeMode(6, QHeaderView.ResizeToContents) # Actions
+        self.table_branches.itemChanged.connect(self.update_branch_selection_count)
         apply_responsive_table_formatting(self.table_branches)
         vbox_tab2.addWidget(self.table_branches)
 
@@ -641,6 +732,7 @@ class SettingsView(QWidget):
 
         self.btn_add_session = QPushButton("+ Add New Academic Session")
         self.btn_add_session.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 5px;")
+        self.btn_add_session.setCursor(Qt.PointingHandCursor)
         self.btn_add_session.clicked.connect(self.add_session)
         hdr_sess.addWidget(self.btn_add_session)
         vbox_tab3.addLayout(hdr_sess)
@@ -667,6 +759,7 @@ class SettingsView(QWidget):
             if not s.is_current:
                 btn_set = QPushButton("Make Current Session")
                 btn_set.setProperty("class", "SecondaryBtn")
+                btn_set.setCursor(Qt.PointingHandCursor)
                 btn_set.clicked.connect(lambda _, sname=s.session_name: self.set_current_session(sname))
                 self.table_sessions.setCellWidget(idx, 2, btn_set)
             else:
@@ -693,53 +786,126 @@ class SettingsView(QWidget):
             QMessageBox.critical(self, "Error", msg)
 
     def load_courses(self):
+        self.table_courses.blockSignals(True)
         courses = AcademicController.get_all_courses_full()
         self.table_courses.setRowCount(len(courses))
 
         for idx, c in enumerate(courses):
-            self.table_courses.setItem(idx, 0, QTableWidgetItem(str(c.id)))
-            self.table_courses.setItem(idx, 1, QTableWidgetItem(c.code))
-            self.table_courses.setItem(idx, 2, QTableWidgetItem(c.name))
-            self.table_courses.setItem(idx, 3, QTableWidgetItem(c.course_type or "UG"))
-            self.table_courses.setItem(idx, 4, QTableWidgetItem(getattr(c, "department", "General") or "General"))
-            self.table_courses.setItem(idx, 5, QTableWidgetItem(f"{c.duration_years} Years"))
-            self.table_courses.setItem(idx, 6, QTableWidgetItem(f"{c.total_semesters} Semesters"))
+            chk_item = QTableWidgetItem()
+            chk_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            chk_item.setCheckState(Qt.Unchecked)
+            chk_item.setData(Qt.UserRole, c.id)
+            self.table_courses.setItem(idx, 0, chk_item)
+
+            self.table_courses.setItem(idx, 1, QTableWidgetItem(str(c.id)))
+            self.table_courses.setItem(idx, 2, QTableWidgetItem(c.code))
+            self.table_courses.setItem(idx, 3, QTableWidgetItem(c.name))
+            self.table_courses.setItem(idx, 4, QTableWidgetItem(c.course_type or "UG"))
+            self.table_courses.setItem(idx, 5, QTableWidgetItem(getattr(c, "department", "General") or "General"))
+            self.table_courses.setItem(idx, 6, QTableWidgetItem(f"{c.duration_years} Years"))
+            self.table_courses.setItem(idx, 7, QTableWidgetItem(f"{c.total_semesters} Semesters"))
             
             fee_val = getattr(c, "baseline_annual_fee", 0.0) or 0.0
             fee_str = f"₹ {fee_val:,.0f}" if fee_val > 0 else "-"
-            self.table_courses.setItem(idx, 7, QTableWidgetItem(fee_str))
+            self.table_courses.setItem(idx, 8, QTableWidgetItem(fee_str))
 
             status_item = QTableWidgetItem("Active" if c.is_active else "Inactive")
             if not c.is_active:
                 status_item.setForeground(Qt.red)
-            self.table_courses.setItem(idx, 8, status_item)
+            self.table_courses.setItem(idx, 9, status_item)
 
             btn_box = QWidget()
             btn_layout = QHBoxLayout(btn_box)
             btn_layout.setContentsMargins(2, 2, 2, 2)
-            btn_layout.setSpacing(4)
+            btn_layout.setSpacing(6)
 
             btn_details = QPushButton("👁 Details")
-            btn_details.setStyleSheet("background-color: #0284c7; color: white; font-weight: bold; font-size: 11px; padding: 3px 8px; border-radius: 4px;")
+            btn_details.setStyleSheet("background-color: #0284c7; color: white; font-weight: bold; font-size: 11px; padding: 4px 10px; border-radius: 4px;")
+            btn_details.setCursor(Qt.PointingHandCursor)
             btn_details.clicked.connect(lambda _, crs=c: self.view_course_details(crs))
 
-            btn_edit = QPushButton("Edit")
+            btn_edit = QPushButton("✏ Edit")
             btn_edit.setProperty("class", "SecondaryBtn")
+            btn_edit.setStyleSheet("font-weight: bold; font-size: 11px; padding: 4px 10px; border-radius: 4px;")
+            btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, crs=c: self.edit_course(crs))
-
-            btn_toggle = QPushButton("Disable" if c.is_active else "Enable")
-            btn_toggle.setStyleSheet("font-weight: bold; font-size: 11px; padding: 3px 8px;")
-            btn_toggle.clicked.connect(lambda _, cid=c.id: self.toggle_course_status(cid))
-
-            btn_del = QPushButton("🗑")
-            btn_del.setStyleSheet("background-color: #ef4444; color: white; font-weight: bold; font-size: 11px; padding: 3px 6px; border-radius: 4px;")
-            btn_del.clicked.connect(lambda _, cid=c.id, cname=c.name: self.delete_course(cid, cname))
 
             btn_layout.addWidget(btn_details)
             btn_layout.addWidget(btn_edit)
-            btn_layout.addWidget(btn_toggle)
-            btn_layout.addWidget(btn_del)
-            self.table_courses.setCellWidget(idx, 9, btn_box)
+            self.table_courses.setCellWidget(idx, 10, btn_box)
+
+        self.table_courses.blockSignals(False)
+        self.update_course_selection_count()
+
+    def toggle_select_all_courses(self, checked: bool):
+        self.table_courses.blockSignals(True)
+        state = Qt.Checked if checked else Qt.Unchecked
+        for r in range(self.table_courses.rowCount()):
+            chk = self.table_courses.item(r, 0)
+            if chk:
+                chk.setCheckState(state)
+        self.table_courses.blockSignals(False)
+        self.update_course_selection_count()
+
+    def get_selected_course_ids(self) -> List[int]:
+        selected_ids = []
+        for r in range(self.table_courses.rowCount()):
+            chk = self.table_courses.item(r, 0)
+            if chk and chk.checkState() == Qt.Checked:
+                cid = chk.data(Qt.UserRole)
+                if cid:
+                    selected_ids.append(int(cid))
+        return selected_ids
+
+    def update_course_selection_count(self):
+        count = len(self.get_selected_course_ids())
+        self.lbl_course_selected_count.setText(f"Selected: {count}")
+
+    def bulk_set_course_status(self, is_active: bool):
+        cids = self.get_selected_course_ids()
+        if not cids:
+            QMessageBox.warning(self, "Selection Required", "Please select at least one course using checkboxes.")
+            return
+        
+        action_name = "Active" if is_active else "Inactive"
+        updated_count = 0
+        for cid in cids:
+            ok, _ = AcademicController.set_course_status(cid, is_active)
+            if ok:
+                updated_count += 1
+
+        QMessageBox.information(self, "Success", f"Marked {updated_count} course program(s) as {action_name}.")
+        self.chk_course_select_all.setChecked(False)
+        self.load_courses()
+
+    def bulk_delete_courses(self):
+        cids = self.get_selected_course_ids()
+        if not cids:
+            QMessageBox.warning(self, "Selection Required", "Please select at least one course using checkboxes.")
+            return
+
+        reply = QMessageBox.question(
+            self, "Confirm Bulk Delete",
+            f"Are you sure you want to permanently delete {len(cids)} selected course program(s)?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            deleted_count = 0
+            err_msgs = []
+            for cid in cids:
+                ok, msg = AcademicController.delete_course(cid)
+                if ok:
+                    deleted_count += 1
+                else:
+                    err_msgs.append(msg)
+            
+            if deleted_count > 0:
+                QMessageBox.information(self, "Bulk Delete Result", f"Successfully deleted {deleted_count} course program(s).")
+            if err_msgs:
+                QMessageBox.warning(self, "Errors Encountered", "\n".join(err_msgs[:5]))
+            
+            self.chk_course_select_all.setChecked(False)
+            self.load_courses()
 
     def view_course_details(self, course_data):
         dlg = CourseDetailsDialog(self, course_data=course_data)
@@ -756,63 +922,114 @@ class SettingsView(QWidget):
         if dlg.exec():
             self.load_courses()
 
-    def toggle_course_status(self, course_id: int):
-        success, msg = AcademicController.toggle_course_status(course_id)
-        if success:
-            self.load_courses()
-        else:
-            QMessageBox.critical(self, "Error", msg)
-
-    def delete_course(self, course_id: int, course_name: str):
-        reply = QMessageBox.question(
-            self, "Confirm Delete",
-            f"Are you sure you want to delete course '{course_name}'?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-        )
-        if reply == QMessageBox.Yes:
-            success, msg = AcademicController.delete_course(course_id)
-            if success:
-                QMessageBox.information(self, "Success", msg)
-                self.load_courses()
-            else:
-                QMessageBox.critical(self, "Error", msg)
-
     def load_branches(self):
+        self.table_branches.blockSignals(True)
         branches = AcademicController.get_all_branches_full()
         self.table_branches.setRowCount(len(branches))
 
         for idx, b in enumerate(branches):
-            self.table_branches.setItem(idx, 0, QTableWidgetItem(str(b.id)))
-            self.table_branches.setItem(idx, 1, QTableWidgetItem(b.code))
-            self.table_branches.setItem(idx, 2, QTableWidgetItem(b.name))
-            self.table_branches.setItem(idx, 3, QTableWidgetItem(b.course_code or "All Courses"))
+            chk_item = QTableWidgetItem()
+            chk_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            chk_item.setCheckState(Qt.Unchecked)
+            chk_item.setData(Qt.UserRole, b.id)
+            self.table_branches.setItem(idx, 0, chk_item)
+
+            self.table_branches.setItem(idx, 1, QTableWidgetItem(str(b.id)))
+            self.table_branches.setItem(idx, 2, QTableWidgetItem(b.code))
+            self.table_branches.setItem(idx, 3, QTableWidgetItem(b.name))
+            self.table_branches.setItem(idx, 4, QTableWidgetItem(b.course_code or "All Courses"))
             
             status_item = QTableWidgetItem("Active" if b.is_active else "Inactive")
             if not b.is_active:
                 status_item.setForeground(Qt.red)
-            self.table_branches.setItem(idx, 4, status_item)
+            self.table_branches.setItem(idx, 5, status_item)
 
             btn_box = QWidget()
             btn_layout = QHBoxLayout(btn_box)
             btn_layout.setContentsMargins(2, 2, 2, 2)
-            btn_layout.setSpacing(4)
+            btn_layout.setSpacing(6)
 
-            btn_edit = QPushButton("Edit")
+            btn_edit = QPushButton("✏ Edit")
             btn_edit.setProperty("class", "SecondaryBtn")
+            btn_edit.setStyleSheet("font-weight: bold; font-size: 11px; padding: 4px 10px; border-radius: 4px;")
+            btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, br=b: self.edit_branch(br))
 
-            btn_toggle = QPushButton("Disable" if b.is_active else "Enable")
-            btn_toggle.setStyleSheet("font-weight: bold; font-size: 11px; padding: 3px 8px;")
-            btn_toggle.clicked.connect(lambda _, bid=b.id: self.toggle_branch_status(bid))
-
-            btn_del = QPushButton("🗑")
-            btn_del.setStyleSheet("background-color: #ef4444; color: white; font-weight: bold; font-size: 11px; padding: 3px 6px; border-radius: 4px;")
-            btn_del.clicked.connect(lambda _, bid=b.id, bname=b.name: self.delete_branch(bid, bname))
-
             btn_layout.addWidget(btn_edit)
-            btn_layout.addWidget(btn_toggle)
-            btn_layout.addWidget(btn_del)
-            self.table_branches.setCellWidget(idx, 5, btn_box)
+            self.table_branches.setCellWidget(idx, 6, btn_box)
+
+        self.table_branches.blockSignals(False)
+        self.update_branch_selection_count()
+
+    def toggle_select_all_branches(self, checked: bool):
+        self.table_branches.blockSignals(True)
+        state = Qt.Checked if checked else Qt.Unchecked
+        for r in range(self.table_branches.rowCount()):
+            chk = self.table_branches.item(r, 0)
+            if chk:
+                chk.setCheckState(state)
+        self.table_branches.blockSignals(False)
+        self.update_branch_selection_count()
+
+    def get_selected_branch_ids(self) -> List[int]:
+        selected_ids = []
+        for r in range(self.table_branches.rowCount()):
+            chk = self.table_branches.item(r, 0)
+            if chk and chk.checkState() == Qt.Checked:
+                bid = chk.data(Qt.UserRole)
+                if bid:
+                    selected_ids.append(int(bid))
+        return selected_ids
+
+    def update_branch_selection_count(self):
+        count = len(self.get_selected_branch_ids())
+        self.lbl_branch_selected_count.setText(f"Selected: {count}")
+
+    def bulk_set_branch_status(self, is_active: bool):
+        bids = self.get_selected_branch_ids()
+        if not bids:
+            QMessageBox.warning(self, "Selection Required", "Please select at least one branch using checkboxes.")
+            return
+        
+        action_name = "Active" if is_active else "Inactive"
+        updated_count = 0
+        for bid in bids:
+            ok, _ = AcademicController.set_branch_status(bid, is_active)
+            if ok:
+                updated_count += 1
+
+        QMessageBox.information(self, "Success", f"Marked {updated_count} branch(es) as {action_name}.")
+        self.chk_branch_select_all.setChecked(False)
+        self.load_branches()
+
+    def bulk_delete_branches(self):
+        bids = self.get_selected_branch_ids()
+        if not bids:
+            QMessageBox.warning(self, "Selection Required", "Please select at least one branch using checkboxes.")
+            return
+
+        reply = QMessageBox.question(
+            self, "Confirm Bulk Delete",
+            f"Are you sure you want to permanently delete {len(bids)} selected branch(es)?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            deleted_count = 0
+            err_msgs = []
+            for bid in bids:
+                ok, msg = AcademicController.delete_branch(bid)
+                if ok:
+                    deleted_count += 1
+                else:
+                    err_msgs.append(msg)
+            
+            if deleted_count > 0:
+                QMessageBox.information(self, "Bulk Delete Result", f"Successfully deleted {deleted_count} branch(es).")
+            if err_msgs:
+                QMessageBox.warning(self, "Errors Encountered", "\n".join(err_msgs[:5]))
+            
+            self.chk_branch_select_all.setChecked(False)
+            self.load_branches()
 
     def add_branch(self):
         dlg = BranchDialog(self)

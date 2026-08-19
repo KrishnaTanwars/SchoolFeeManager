@@ -84,8 +84,10 @@ def test_course_crud():
     courses_active_only = AcademicController.get_courses()
     assert "Diploma in Pharmacy Updated" not in courses_active_only
 
-    # Toggle back to active
-    AcademicController.toggle_course_status(target.id)
+    # Set explicit status
+    ok_set, msg_set = AcademicController.set_course_status(target.id, True)
+    assert ok_set is True
+    assert "Active" in msg_set
 
     # 4. Delete course
     ok_del, msg_del = AcademicController.delete_course(target.id)
@@ -129,10 +131,10 @@ def test_branch_crud():
     )
     assert ok_upd is True
 
-    # 3. Toggle status
-    ok_tog, msg_tog = AcademicController.toggle_branch_status(target.id)
-    assert ok_tog is True
-    assert "Inactive" in msg_tog
+    # 3. Set explicit status
+    ok_set, msg_set = AcademicController.set_branch_status(target.id, False)
+    assert ok_set is True
+    assert "Inactive" in msg_set
 
     # 4. Delete branch
     ok_del, msg_del = AcademicController.delete_branch(target.id)
