@@ -1,5 +1,5 @@
 """
-Unit and Integration Tests for Course and Branch Management in Academic Controller & Settings.
+Unit and Integration Tests for Expanded Course Master and Branch Management.
 """
 
 import pytest
@@ -16,13 +16,19 @@ from models.academic import Course, Branch
 from config.database import get_db
 
 def test_course_crud():
-    # 1. Add course
+    # 1. Add course with full program details
     ok, msg = AcademicController.add_course(
         code="DPHARM_TEST",
         name="Diploma in Pharmacy Test",
         course_type="Diploma",
         duration_years=2,
-        total_semesters=4
+        total_semesters=4,
+        department="Dept of Pharmacy Test",
+        degree_awarded="Diploma in Pharmacy (D.Pharm)",
+        affiliation="PCI Approved",
+        eligibility_criteria="10+2 with PCB/PCM min 45%",
+        baseline_annual_fee=55000.0,
+        description="Comprehensive 2-year diploma program in pharmacy practice."
     )
     assert ok is True
     assert "added successfully" in msg
@@ -37,20 +43,37 @@ def test_course_crud():
     assert target is not None
     assert target.duration_years == 2
     assert target.total_semesters == 4
+    assert target.department == "Dept of Pharmacy Test"
+    assert target.degree_awarded == "Diploma in Pharmacy (D.Pharm)"
+    assert target.affiliation == "PCI Approved"
+    assert target.eligibility_criteria == "10+2 with PCB/PCM min 45%"
+    assert target.baseline_annual_fee == 55000.0
+    assert "2-year diploma" in target.description
 
-    # 2. Update course
+    # 2. Update course with modified details
     ok_upd, msg_upd = AcademicController.update_course(
         target.id,
         code="DPHARM_TEST",
         name="Diploma in Pharmacy Updated",
         course_type="Diploma",
         duration_years=2,
-        total_semesters=4
+        total_semesters=4,
+        department="Dept of Pharmacy Updated",
+        degree_awarded="Diploma in Pharmacy (D.Pharm)",
+        affiliation="PCI & AICTE Approved",
+        eligibility_criteria="10+2 with PCB/PCM min 50%",
+        baseline_annual_fee=60000.0,
+        description="Updated 2-year diploma program notes."
     )
     assert ok_upd is True
 
     courses_after_upd = AcademicController.get_courses()
     assert "Diploma in Pharmacy Updated" in courses_after_upd
+
+    full_courses_upd = AcademicController.get_all_courses_full()
+    target_upd = next((c for c in full_courses_upd if c.code == "DPHARM_TEST"), None)
+    assert target_upd.baseline_annual_fee == 60000.0
+    assert target_upd.affiliation == "PCI & AICTE Approved"
 
     # 3. Toggle status
     ok_tog, msg_tog = AcademicController.toggle_course_status(target.id)
@@ -73,6 +96,13 @@ def test_course_crud():
     assert "Diploma in Pharmacy Updated" not in courses_final
 
 def test_branch_crud():
+    # Pre-cleanup if leftover
+    db = get_db()
+    old_b = db.query(Branch).filter((Branch.code == "PHARM_TOX_TEST") | (Branch.name == "Pharmacology & Toxicology Test")).first()
+    if old_b:
+        db.delete(old_b)
+        db.commit()
+
     # 1. Add branch
     ok, msg = AcademicController.add_branch(
         code="PHARM_TOX_TEST",

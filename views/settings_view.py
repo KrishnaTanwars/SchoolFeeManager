@@ -30,6 +30,7 @@ from dialogs.user_dialog import UserDialog
 from dialogs.change_password_dialog import ChangePasswordDialog
 from dialogs.course_dialog import CourseDialog
 from dialogs.branch_dialog import BranchDialog
+from dialogs.course_details_dialog import CourseDetailsDialog
 from utils.logger import logger
 from utils.table_delegate import apply_responsive_table_formatting
 
@@ -564,94 +565,96 @@ class SettingsView(QWidget):
 
     # ---------------- PAGE 3: ACADEMIC SETTINGS ----------------
     def setup_academic_page(self):
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.NoFrame)
+        main_layout = QVBoxLayout(self.page_academic)
+        main_layout.setContentsMargins(4, 4, 4, 4)
 
-        container = QWidget()
-        layout = QVBoxLayout(container)
-        layout.setContentsMargins(6, 6, 6, 6)
-        layout.setSpacing(20)
+        # Tabbed Container for Academic Master Modules
+        self.academic_tabs = QTabWidget()
+        self.academic_tabs.setStyleSheet("""
+            QTabBar::tab {
+                font-weight: bold;
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+            QTabBar::tab:selected {
+                color: #2563eb;
+                border-bottom: 2px solid #2563eb;
+            }
+        """)
 
-        # --- SECTION 1: ACADEMIC SESSIONS ---
-        group_sessions = QGroupBox("1. Manage Academic Sessions & Active Operational Year")
-        group_sessions.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; color: #1e3a8a; }")
-        vbox_sess = QVBoxLayout(group_sessions)
-
-        hdr_sess = QHBoxLayout()
-        hdr_sess.addWidget(QLabel("Configure active academic session for student enrollment & fee processing:"))
-        hdr_sess.addStretch()
-
-        self.btn_add_session = QPushButton("+ Add New Academic Session")
-        self.btn_add_session.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 12px; border-radius: 5px;")
-        self.btn_add_session.clicked.connect(self.add_session)
-        hdr_sess.addWidget(self.btn_add_session)
-        vbox_sess.addLayout(hdr_sess)
-
-        self.table_sessions = QTableWidget()
-        self.table_sessions.setColumnCount(3)
-        self.table_sessions.setHorizontalHeaderLabels(["Session Name", "Is Active Current Session", "Action"])
-        self.table_sessions.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_sessions.setMinimumHeight(140)
-        apply_responsive_table_formatting(self.table_sessions)
-        vbox_sess.addWidget(self.table_sessions)
-
-        layout.addWidget(group_sessions)
-
-        # --- SECTION 2: COURSES & DEGREE PROGRAMS ---
-        group_courses = QGroupBox("2. Manage Academic Courses & Degree Programs")
-        group_courses.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; color: #1e3a8a; }")
-        vbox_crs = QVBoxLayout(group_courses)
+        # --- TAB 1: COURSES & PROGRAM MASTER ---
+        tab_crs = QWidget()
+        vbox_tab1 = QVBoxLayout(tab_crs)
+        vbox_tab1.setContentsMargins(6, 6, 6, 6)
 
         hdr_crs = QHBoxLayout()
-        hdr_crs.addWidget(QLabel("Configure courses, degree programs, duration, and semester structures:"))
+        hdr_crs.addWidget(QLabel("Configure course programs, academic level, degree awarded, duration, semesters, and fees:"))
         hdr_crs.addStretch()
 
-        self.btn_add_course = QPushButton("+ Add New Course")
-        self.btn_add_course.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 12px; border-radius: 5px;")
+        self.btn_add_course = QPushButton("+ Add New Course Program")
+        self.btn_add_course.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 5px;")
         self.btn_add_course.clicked.connect(self.add_course)
         hdr_crs.addWidget(self.btn_add_course)
-        vbox_crs.addLayout(hdr_crs)
+        vbox_tab1.addLayout(hdr_crs)
 
         self.table_courses = QTableWidget()
-        self.table_courses.setColumnCount(8)
-        self.table_courses.setHorizontalHeaderLabels(["ID", "Code", "Course Name", "Type", "Duration", "Semesters", "Status", "Actions"])
+        self.table_courses.setColumnCount(10)
+        self.table_courses.setHorizontalHeaderLabels(["ID", "Code", "Course Name", "Type", "Department", "Duration", "Semesters", "Baseline Fee", "Status", "Actions"])
         self.table_courses.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_courses.setMinimumHeight(200)
         apply_responsive_table_formatting(self.table_courses)
-        vbox_crs.addWidget(self.table_courses)
+        vbox_tab1.addWidget(self.table_courses)
 
-        layout.addWidget(group_courses)
+        self.academic_tabs.addTab(tab_crs, "🎓 Course Programs Master")
 
-        # --- SECTION 3: SPECIALIZATION BRANCHES ---
-        group_branches = QGroupBox("3. Manage Specialization Branches")
-        group_branches.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; color: #1e3a8a; }")
-        vbox_br = QVBoxLayout(group_branches)
+        # --- TAB 2: SPECIALIZATION BRANCHES ---
+        tab_br = QWidget()
+        vbox_tab2 = QVBoxLayout(tab_br)
+        vbox_tab2.setContentsMargins(6, 6, 6, 6)
 
         hdr_br = QHBoxLayout()
-        hdr_br.addWidget(QLabel("Configure branches and specializations linked to academic courses:"))
+        hdr_br.addWidget(QLabel("Configure specialization branches linked to academic course programs:"))
         hdr_br.addStretch()
 
         self.btn_add_branch = QPushButton("+ Add New Branch")
-        self.btn_add_branch.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 12px; border-radius: 5px;")
+        self.btn_add_branch.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 5px;")
         self.btn_add_branch.clicked.connect(self.add_branch)
         hdr_br.addWidget(self.btn_add_branch)
-        vbox_br.addLayout(hdr_br)
+        vbox_tab2.addLayout(hdr_br)
 
         self.table_branches = QTableWidget()
         self.table_branches.setColumnCount(6)
         self.table_branches.setHorizontalHeaderLabels(["ID", "Code", "Branch Name", "Linked Course", "Status", "Actions"])
         self.table_branches.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_branches.setMinimumHeight(180)
         apply_responsive_table_formatting(self.table_branches)
-        vbox_br.addWidget(self.table_branches)
+        vbox_tab2.addWidget(self.table_branches)
 
-        layout.addWidget(group_branches)
+        self.academic_tabs.addTab(tab_br, "🌿 Specialization Branches")
 
-        scroll.setWidget(container)
-        p_layout = QVBoxLayout(self.page_academic)
-        p_layout.setContentsMargins(0, 0, 0, 0)
-        p_layout.addWidget(scroll)
+        # --- TAB 3: ACADEMIC SESSIONS ---
+        tab_sess = QWidget()
+        vbox_tab3 = QVBoxLayout(tab_sess)
+        vbox_tab3.setContentsMargins(6, 6, 6, 6)
+
+        hdr_sess = QHBoxLayout()
+        hdr_sess.addWidget(QLabel("Configure active operational academic session year for student registration & billing:"))
+        hdr_sess.addStretch()
+
+        self.btn_add_session = QPushButton("+ Add New Academic Session")
+        self.btn_add_session.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 5px;")
+        self.btn_add_session.clicked.connect(self.add_session)
+        hdr_sess.addWidget(self.btn_add_session)
+        vbox_tab3.addLayout(hdr_sess)
+
+        self.table_sessions = QTableWidget()
+        self.table_sessions.setColumnCount(3)
+        self.table_sessions.setHorizontalHeaderLabels(["Session Name", "Is Active Current Session", "Action"])
+        self.table_sessions.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        apply_responsive_table_formatting(self.table_sessions)
+        vbox_tab3.addWidget(self.table_sessions)
+
+        self.academic_tabs.addTab(tab_sess, "📅 Academic Sessions")
+
+        main_layout.addWidget(self.academic_tabs)
 
     def load_sessions(self):
         sessions = SettingsController.get_academic_sessions()
@@ -698,18 +701,27 @@ class SettingsView(QWidget):
             self.table_courses.setItem(idx, 1, QTableWidgetItem(c.code))
             self.table_courses.setItem(idx, 2, QTableWidgetItem(c.name))
             self.table_courses.setItem(idx, 3, QTableWidgetItem(c.course_type or "UG"))
-            self.table_courses.setItem(idx, 4, QTableWidgetItem(f"{c.duration_years} Years"))
-            self.table_courses.setItem(idx, 5, QTableWidgetItem(f"{c.total_semesters} Semesters"))
+            self.table_courses.setItem(idx, 4, QTableWidgetItem(getattr(c, "department", "General") or "General"))
+            self.table_courses.setItem(idx, 5, QTableWidgetItem(f"{c.duration_years} Years"))
+            self.table_courses.setItem(idx, 6, QTableWidgetItem(f"{c.total_semesters} Semesters"))
             
+            fee_val = getattr(c, "baseline_annual_fee", 0.0) or 0.0
+            fee_str = f"₹ {fee_val:,.0f}" if fee_val > 0 else "-"
+            self.table_courses.setItem(idx, 7, QTableWidgetItem(fee_str))
+
             status_item = QTableWidgetItem("Active" if c.is_active else "Inactive")
             if not c.is_active:
                 status_item.setForeground(Qt.red)
-            self.table_courses.setItem(idx, 6, status_item)
+            self.table_courses.setItem(idx, 8, status_item)
 
             btn_box = QWidget()
             btn_layout = QHBoxLayout(btn_box)
             btn_layout.setContentsMargins(2, 2, 2, 2)
             btn_layout.setSpacing(4)
+
+            btn_details = QPushButton("👁 Details")
+            btn_details.setStyleSheet("background-color: #0284c7; color: white; font-weight: bold; font-size: 11px; padding: 3px 8px; border-radius: 4px;")
+            btn_details.clicked.connect(lambda _, crs=c: self.view_course_details(crs))
 
             btn_edit = QPushButton("Edit")
             btn_edit.setProperty("class", "SecondaryBtn")
@@ -723,10 +735,16 @@ class SettingsView(QWidget):
             btn_del.setStyleSheet("background-color: #ef4444; color: white; font-weight: bold; font-size: 11px; padding: 3px 6px; border-radius: 4px;")
             btn_del.clicked.connect(lambda _, cid=c.id, cname=c.name: self.delete_course(cid, cname))
 
+            btn_layout.addWidget(btn_details)
             btn_layout.addWidget(btn_edit)
             btn_layout.addWidget(btn_toggle)
             btn_layout.addWidget(btn_del)
-            self.table_courses.setCellWidget(idx, 7, btn_box)
+            self.table_courses.setCellWidget(idx, 9, btn_box)
+
+    def view_course_details(self, course_data):
+        dlg = CourseDetailsDialog(self, course_data=course_data)
+        if dlg.exec():
+            self.load_courses()
 
     def add_course(self):
         dlg = CourseDialog(self)

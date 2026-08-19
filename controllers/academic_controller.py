@@ -46,6 +46,8 @@ class AcademicController:
     @classmethod
     def seed_academic_masters_if_empty(cls):
         """Ensures default Courses, Branches, Academic Years, and Semesters are present."""
+        from config.database import init_db
+        init_db()
         db = get_db()
         try:
             # Seed Courses
@@ -183,7 +185,20 @@ class AcademicController:
             return []
 
     @classmethod
-    def add_course(cls, code: str, name: str, course_type: str = "UG", duration_years: int = 3, total_semesters: int = 6) -> tuple[bool, str]:
+    def add_course(
+        cls,
+        code: str,
+        name: str,
+        course_type: str = "UG",
+        duration_years: int = 3,
+        total_semesters: int = 6,
+        department: str = "General",
+        degree_awarded: str = "",
+        affiliation: str = "",
+        eligibility_criteria: str = "",
+        baseline_annual_fee: float = 0.0,
+        description: str = ""
+    ) -> tuple[bool, str]:
         """Adds a new Course record to DB."""
         db = get_db()
         try:
@@ -202,6 +217,12 @@ class AcademicController:
                 course_type=course_type,
                 duration_years=duration_years,
                 total_semesters=total_semesters,
+                department=department.strip() or "General",
+                degree_awarded=degree_awarded.strip(),
+                affiliation=affiliation.strip(),
+                eligibility_criteria=eligibility_criteria.strip(),
+                baseline_annual_fee=float(baseline_annual_fee or 0.0),
+                description=description.strip(),
                 is_active=True
             )
             db.add(new_course)
@@ -213,7 +234,21 @@ class AcademicController:
             return False, f"Failed to add course: {e}"
 
     @classmethod
-    def update_course(cls, course_id: int, code: str, name: str, course_type: str, duration_years: int, total_semesters: int) -> tuple[bool, str]:
+    def update_course(
+        cls,
+        course_id: int,
+        code: str,
+        name: str,
+        course_type: str,
+        duration_years: int,
+        total_semesters: int,
+        department: str = "General",
+        degree_awarded: str = "",
+        affiliation: str = "",
+        eligibility_criteria: str = "",
+        baseline_annual_fee: float = 0.0,
+        description: str = ""
+    ) -> tuple[bool, str]:
         """Updates an existing Course record in DB."""
         db = get_db()
         try:
@@ -235,6 +270,12 @@ class AcademicController:
             course.course_type = course_type
             course.duration_years = duration_years
             course.total_semesters = total_semesters
+            course.department = department.strip() or "General"
+            course.degree_awarded = degree_awarded.strip()
+            course.affiliation = affiliation.strip()
+            course.eligibility_criteria = eligibility_criteria.strip()
+            course.baseline_annual_fee = float(baseline_annual_fee or 0.0)
+            course.description = description.strip()
             db.commit()
             return True, f"Course '{name_clean}' updated successfully."
         except Exception as e:

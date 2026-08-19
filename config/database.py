@@ -174,6 +174,22 @@ def run_migrations():
             if "created_by" not in backup_cols:
                 cursor.execute("ALTER TABLE backup_history ADD COLUMN created_by VARCHAR(100) DEFAULT 'Administrator';")
 
+            # Check courses columns
+            cursor.execute("PRAGMA table_info(courses);")
+            course_cols = {row[1] for row in cursor.fetchall()}
+            if "department" not in course_cols:
+                cursor.execute("ALTER TABLE courses ADD COLUMN department VARCHAR(100) DEFAULT 'General';")
+            if "degree_awarded" not in course_cols:
+                cursor.execute("ALTER TABLE courses ADD COLUMN degree_awarded VARCHAR(100) DEFAULT '';")
+            if "affiliation" not in course_cols:
+                cursor.execute("ALTER TABLE courses ADD COLUMN affiliation VARCHAR(100) DEFAULT '';")
+            if "eligibility_criteria" not in course_cols:
+                cursor.execute("ALTER TABLE courses ADD COLUMN eligibility_criteria VARCHAR(255) DEFAULT '';")
+            if "baseline_annual_fee" not in course_cols:
+                cursor.execute("ALTER TABLE courses ADD COLUMN baseline_annual_fee FLOAT DEFAULT 0.0;")
+            if "description" not in course_cols:
+                cursor.execute("ALTER TABLE courses ADD COLUMN description TEXT DEFAULT '';")
+
             # Data backfill for legacy V1.0 records
             cursor.execute("UPDATE receipts SET paid_amount = total_amount WHERE paid_amount IS NULL OR paid_amount = 0.0;")
             cursor.execute("UPDATE receipts SET due_amount = 0.0 WHERE due_amount IS NULL;")

@@ -3,7 +3,7 @@ Academic Structure Master Models for Courses, Branches, Academic Years, and Seme
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, Text
 from models.base import Base
 
 class Course(Base):
@@ -15,6 +15,12 @@ class Course(Base):
     course_type = Column(String(30), default="College", nullable=False) # College / School / University / Institute
     duration_years = Column(Integer, default=3, nullable=False)
     total_semesters = Column(Integer, default=6, nullable=False)
+    department = Column(String(100), default="General", nullable=True)
+    degree_awarded = Column(String(100), default="", nullable=True)
+    affiliation = Column(String(100), default="", nullable=True)
+    eligibility_criteria = Column(String(255), default="", nullable=True)
+    baseline_annual_fee = Column(Float, default=0.0, nullable=True)
+    description = Column(Text, default="", nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
