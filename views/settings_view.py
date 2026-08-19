@@ -23,10 +23,13 @@ import PySide6
 from config.app_config import APP_NAME, APP_VERSION, COMPANY_NAME, DB_PATH, BACKUP_DIR, EXPORTS_DIR
 from controllers.settings_controller import SettingsController
 from controllers.auth_controller import AuthController
+from controllers.academic_controller import AcademicController
 from services.backup_service import BackupService
 from services.export_service import ExportService
 from dialogs.user_dialog import UserDialog
 from dialogs.change_password_dialog import ChangePasswordDialog
+from dialogs.course_dialog import CourseDialog
+from dialogs.branch_dialog import BranchDialog
 from utils.logger import logger
 from utils.table_delegate import apply_responsive_table_formatting
 
@@ -561,26 +564,94 @@ class SettingsView(QWidget):
 
     # ---------------- PAGE 3: ACADEMIC SETTINGS ----------------
     def setup_academic_page(self):
-        layout = QVBoxLayout(self.page_academic)
-        layout.setContentsMargins(4, 4, 4, 4)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
 
-        hdr = QHBoxLayout()
-        hdr.addWidget(QLabel("Manage Academic Sessions & Active Operational Year"))
-        hdr.addStretch()
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(20)
+
+        # --- SECTION 1: ACADEMIC SESSIONS ---
+        group_sessions = QGroupBox("1. Manage Academic Sessions & Active Operational Year")
+        group_sessions.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; color: #1e3a8a; }")
+        vbox_sess = QVBoxLayout(group_sessions)
+
+        hdr_sess = QHBoxLayout()
+        hdr_sess.addWidget(QLabel("Configure active academic session for student enrollment & fee processing:"))
+        hdr_sess.addStretch()
 
         self.btn_add_session = QPushButton("+ Add New Academic Session")
         self.btn_add_session.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 12px; border-radius: 5px;")
         self.btn_add_session.clicked.connect(self.add_session)
-        hdr.addWidget(self.btn_add_session)
-
-        layout.addLayout(hdr)
+        hdr_sess.addWidget(self.btn_add_session)
+        vbox_sess.addLayout(hdr_sess)
 
         self.table_sessions = QTableWidget()
         self.table_sessions.setColumnCount(3)
         self.table_sessions.setHorizontalHeaderLabels(["Session Name", "Is Active Current Session", "Action"])
         self.table_sessions.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_sessions.setMinimumHeight(140)
         apply_responsive_table_formatting(self.table_sessions)
-        layout.addWidget(self.table_sessions)
+        vbox_sess.addWidget(self.table_sessions)
+
+        layout.addWidget(group_sessions)
+
+        # --- SECTION 2: COURSES & DEGREE PROGRAMS ---
+        group_courses = QGroupBox("2. Manage Academic Courses & Degree Programs")
+        group_courses.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; color: #1e3a8a; }")
+        vbox_crs = QVBoxLayout(group_courses)
+
+        hdr_crs = QHBoxLayout()
+        hdr_crs.addWidget(QLabel("Configure courses, degree programs, duration, and semester structures:"))
+        hdr_crs.addStretch()
+
+        self.btn_add_course = QPushButton("+ Add New Course")
+        self.btn_add_course.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 12px; border-radius: 5px;")
+        self.btn_add_course.clicked.connect(self.add_course)
+        hdr_crs.addWidget(self.btn_add_course)
+        vbox_crs.addLayout(hdr_crs)
+
+        self.table_courses = QTableWidget()
+        self.table_courses.setColumnCount(8)
+        self.table_courses.setHorizontalHeaderLabels(["ID", "Code", "Course Name", "Type", "Duration", "Semesters", "Status", "Actions"])
+        self.table_courses.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_courses.setMinimumHeight(200)
+        apply_responsive_table_formatting(self.table_courses)
+        vbox_crs.addWidget(self.table_courses)
+
+        layout.addWidget(group_courses)
+
+        # --- SECTION 3: SPECIALIZATION BRANCHES ---
+        group_branches = QGroupBox("3. Manage Specialization Branches")
+        group_branches.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; color: #1e3a8a; }")
+        vbox_br = QVBoxLayout(group_branches)
+
+        hdr_br = QHBoxLayout()
+        hdr_br.addWidget(QLabel("Configure branches and specializations linked to academic courses:"))
+        hdr_br.addStretch()
+
+        self.btn_add_branch = QPushButton("+ Add New Branch")
+        self.btn_add_branch.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 12px; border-radius: 5px;")
+        self.btn_add_branch.clicked.connect(self.add_branch)
+        hdr_br.addWidget(self.btn_add_branch)
+        vbox_br.addLayout(hdr_br)
+
+        self.table_branches = QTableWidget()
+        self.table_branches.setColumnCount(6)
+        self.table_branches.setHorizontalHeaderLabels(["ID", "Code", "Branch Name", "Linked Course", "Status", "Actions"])
+        self.table_branches.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_branches.setMinimumHeight(180)
+        apply_responsive_table_formatting(self.table_branches)
+        vbox_br.addWidget(self.table_branches)
+
+        layout.addWidget(group_branches)
+
+        scroll.setWidget(container)
+        p_layout = QVBoxLayout(self.page_academic)
+        p_layout.setContentsMargins(0, 0, 0, 0)
+        p_layout.addWidget(scroll)
 
     def load_sessions(self):
         sessions = SettingsController.get_academic_sessions()
@@ -600,6 +671,9 @@ class SettingsView(QWidget):
                 lbl_active.setStyleSheet("font-weight: bold; color: #10b981; padding-left: 10px;")
                 self.table_sessions.setCellWidget(idx, 2, lbl_active)
 
+        self.load_courses()
+        self.load_branches()
+
     def add_session(self):
         from PySide6.QtWidgets import QInputDialog
         session_name, ok = QInputDialog.getText(self, "New Academic Session", "Enter Academic Session Name (e.g. 2025-2026):")
@@ -614,6 +688,144 @@ class SettingsView(QWidget):
             self.load_sessions()
         else:
             QMessageBox.critical(self, "Error", msg)
+
+    def load_courses(self):
+        courses = AcademicController.get_all_courses_full()
+        self.table_courses.setRowCount(len(courses))
+
+        for idx, c in enumerate(courses):
+            self.table_courses.setItem(idx, 0, QTableWidgetItem(str(c.id)))
+            self.table_courses.setItem(idx, 1, QTableWidgetItem(c.code))
+            self.table_courses.setItem(idx, 2, QTableWidgetItem(c.name))
+            self.table_courses.setItem(idx, 3, QTableWidgetItem(c.course_type or "UG"))
+            self.table_courses.setItem(idx, 4, QTableWidgetItem(f"{c.duration_years} Years"))
+            self.table_courses.setItem(idx, 5, QTableWidgetItem(f"{c.total_semesters} Semesters"))
+            
+            status_item = QTableWidgetItem("Active" if c.is_active else "Inactive")
+            if not c.is_active:
+                status_item.setForeground(Qt.red)
+            self.table_courses.setItem(idx, 6, status_item)
+
+            btn_box = QWidget()
+            btn_layout = QHBoxLayout(btn_box)
+            btn_layout.setContentsMargins(2, 2, 2, 2)
+            btn_layout.setSpacing(4)
+
+            btn_edit = QPushButton("Edit")
+            btn_edit.setProperty("class", "SecondaryBtn")
+            btn_edit.clicked.connect(lambda _, crs=c: self.edit_course(crs))
+
+            btn_toggle = QPushButton("Disable" if c.is_active else "Enable")
+            btn_toggle.setStyleSheet("font-weight: bold; font-size: 11px; padding: 3px 8px;")
+            btn_toggle.clicked.connect(lambda _, cid=c.id: self.toggle_course_status(cid))
+
+            btn_del = QPushButton("🗑")
+            btn_del.setStyleSheet("background-color: #ef4444; color: white; font-weight: bold; font-size: 11px; padding: 3px 6px; border-radius: 4px;")
+            btn_del.clicked.connect(lambda _, cid=c.id, cname=c.name: self.delete_course(cid, cname))
+
+            btn_layout.addWidget(btn_edit)
+            btn_layout.addWidget(btn_toggle)
+            btn_layout.addWidget(btn_del)
+            self.table_courses.setCellWidget(idx, 7, btn_box)
+
+    def add_course(self):
+        dlg = CourseDialog(self)
+        if dlg.exec():
+            self.load_courses()
+
+    def edit_course(self, course_data):
+        dlg = CourseDialog(self, course_data=course_data)
+        if dlg.exec():
+            self.load_courses()
+
+    def toggle_course_status(self, course_id: int):
+        success, msg = AcademicController.toggle_course_status(course_id)
+        if success:
+            self.load_courses()
+        else:
+            QMessageBox.critical(self, "Error", msg)
+
+    def delete_course(self, course_id: int, course_name: str):
+        reply = QMessageBox.question(
+            self, "Confirm Delete",
+            f"Are you sure you want to delete course '{course_name}'?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            success, msg = AcademicController.delete_course(course_id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.load_courses()
+            else:
+                QMessageBox.critical(self, "Error", msg)
+
+    def load_branches(self):
+        branches = AcademicController.get_all_branches_full()
+        self.table_branches.setRowCount(len(branches))
+
+        for idx, b in enumerate(branches):
+            self.table_branches.setItem(idx, 0, QTableWidgetItem(str(b.id)))
+            self.table_branches.setItem(idx, 1, QTableWidgetItem(b.code))
+            self.table_branches.setItem(idx, 2, QTableWidgetItem(b.name))
+            self.table_branches.setItem(idx, 3, QTableWidgetItem(b.course_code or "All Courses"))
+            
+            status_item = QTableWidgetItem("Active" if b.is_active else "Inactive")
+            if not b.is_active:
+                status_item.setForeground(Qt.red)
+            self.table_branches.setItem(idx, 4, status_item)
+
+            btn_box = QWidget()
+            btn_layout = QHBoxLayout(btn_box)
+            btn_layout.setContentsMargins(2, 2, 2, 2)
+            btn_layout.setSpacing(4)
+
+            btn_edit = QPushButton("Edit")
+            btn_edit.setProperty("class", "SecondaryBtn")
+            btn_edit.clicked.connect(lambda _, br=b: self.edit_branch(br))
+
+            btn_toggle = QPushButton("Disable" if b.is_active else "Enable")
+            btn_toggle.setStyleSheet("font-weight: bold; font-size: 11px; padding: 3px 8px;")
+            btn_toggle.clicked.connect(lambda _, bid=b.id: self.toggle_branch_status(bid))
+
+            btn_del = QPushButton("🗑")
+            btn_del.setStyleSheet("background-color: #ef4444; color: white; font-weight: bold; font-size: 11px; padding: 3px 6px; border-radius: 4px;")
+            btn_del.clicked.connect(lambda _, bid=b.id, bname=b.name: self.delete_branch(bid, bname))
+
+            btn_layout.addWidget(btn_edit)
+            btn_layout.addWidget(btn_toggle)
+            btn_layout.addWidget(btn_del)
+            self.table_branches.setCellWidget(idx, 5, btn_box)
+
+    def add_branch(self):
+        dlg = BranchDialog(self)
+        if dlg.exec():
+            self.load_branches()
+
+    def edit_branch(self, branch_data):
+        dlg = BranchDialog(self, branch_data=branch_data)
+        if dlg.exec():
+            self.load_branches()
+
+    def toggle_branch_status(self, branch_id: int):
+        success, msg = AcademicController.toggle_branch_status(branch_id)
+        if success:
+            self.load_branches()
+        else:
+            QMessageBox.critical(self, "Error", msg)
+
+    def delete_branch(self, branch_id: int, branch_name: str):
+        reply = QMessageBox.question(
+            self, "Confirm Delete",
+            f"Are you sure you want to delete branch '{branch_name}'?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            success, msg = AcademicController.delete_branch(branch_id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.load_branches()
+            else:
+                QMessageBox.critical(self, "Error", msg)
 
     # ---------------- PAGE 4: DATABASE MANAGEMENT ----------------
     def setup_db_page(self):

@@ -323,6 +323,9 @@ class StudentDialog(QDialog):
 
         aadhaar_val = self.txt_aadhaar.text().strip()
 
+        branch_name = self.cmb_branch.currentText().strip()
+        AcademicController.auto_ensure_course_and_branch(course_name, branch_name)
+
         data = {
             "admission_no": adm_no,
             "enrollment_no": enr_no,
@@ -331,7 +334,7 @@ class StudentDialog(QDialog):
             "father_name": father_name,
             "mother_name": self.txt_mother_name.text().strip(),
             "course": course_name,
-            "branch": self.cmb_branch.currentText().strip(),
+            "branch": branch_name,
             "year": "" if yr == "None" else yr,
             "semester": "" if sem == "None" else sem,
             "class_name": course_name,

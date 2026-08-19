@@ -170,3 +170,267 @@ class AcademicController:
                 return False, f"Course '{course}' (PG) has maximum 4 Semesters. '{semester}' is invalid."
                 
         return True, ""
+
+    @classmethod
+    def get_all_courses_full(cls) -> List[Course]:
+        """Returns all Course records from database."""
+        cls.seed_academic_masters_if_empty()
+        db = get_db()
+        try:
+            return db.query(Course).order_by(Course.id).all()
+        except Exception as e:
+            logger.error(f"Error fetching full course records: {e}")
+            return []
+
+    @classmethod
+    def add_course(cls, code: str, name: str, course_type: str = "UG", duration_years: int = 3, total_semesters: int = 6) -> tuple[bool, str]:
+        """Adds a new Course record to DB."""
+        db = get_db()
+        try:
+            code_clean = code.strip().upper()
+            name_clean = name.strip()
+            if not code_clean or not name_clean:
+                return False, "Course Code and Name are required."
+            
+            existing = db.query(Course).filter((Course.code == code_clean) | (Course.name == name_clean)).first()
+            if existing:
+                return False, f"A course with code '{code_clean}' or name '{name_clean}' already exists."
+            
+            new_course = Course(
+                code=code_clean,
+                name=name_clean,
+                course_type=course_type,
+                duration_years=duration_years,
+                total_semesters=total_semesters,
+                is_active=True
+            )
+            db.add(new_course)
+            db.commit()
+            return True, f"Course '{name_clean}' added successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error adding course: {e}")
+            return False, f"Failed to add course: {e}"
+
+    @classmethod
+    def update_course(cls, course_id: int, code: str, name: str, course_type: str, duration_years: int, total_semesters: int) -> tuple[bool, str]:
+        """Updates an existing Course record in DB."""
+        db = get_db()
+        try:
+            course = db.query(Course).filter(Course.id == course_id).first()
+            if not course:
+                return False, "Course not found."
+            
+            code_clean = code.strip().upper()
+            name_clean = name.strip()
+            if not code_clean or not name_clean:
+                return False, "Course Code and Name are required."
+
+            existing = db.query(Course).filter(Course.id != course_id, (Course.code == code_clean) | (Course.name == name_clean)).first()
+            if existing:
+                return False, f"Another course with code '{code_clean}' or name '{name_clean}' already exists."
+            
+            course.code = code_clean
+            course.name = name_clean
+            course.course_type = course_type
+            course.duration_years = duration_years
+            course.total_semesters = total_semesters
+            db.commit()
+            return True, f"Course '{name_clean}' updated successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error updating course: {e}")
+            return False, f"Failed to update course: {e}"
+
+    @classmethod
+    def toggle_course_status(cls, course_id: int) -> tuple[bool, str]:
+        """Toggles active/inactive status of a course."""
+        db = get_db()
+        try:
+            course = db.query(Course).filter(Course.id == course_id).first()
+            if not course:
+                return False, "Course not found."
+            course.is_active = not course.is_active
+            db.commit()
+            status_str = "Active" if course.is_active else "Inactive"
+            return True, f"Course '{course.name}' is now {status_str}."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error toggling course status: {e}")
+            return False, f"Failed to update course status: {e}"
+
+    @classmethod
+    def delete_course(cls, course_id: int) -> tuple[bool, str]:
+        """Deletes a course if not in use."""
+        db = get_db()
+        try:
+            course = db.query(Course).filter(Course.id == course_id).first()
+            if not course:
+                return False, "Course not found."
+            c_name = course.name
+            db.delete(course)
+            db.commit()
+            return True, f"Course '{c_name}' deleted successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error deleting course: {e}")
+            return False, f"Failed to delete course: {e}"
+
+    @classmethod
+    def get_all_branches_full(cls) -> List[Branch]:
+        """Returns all Branch records from database."""
+        cls.seed_academic_masters_if_empty()
+        db = get_db()
+        try:
+            return db.query(Branch).order_by(Branch.id).all()
+        except Exception as e:
+            logger.error(f"Error fetching full branch records: {e}")
+            return []
+
+    @classmethod
+    def add_branch(cls, code: str, name: str, course_code: Optional[str] = None) -> tuple[bool, str]:
+        """Adds a new Branch record to DB."""
+        db = get_db()
+        try:
+            code_clean = code.strip().upper()
+            name_clean = name.strip()
+            if not code_clean or not name_clean:
+                return False, "Branch Code and Name are required."
+            
+            existing = db.query(Branch).filter((Branch.code == code_clean) | (Branch.name == name_clean)).first()
+            if existing:
+                return False, f"A branch with code '{code_clean}' or name '{name_clean}' already exists."
+
+            new_branch = Branch(
+                code=code_clean,
+                name=name_clean,
+                course_code=course_code if course_code and course_code != "All" else None,
+                is_active=True
+            )
+            db.add(new_branch)
+            db.commit()
+            return True, f"Branch '{name_clean}' added successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error adding branch: {e}")
+            return False, f"Failed to add branch: {e}"
+
+    @classmethod
+    def update_branch(cls, branch_id: int, code: str, name: str, course_code: Optional[str] = None) -> tuple[bool, str]:
+        """Updates an existing Branch record in DB."""
+        db = get_db()
+        try:
+            branch = db.query(Branch).filter(Branch.id == branch_id).first()
+            if not branch:
+                return False, "Branch not found."
+            
+            code_clean = code.strip().upper()
+            name_clean = name.strip()
+            if not code_clean or not name_clean:
+                return False, "Branch Code and Name are required."
+
+            existing = db.query(Branch).filter(Branch.id != branch_id, (Branch.code == code_clean) | (Branch.name == name_clean)).first()
+            if existing:
+                return False, f"Another branch with code '{code_clean}' or name '{name_clean}' already exists."
+
+            branch.code = code_clean
+            branch.name = name_clean
+            branch.course_code = course_code if course_code and course_code != "All" else None
+            db.commit()
+            return True, f"Branch '{name_clean}' updated successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error updating branch: {e}")
+            return False, f"Failed to update branch: {e}"
+
+    @classmethod
+    def toggle_branch_status(cls, branch_id: int) -> tuple[bool, str]:
+        """Toggles active/inactive status of a branch."""
+        db = get_db()
+        try:
+            branch = db.query(Branch).filter(Branch.id == branch_id).first()
+            if not branch:
+                return False, "Branch not found."
+            branch.is_active = not branch.is_active
+            db.commit()
+            status_str = "Active" if branch.is_active else "Inactive"
+            return True, f"Branch '{branch.name}' is now {status_str}."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error toggling branch status: {e}")
+            return False, f"Failed to update branch status: {e}"
+
+    @classmethod
+    def delete_branch(cls, branch_id: int) -> tuple[bool, str]:
+        """Deletes a branch if not in use."""
+        db = get_db()
+        try:
+            branch = db.query(Branch).filter(Branch.id == branch_id).first()
+            if not branch:
+                return False, "Branch not found."
+            b_name = branch.name
+            db.delete(branch)
+            db.commit()
+            return True, f"Branch '{b_name}' deleted successfully."
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error deleting branch: {e}")
+            return False, f"Failed to delete branch: {e}"
+
+    @classmethod
+    def auto_ensure_course_and_branch(cls, course_name: str, branch_name: str):
+        """Automatically registers course_name and branch_name into master tables if they do not exist."""
+        c_name = (course_name or "").strip()
+        b_name = (branch_name or "").strip()
+
+        if not c_name:
+            return
+
+        cls.seed_academic_masters_if_empty()
+        db = get_db()
+        try:
+            # Check course
+            existing_c = db.query(Course).filter(Course.name.ilike(c_name)).first()
+            if not existing_c:
+                c_upper = c_name.upper()
+                c_type = "PG" if ("M." in c_upper or "PG" in c_upper or "MASTER" in c_upper or "MBA" in c_upper or "MCA" in c_upper) else "UG"
+                c_code = "".join([ch for ch in c_upper if ch.isalnum()])[:15] or "COURSE"
+                counter = 1
+                base_code = c_code
+                while db.query(Course).filter(Course.code == c_code).first():
+                    c_code = f"{base_code}_{counter}"
+                    counter += 1
+                
+                db.add(Course(
+                    code=c_code,
+                    name=c_name,
+                    course_type=c_type,
+                    duration_years=2 if c_type == "PG" else 3,
+                    total_semesters=4 if c_type == "PG" else 6,
+                    is_active=True
+                ))
+                db.commit()
+
+            # Check branch
+            if b_name:
+                existing_b = db.query(Branch).filter(Branch.name.ilike(b_name)).first()
+                if not existing_b:
+                    b_upper = b_name.upper()
+                    b_code = "".join([ch for ch in b_upper if ch.isalnum()])[:15] or "BRANCH"
+                    counter = 1
+                    base_code = b_code
+                    while db.query(Branch).filter(Branch.code == b_code).first():
+                        b_code = f"{base_code}_{counter}"
+                        counter += 1
+                    
+                    db.add(Branch(
+                        code=b_code,
+                        name=b_name,
+                        course_code=None,
+                        is_active=True
+                    ))
+                    db.commit()
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error auto-ensuring course '{c_name}' & branch '{b_name}': {e}")
+
