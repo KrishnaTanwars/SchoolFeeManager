@@ -124,7 +124,7 @@ def get_window_handle():
     def enum_windows_callback(hwnd, extra):
         if win32gui.IsWindowVisible(hwnd):
             title = win32gui.GetWindowText(hwnd)
-            if "School Fee Manager" in title or "EduLedger" in title or "PySide6" in title:
+            if "College Management System" in title or "School Fee Manager" in title or "EduLedger" in title or "PySide6" in title:
                 hwnds.append(hwnd)
         return True
     win32gui.EnumWindows(enum_windows_callback, None)

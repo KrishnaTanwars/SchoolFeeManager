@@ -107,7 +107,7 @@ def _load_version() -> str:
             return vfile.read_text(encoding="utf-8").strip()
         except Exception:
             pass
-    return "2.6.0"
+    return "3.4.0"
 
 # Application Metadata
 APP_NAME = "School Fee ERP"

@@ -2,13 +2,16 @@
 Login View Widget for Admin / Operator Authentication with Responsive Card Dimensions.
 """
 
+from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QFrame, QMessageBox, QScrollArea
 )
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QPixmap
 from controllers.auth_controller import AuthController
-from config.app_config import APP_VERSION
+from controllers.settings_controller import SettingsController
+from config.app_config import APP_VERSION, ASSETS_DIR
 
 class LoginView(QWidget):
     login_success = Signal()
@@ -31,7 +34,7 @@ class LoginView(QWidget):
 
         # Center Card Frame with flexible dimensions to prevent clipping
         card = QFrame()
-        card.setMinimumSize(360, 420)
+        card.setMinimumSize(360, 460)
         card.setMaximumWidth(450)
         card.setStyleSheet("""
             QFrame {
@@ -42,14 +45,28 @@ class LoginView(QWidget):
         """)
 
         card_layout = QVBoxLayout(card)
-        card_layout.setContentsMargins(35, 30, 35, 30)
-        card_layout.setSpacing(12)
+        card_layout.setContentsMargins(35, 25, 35, 25)
+        card_layout.setSpacing(10)
 
-        # App Logo / Icon Header
-        title = QLabel("School Fee Manager")
+        # App Logo Image & Header
+        lbl_logo = QLabel()
+        lbl_logo.setAlignment(Qt.AlignCenter)
+        lbl_logo.setStyleSheet("border: none;")
+
+        logo_path = SettingsController.get_active_logo_path()
+        if not logo_path or not Path(logo_path).exists():
+            logo_path = str(ASSETS_DIR / "edu_ledger_logo.png")
+
+        if Path(logo_path).exists():
+            pix = QPixmap(logo_path)
+            if not pix.isNull():
+                lbl_logo.setPixmap(pix.scaled(220, 110, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                card_layout.addWidget(lbl_logo)
+
+        title = QLabel("College Management System")
         title.setWordWrap(True)
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 22px; font-weight: 800; color: #1e3a8a; border: none;")
+        title.setStyleSheet("font-size: 20px; font-weight: 800; color: #1e3a8a; border: none;")
 
         subtitle = QLabel(f"Enterprise ERP System v{APP_VERSION}")
         subtitle.setWordWrap(True)

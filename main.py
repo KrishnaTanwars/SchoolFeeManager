@@ -8,8 +8,9 @@ import traceback
 from pathlib import Path
 from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtCore import Qt, QFile, QTextStream
+from PySide6.QtGui import QIcon
 
-from config.app_config import APP_NAME, APP_VERSION, STYLES_DIR
+from config.app_config import APP_NAME, APP_VERSION, STYLES_DIR, ICONS_DIR
 from config.database import init_db
 from services.db_seed import seed_initial_data
 from views.main_window import MainWindow
@@ -36,6 +37,10 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setApplicationVersion(APP_VERSION)
+    
+    icon_file = ICONS_DIR / "app_icon.png"
+    if icon_file.exists():
+        app.setWindowIcon(QIcon(str(icon_file)))
 
     # Initialize Database & Seed Data
     try:

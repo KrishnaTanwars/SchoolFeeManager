@@ -323,7 +323,7 @@ class MainWindow(QMainWindow):
         # Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("School Fee ERP System | Status: Connected (Offline DB)")
+        self.status_bar.showMessage("College Management ERP System | Status: Connected (Offline DB)")
 
         # Logged-in User Status Bar Label (Permanent Right-Aligned Widget)
         self.lbl_status_user = QLabel("")

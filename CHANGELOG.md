@@ -2,6 +2,17 @@
 
 All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
 
+## [3.4.0] - Official College Management System Rebrand & Company Standard Logo
+
+### 🏛️ Rebrand & Logo Integration
+- **College Management System Rebrand**: Rebranded application title to **College Management System** on Login Screen, Application Title, and Status Bar.
+- **Company Standard EduLedger Logo**: Integrated the official company standard EduLedger logo (Graduation Cap & Open Book visual branding) into application assets (`school_logo.png`, `edu_ledger_logo.png`, `app_icon.png`, `app_icon.ico`).
+- **High-DPI Login Screen Card**: Rendered high-resolution EduLedger logo on the Login Card header.
+- **Permanent Windows Application & Taskbar Icon**: Set application window icon globally via `QApplication.setWindowIcon`.
+- **A4 PDF Receipt Layout Preservation**: Fine-tuned 14-head receipt vertical layout scaling to ensure 1-page A4 PDF output with company logo image.
+
+---
+
 ## [3.0.0] - Phase 5 Release (FINAL PRODUCTION RELEASE)
 
 ### 🏆 Full Production Hardening, System Lockdown & Master Deployment

@@ -88,6 +88,12 @@ class PDFService:
             padding_sz = 4.0
             info_padding = 1.8
             spacer_sz = 1.8 * mm
+        elif item_count >= 14:
+            font_sz = 7.8
+            leading_sz = 9.2
+            padding_sz = 6.0
+            info_padding = 2.5
+            spacer_sz = 2.0 * mm
         elif item_count >= 12:
             font_sz = 8.0
             leading_sz = 9.8
