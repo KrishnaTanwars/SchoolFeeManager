@@ -15,16 +15,38 @@ from dialogs.admin_auth_dialog import AdminAuthDialog
 from utils.logger import logger
 
 
+from pathlib import Path
 from controllers.settings_controller import SettingsController
 
 def generate_receipt_html(receipt: Receipt) -> str:
     school_info = SettingsController.get_school_info()
-    school_name = getattr(school_info, "name", None) or "EduLedger Institute of Technology & Management"
-    school_addr = getattr(school_info, "address", None) or "Main Campus, Knowledge Park, Education Hub"
-    school_city = getattr(school_info, "city", None) or "New Delhi"
-    school_state = getattr(school_info, "state", None) or "Delhi"
-    school_pin = getattr(school_info, "pin_code", None) or "110001"
-    school_phone = getattr(school_info, "phone", None) or "011-23456789"
+    school_name = getattr(school_info, "school_name", None) or getattr(school_info, "name", None) or "College Management System"
+    school_addr = getattr(school_info, "address", None) or ""
+    school_city = getattr(school_info, "city", None) or ""
+    school_state = getattr(school_info, "state", None) or ""
+    school_pin = getattr(school_info, "pin_code", None) or ""
+    school_phone = getattr(school_info, "phone", None) or ""
+    school_email = getattr(school_info, "email", None) or ""
+
+    city_state = ", ".join(filter(None, [school_city, school_state]))
+    if school_pin:
+        city_state = f"{city_state} - {school_pin}" if city_state else school_pin
+    addr_line = ", ".join(filter(None, [school_addr, city_state]))
+    
+    sub_items = []
+    if addr_line:
+        sub_items.append(addr_line)
+    if school_phone:
+        sub_items.append(f"Ph: {school_phone}")
+    if school_email:
+        sub_items.append(f"Email: {school_email}")
+    sub_header_str = " | ".join(sub_items) if sub_items else "Main Campus, Education Hub"
+
+    logo_path = SettingsController.get_active_logo_path()
+    logo_html = ""
+    if logo_path and Path(logo_path).exists():
+        logo_url = Path(logo_path).as_uri()
+        logo_html = f'<img src="{logo_url}" style="max-height: 48px; max-width: 140px; margin-bottom: 4px;" /><br/>'
 
     st = receipt.student
     paid_amt = getattr(receipt, 'paid_amount', receipt.total_amount) or receipt.total_amount
@@ -77,8 +99,9 @@ def generate_receipt_html(receipt: Receipt) -> str:
     </head>
     <body>
         <div class="header">
+            {logo_html}
             <div class="school-name">{school_name}</div>
-            <div class="school-sub">{school_addr}, {school_city}, {school_state} - {school_pin} | Ph: {school_phone}</div>
+            <div class="school-sub">{sub_header_str}</div>
         </div>
 
         <div class="badge-row">
