@@ -34,13 +34,13 @@ def setup_db_session():
         db.query(AcademicSession).delete()
         info = db.query(SchoolInformation).first()
         if not info:
-            info = SchoolInformation(school_name="DPS International School", current_session="2024-2025")
+            info = SchoolInformation(school_name="DPS International School", current_session="2025-2026")
             db.add(info)
         else:
-            info.current_session = "2024-2025"
+            info.current_session = "2025-2026"
 
-        s1 = AcademicSession(session_name="2024-2025", is_current=True)
-        s2 = AcademicSession(session_name="2025-2026", is_current=False)
+        s1 = AcademicSession(session_name="2025-2026", is_current=True)
+        s2 = AcademicSession(session_name="2024-2025", is_current=False)
         db.add_all([s1, s2])
         db.commit()
     finally:
@@ -50,9 +50,9 @@ def setup_db_session():
     yield
 
 def test_01_get_active_session_initial():
-    """Test 1: Initial active session returns 2024-2025."""
+    """Test 1: Initial active session returns 2025-2026."""
     active = session_manager.get_active_session()
-    assert active == "2024-2025"
+    assert active == "2025-2026"
 
 def test_02_set_active_session_updates_db_and_signal():
     """Test 2: Changing session to 2025-2026 updates DB and emits signal."""

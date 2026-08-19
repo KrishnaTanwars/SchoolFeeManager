@@ -72,7 +72,7 @@ class SettingsController:
             info.logo_path = data.get("logo_path", info.logo_path)
             info.receipt_prefix = data.get("receipt_prefix", info.receipt_prefix or "REC/").strip()
             info.receipt_footer = data.get("receipt_footer", info.receipt_footer or "").strip()
-            info.current_session = data.get("current_session", info.current_session or "2024-2025").strip()
+            info.current_session = data.get("current_session", info.current_session or "2025-2026").strip()
 
             from services.security_service import SecurityService
             SecurityService.log_audit(

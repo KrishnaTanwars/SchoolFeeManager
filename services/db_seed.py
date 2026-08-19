@@ -41,18 +41,19 @@ def seed_initial_data():
                 email="accounts@dps school.edu.in",
                 website="www.dpsschool.edu.in",
                 logo_path="assets/school_logo.png",
-                receipt_prefix="REC/2024/",
+                receipt_prefix="REC/2025/",
                 receipt_footer="Fee once paid is non-refundable. Thank you!",
-                current_session="2024-2025"
+                current_session="2025-2026"
             )
             db.add(school_info)
             logger.info("Seeded default school information.")
 
         # Seed Academic Sessions
         if db.query(AcademicSession).count() == 0:
-            s1 = AcademicSession(session_name="2024-2025", is_current=True)
-            s2 = AcademicSession(session_name="2025-2026", is_current=False)
-            db.add_all([s1, s2])
+            s1 = AcademicSession(session_name="2025-2026", is_current=True)
+            s2 = AcademicSession(session_name="2024-2025", is_current=False)
+            s3 = AcademicSession(session_name="2026-2027", is_current=False)
+            db.add_all([s1, s2, s3])
             logger.info("Seeded default academic sessions.")
 
         # Seed Fee Categories (Delegates to FeeController seed helper)

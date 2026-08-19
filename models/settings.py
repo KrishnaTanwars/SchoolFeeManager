@@ -33,7 +33,7 @@ class SchoolInformation(Base):
     logo_path = Column(String(255), nullable=True)
     receipt_prefix = Column(String(20), default="REC/", nullable=False)
     receipt_footer = Column(Text, default="Thank you for your payment. Keep this receipt for future reference.", nullable=False)
-    current_session = Column(String(20), default="2024-2025", nullable=False)
+    current_session = Column(String(20), default="2025-2026", nullable=False)
 
     def __repr__(self):
         return f"<SchoolInformation(school_name='{self.school_name}')>"

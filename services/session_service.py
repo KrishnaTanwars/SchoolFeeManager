@@ -44,7 +44,7 @@ class SessionManager:
 
     @classmethod
     def get_current_session(cls) -> str:
-        """Returns the currently marked active session name, or '2024-2025' default."""
+        """Returns the currently marked active session name, or '2025-2026' default."""
         if cls._cached_session:
             return cls._cached_session
 
@@ -60,10 +60,10 @@ class SessionManager:
             if first_s:
                 cls._cached_session = first_s.session_name
                 return first_s.session_name
-            return "2024-2025"
+            return "2025-2026"
         except Exception as e:
             logger.error(f"Error retrieving current session: {e}")
-            return "2024-2025"
+            return "2025-2026"
         finally:
             db.close()
 
@@ -142,11 +142,11 @@ class SessionManager:
         try:
             sessions = db.query(AcademicSession).order_by(AcademicSession.session_name.desc()).all()
             if not sessions:
-                return ["2024-2025", "2025-2026"]
+                return ["2025-2026", "2024-2025", "2026-2027"]
             return [s.session_name for s in sessions]
         except Exception as e:
             logger.error(f"Error fetching all sessions: {e}")
-            return ["2024-2025"]
+            return ["2025-2026"]
         finally:
             db.close()
 
