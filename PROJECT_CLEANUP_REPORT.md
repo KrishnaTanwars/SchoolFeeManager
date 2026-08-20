@@ -1,5 +1,5 @@
 # EduLedger ERP — Project Cleanup & File Audit Report
-**Project Name**: EduLedger ERP (School Fee Management System)  
+**Project Name**: EduLedger ERP (College Fee Management System)  
 **Cleanup Date**: August 2026  
 **Scope**: Non-destructive file audit, temporary file cleanup, obsolete release archiving, build verification, and runtime test validation.  
 **Result**: 100% SUCCESSFUL  
@@ -22,11 +22,11 @@
 
 ### 1. Core Application Files (100% PROTECTED)
 - **Source Code**: Python `.py` modules across `config/`, `controllers/`, `database/`, `dialogs/`, `models/`, `services/`, `utils/`, `views/`, `tests/`, `main.py`, `build.py`, `package_release.py`, `generate_pdf_docs.py`, `seed_dummy_data.py`.
-- **Database**: `database/school_fee.db` (SQLite 3 WAL Mode with safe migrations).
+- **Database**: `database/college_fee.db` (SQLite 3 WAL Mode with safe migrations).
 - **Assets & Icons**: `assets/styles/theme.qss`, `assets/school_logo.png`, `assets/icons/`.
 - **Documentation**: `README.md`, `Version.txt`, `License.txt`, `CHANGELOG.md`, `INSTALLATION_GUIDE.*`, `USER_MANUAL.*`, `DEVELOPER_GUIDE.md`, `PHASE_00_FINALIZATION_REPORT.md`, `PHASE_01_REPORT.md`, `PHASE_01_RUNTIME_VALIDATION.md`, `docs/`, `phases/`, `scripts/`.
-- **Packaging & Control**: `SchoolFeeManager.spec`, `installer.iss`, `.git/`, `.gitignore`, `.github/`.
-- **Latest Release**: `release/v1.1.0/` (Contains compiled `SchoolFeeManager.exe` and release package `SchoolFeeManager_v1.1.0.zip`).
+- **Packaging & Control**: `CollegeFeeManager.spec`, `installer.iss`, `.git/`, `.gitignore`, `.github/`.
+- **Latest Release**: `release/v1.1.0/` (Contains compiled `CollegeFeeManager.exe` and release package `CollegeFeeManager_v1.1.0.zip`).
 
 ### 2. Temporary Files (DELETED)
 - **Python Cache**: 9 `__pycache__` directories (`.pyc` bytecode caches) safely removed.
@@ -46,7 +46,7 @@
 ### Build Verification (Step 6)
 - **Command**: `python build.py`
 - **Result**: **BUILD SUCCESSFUL**
-- **Executable Target**: `dist/SchoolFeeManager/SchoolFeeManager.exe` (Size: 9.85 MB)
+- **Executable Target**: `dist/CollegeFeeManager/CollegeFeeManager.exe` (Size: 9.85 MB)
 
 ### Executable Launch & Runtime Verification (Step 7)
 - **Subprocess Launch**: Tested post-cleanup executable startup via Windows process launcher (PID 1936).

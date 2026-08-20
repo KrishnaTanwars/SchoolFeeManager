@@ -17,24 +17,24 @@ All operational tasks, system parameters, user security roles, database health t
 ## 2. Files Created & Modified
 
 ### Modified Core Files
-- [`config/app_config.py`](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py) — Bumped `APP_VERSION` to `1.7.0`.
-- [`Version.txt`](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt) — Updated baseline version string to `v1.7.0`.
-- [`models/settings.py`](file:///e:/Downloads/ERP/SchoolFeeManager/models/settings.py) — Extended `SchoolInformation` model with `city`, `state`, `pin_code`, and `principal_name` columns.
-- [`models/user.py`](file:///e:/Downloads/ERP/SchoolFeeManager/models/user.py) — Extended `User` model with `failed_attempts` integer column.
-- [`models/audit.py`](file:///e:/Downloads/ERP/SchoolFeeManager/models/audit.py) — Extended `BackupHistory` model with `created_by` author column.
-- [`config/database.py`](file:///e:/Downloads/ERP/SchoolFeeManager/config/database.py) — Extended `run_migrations()` with non-destructive schema migration checks for missing `school_information`, `users`, and `backup_history` fields.
-- [`controllers/auth_controller.py`](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/auth_controller.py) — Enhanced with user account CRUD (`create_user`, `update_user`, `delete_user`, `reset_password`, `change_password`), role assignment (`Admin`, `Operator`, `Viewer`), status toggles (`Active`, `Disabled`), and failed login tracking.
-- [`controllers/settings_controller.py`](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/settings_controller.py) — Added extended school profile updates, real-time DB statistics, SQLite `VACUUM`/`ANALYZE` optimization, `PRAGMA integrity_check` validation, filtered audit log querying, audit log clearing (Admin only), and application preferences persistence.
-- [`services/export_service.py`](file:///e:/Downloads/ERP/SchoolFeeManager/services/export_service.py) — Integrated CSV, Excel, and ReportLab PDF/Print audit log export methods.
-- [`views/settings_view.py`](file:///e:/Downloads/ERP/SchoolFeeManager/views/settings_view.py) — Redesigned into a commercial 8-Category Card Dashboard grid with dedicated sub-views and `"⬅ Back to Dashboard"` navigation header.
-- [`dialogs/user_dialog.py`](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/user_dialog.py) — Enhanced to handle Create and Edit modes with roles (`Administrator`, `Operator`, `Viewer`) and Account Status toggling.
-- [`package_release.py`](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py) — Updated release packaging configuration to build `v1.7.0` client and source ZIP archives while preserving all prior release version folders.
-- [`CHANGELOG.md`](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md) & [`docs/VERSION_HISTORY.md`](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md) & [`docs/ROADMAP.md`](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md) — Documented Phase 7 changes and updated version release progression.
+- [`config/app_config.py`](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py) — Bumped `APP_VERSION` to `1.7.0`.
+- [`Version.txt`](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt) — Updated baseline version string to `v1.7.0`.
+- [`models/settings.py`](file:///e:/Downloads/ERP/CollegeFeeManager/models/settings.py) — Extended `SchoolInformation` model with `city`, `state`, `pin_code`, and `principal_name` columns.
+- [`models/user.py`](file:///e:/Downloads/ERP/CollegeFeeManager/models/user.py) — Extended `User` model with `failed_attempts` integer column.
+- [`models/audit.py`](file:///e:/Downloads/ERP/CollegeFeeManager/models/audit.py) — Extended `BackupHistory` model with `created_by` author column.
+- [`config/database.py`](file:///e:/Downloads/ERP/CollegeFeeManager/config/database.py) — Extended `run_migrations()` with non-destructive schema migration checks for missing `school_information`, `users`, and `backup_history` fields.
+- [`controllers/auth_controller.py`](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/auth_controller.py) — Enhanced with user account CRUD (`create_user`, `update_user`, `delete_user`, `reset_password`, `change_password`), role assignment (`Admin`, `Operator`, `Viewer`), status toggles (`Active`, `Disabled`), and failed login tracking.
+- [`controllers/settings_controller.py`](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/settings_controller.py) — Added extended school profile updates, real-time DB statistics, SQLite `VACUUM`/`ANALYZE` optimization, `PRAGMA integrity_check` validation, filtered audit log querying, audit log clearing (Admin only), and application preferences persistence.
+- [`services/export_service.py`](file:///e:/Downloads/ERP/CollegeFeeManager/services/export_service.py) — Integrated CSV, Excel, and ReportLab PDF/Print audit log export methods.
+- [`views/settings_view.py`](file:///e:/Downloads/ERP/CollegeFeeManager/views/settings_view.py) — Redesigned into a commercial 8-Category Card Dashboard grid with dedicated sub-views and `"⬅ Back to Dashboard"` navigation header.
+- [`dialogs/user_dialog.py`](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/user_dialog.py) — Enhanced to handle Create and Edit modes with roles (`Administrator`, `Operator`, `Viewer`) and Account Status toggling.
+- [`package_release.py`](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py) — Updated release packaging configuration to build `v1.7.0` client and source ZIP archives while preserving all prior release version folders.
+- [`CHANGELOG.md`](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md) & [`docs/VERSION_HISTORY.md`](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md) & [`docs/ROADMAP.md`](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md) — Documented Phase 7 changes and updated version release progression.
 
 ### New Created Files
-- [`dialogs/change_password_dialog.py`](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/change_password_dialog.py) — Password change and Admin password reset modal.
-- [`tests/test_phase7_settings.py`](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_phase7_settings.py) — Complete unit test suite for Phase 7 features.
-- [`PHASE_07_REPORT.md`](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_07_REPORT.md) — Phase 7 finalization report.
+- [`dialogs/change_password_dialog.py`](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/change_password_dialog.py) — Password change and Admin password reset modal.
+- [`tests/test_phase7_settings.py`](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_phase7_settings.py) — Complete unit test suite for Phase 7 features.
+- [`PHASE_07_REPORT.md`](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_07_REPORT.md) — Phase 7 finalization report.
 
 ---
 
@@ -103,9 +103,9 @@ Executed automated pytest suite covering 54 unit and integration tests:
 
 ## 7. Build, Packaging & Release Deliverables
 
-- **Clean Executable**: Built `dist/SchoolFeeManager/SchoolFeeManager.exe` via PyInstaller.
-- **Client Release Archive**: Created `release/v1.7.0/SchoolFeeManager_v1.7.0.zip`.
-- **Source Code Archive**: Created `release/v1.7.0/SchoolFeeManager_Source_v1.7.0.zip`.
+- **Clean Executable**: Built `dist/CollegeFeeManager/CollegeFeeManager.exe` via PyInstaller.
+- **Client Release Archive**: Created `release/v1.7.0/CollegeFeeManager_v1.7.0.zip`.
+- **Source Code Archive**: Created `release/v1.7.0/CollegeFeeManager_Source_v1.7.0.zip`.
 - **Preservation Rule Enforced**: All existing release version folders (`release/v1.0.0` through `release/v1.6.2`) remain permanently preserved.
 
 ---

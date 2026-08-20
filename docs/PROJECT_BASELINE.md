@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-**EduLedger ERP** (internally structured as **SchoolFeeManager**) is a production-grade, offline-first commercial Windows Desktop ERP system engineered specifically for Indian Schools, Colleges, Coaching Institutes, and Educational Organizations. 
+**EduLedger ERP** (internally structured as **CollegeFeeManager**) is a production-grade, offline-first commercial Windows Desktop ERP system engineered specifically for Indian Schools, Colleges, Coaching Institutes, and Educational Organizations. 
 
 The software manages the entire student life-cycle within the institution, including student admission, student master profile maintenance, dynamic fee head configuration, multi-item fee collection, discount and fine application, partial payment due tracking, automated Indian currency word conversion (Lakhs & Crores), high-resolution ReportLab A4 PDF receipt generation, native Windows printing, financial summary reporting, multi-format export (CSV/Excel/PDF), user role-based access control, disaster recovery backup/restore, and detailed audit logging.
 
@@ -20,7 +20,7 @@ This document represents the official **Phase 0 System Baseline**. No further ch
 
 | Metric / Parameter | Value / Detail |
 |---|---|
-| **Product Name** | EduLedger ERP (School Fee Management System) |
+| **Product Name** | EduLedger ERP (College Fee Management System) |
 | **Current Baseline Version** | `2.0.0` (Enterprise Release 2) |
 | **System Architecture** | Layered Model-View-Controller (MVC) + Service Architecture |
 | **Primary Programming Language** | Python 3.12.10 (64-bit) |
@@ -35,7 +35,7 @@ This document represents the official **Phase 0 System Baseline**. No further ch
 | **Main UI Views** | 9 screens |
 | **Modal Dialogs** | 5 dialogs |
 | **Automated Test Suite** | 18 unit & integration tests (100% pass rate) |
-| **Standalone Executable** | `release_v2.0/SchoolFeeManager/SchoolFeeManager.exe` (9.77 MB) |
+| **Standalone Executable** | `release_v2.0/CollegeFeeManager/CollegeFeeManager.exe` (9.77 MB) |
 
 ---
 
@@ -68,7 +68,7 @@ EduLedger ERP utilizes a strict separation of concerns through a layered archite
                                     v
 +-----------------------------------------------------------------------+
 |                             DATABASE LAYER                            |
-|        SQLite Database Engine (school_fee.db - WAL / Foreign Keys)    |
+|        SQLite Database Engine (college_fee.db - WAL / Foreign Keys)    |
 +-----------------------------------------------------------------------+
 ```
 
@@ -87,7 +87,7 @@ EduLedger ERP utilizes a strict separation of concerns through a layered archite
 | **Source Code Modification** | FROZEN | 0 files edited during Phase 0 audit |
 | **Unit Test Suite** | PASSED | 18 / 18 tests executed cleanly in 1.24s |
 | **Database Schema** | VERIFIED | 8 core tables with migration runner verified |
-| **Standalone Packaging** | VERIFIED | `release_v2.0/SchoolFeeManager/SchoolFeeManager.exe` launch verified |
+| **Standalone Packaging** | VERIFIED | `release_v2.0/CollegeFeeManager/CollegeFeeManager.exe` launch verified |
 | **Documentation Baseline** | GENERATED | 23 comprehensive baseline documents generated |
 
 ---
@@ -95,6 +95,6 @@ EduLedger ERP utilizes a strict separation of concerns through a layered archite
 ## 5. Next Steps for Developer Handover
 
 Any incoming engineer must review:
-1. [PROJECT_HANDOVER.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/PROJECT_HANDOVER.md) for onboarding and execution steps.
-2. [ARCHITECTURE.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ARCHITECTURE.md) for structural patterns and database session lifecycle.
-3. [ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md) for Phase 1 through Phase 10 execution sequence.
+1. [PROJECT_HANDOVER.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/PROJECT_HANDOVER.md) for onboarding and execution steps.
+2. [ARCHITECTURE.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ARCHITECTURE.md) for structural patterns and database session lifecycle.
+3. [ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md) for Phase 1 through Phase 10 execution sequence.

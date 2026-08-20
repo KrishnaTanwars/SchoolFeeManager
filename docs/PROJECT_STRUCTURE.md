@@ -6,12 +6,12 @@
 ## Complete Workspace Directory Tree
 
 ```
-SchoolFeeManager/
+CollegeFeeManager/
 ├── .gitignore               # Git source exclusion rules
 ├── build.py                 # PyInstaller build orchestration script
 ├── package_release.py       # Release ZIP archive generator
 ├── main.py                  # Primary application entry point & QApplication lifecycle
-├── SchoolFeeManager.spec    # PyInstaller packaging configuration
+├── CollegeFeeManager.spec    # PyInstaller packaging configuration
 ├── installer.iss            # Inno Setup Windows installer compiler script
 ├── seed_dummy_data.py       # Dummy data populator for testing
 ├── generate_pdf_docs.py     # PDF documentation generator script
@@ -90,7 +90,7 @@ SchoolFeeManager/
 │   └── test_v11_features.py # Partial fee collection, CSV & migration integration tests
 │
 ├── database/                # SQLite Local Database Storage
-│   └── school_fee.db        # Active SQLite database file
+│   └── college_fee.db        # Active SQLite database file
 │
 ├── backup/                  # Disaster Recovery ZIP Backups Directory
 ├── exports/                 # PDF Receipts & CSV Reports Exports Output Directory

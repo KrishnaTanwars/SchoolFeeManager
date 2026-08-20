@@ -24,6 +24,9 @@ Desktop.ini
 database/school_fee.db
 database/school_fee.db-shm
 database/school_fee.db-wal
+database/college_fee.db
+database/college_fee.db-shm
+database/college_fee.db-wal
 backup/*.zip
 exports/*.pdf
 exports/*.csv

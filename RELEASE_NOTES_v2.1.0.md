@@ -38,6 +38,6 @@ We are pleased to announce **EduLedger ERP Version v2.1.0**. This release introd
 
 ## 📦 Package Deliverables in `release/v2.1.0/`
 
-- **Standalone Executable App**: `release/v2.1.0/SchoolFeeManager/SchoolFeeManager.exe`
-- **Client Release Archive**: `release/v2.1.0/SchoolFeeManager_v2.1.0.zip`
-- **Developer Source Archive**: `release/v2.1.0/SchoolFeeManager_Source_v2.1.0.zip`
+- **Standalone Executable App**: `release/v2.1.0/CollegeFeeManager/CollegeFeeManager.exe`
+- **Client Release Archive**: `release/v2.1.0/CollegeFeeManager_v2.1.0.zip`
+- **Developer Source Archive**: `release/v2.1.0/CollegeFeeManager_Source_v2.1.0.zip`

@@ -274,9 +274,9 @@ class SettingsController:
 
     @staticmethod
     def get_preferences() -> Dict[str, Any]:
-        settings = QSettings("SmartSchool", "SchoolFeeManager")
+        settings = QSettings("EduLedger", "CollegeFeeManager")
         return {
-            "window_size": settings.value("window_size", "1280x800"),
+            "window_size": settings.value("window_size", "1280x750"),
             "sidebar_expanded": settings.value("sidebar_expanded", False, type=bool),
             "theme": settings.value("theme", "Professional Navy"),
             "auto_backup_enabled": settings.value("auto_backup_enabled", True, type=bool),
@@ -301,7 +301,7 @@ class SettingsController:
     @staticmethod
     def save_preferences(prefs: Dict[str, Any]) -> Tuple[bool, str]:
         try:
-            settings = QSettings("SmartSchool", "SchoolFeeManager")
+            settings = QSettings("EduLedger", "CollegeFeeManager")
             for k, v in prefs.items():
                 settings.setValue(k, v)
             logger.info("Saved application preferences to QSettings.")

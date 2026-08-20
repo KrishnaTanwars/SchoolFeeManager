@@ -165,3 +165,28 @@ def test_application_preferences():
     loaded_prefs = SettingsController.get_preferences()
     assert loaded_prefs["window_size"] == "1600x900"
     assert loaded_prefs["sidebar_expanded"] is True
+
+
+def test_window_size_apply_logic():
+    """Verify MainWindow reacts to window size changes and applies requested geometry."""
+    from PySide6.QtWidgets import QApplication
+    from views.main_window import MainWindow
+
+    app = QApplication.instance() or QApplication([])
+    win = MainWindow()
+
+    win.apply_window_size("1600x900")
+    assert win.width() == 1600
+    assert win.height() == 900
+
+    win.apply_window_size("1280x750")
+    assert win.width() == 1280
+    assert win.height() == 750
+
+    win.apply_window_size("1280x800")
+    assert win.width() == 1280
+    assert win.height() == 800
+
+    win.apply_window_size("Maximize")
+    assert win.isMaximized() is True
+

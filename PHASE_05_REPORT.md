@@ -49,20 +49,20 @@ Phase 5 has successfully transformed the Fee Collection module of **EduLedger ER
 ## 4. Files Modified & Created
 
 ### Modified Core Files:
-1. [receipt_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_view.py): Redesigned Fee Collection UI with `StudentSearchPopup`, `SearchLineEdit`, zero-clipping student summary card, course fee filtering, real-time calculations, and keyboard shortcuts.
-2. [receipt_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/receipt_controller.py): Added `collect_fee` backward compatibility helper and eager relation loading for receipts.
-3. [database.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/database.py): Added database migration removing legacy unique constraint on `fee_categories.name` to allow multi-course fee heads with identical descriptions across UG and PG.
-4. [app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py): Updated `APP_VERSION` to `1.5.0`.
-5. [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt): Bumped release version to `v1.5.0`.
-6. [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py): Updated release script for `v1.5.0` directory and packaging structure.
+1. [receipt_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_view.py): Redesigned Fee Collection UI with `StudentSearchPopup`, `SearchLineEdit`, zero-clipping student summary card, course fee filtering, real-time calculations, and keyboard shortcuts.
+2. [receipt_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/receipt_controller.py): Added `collect_fee` backward compatibility helper and eager relation loading for receipts.
+3. [database.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/database.py): Added database migration removing legacy unique constraint on `fee_categories.name` to allow multi-course fee heads with identical descriptions across UG and PG.
+4. [app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py): Updated `APP_VERSION` to `1.5.0`.
+5. [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt): Bumped release version to `v1.5.0`.
+6. [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py): Updated release script for `v1.5.0` directory and packaging structure.
 
 ### New Test & Documentation Files:
-7. [test_phase5_fee_collection.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_phase5_fee_collection.py): Unit & integration test suite covering instant search autocomplete, course fee filtering, calculation engine, receipt creation validations, and PDF generation.
-8. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Updated changelog with Phase 5 release details.
-9. [VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md): Updated version history catalog.
-10. [CLIENT_CUSTOMIZATIONS.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/CLIENT_CUSTOMIZATIONS.md): Added Customization 8 logging client fee collection enhancements.
-11. [ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md): Marked Phase 5 completed.
-12. [PHASE_05_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_05_REPORT.md): This report document.
+7. [test_phase5_fee_collection.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_phase5_fee_collection.py): Unit & integration test suite covering instant search autocomplete, course fee filtering, calculation engine, receipt creation validations, and PDF generation.
+8. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Updated changelog with Phase 5 release details.
+9. [VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md): Updated version history catalog.
+10. [CLIENT_CUSTOMIZATIONS.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/CLIENT_CUSTOMIZATIONS.md): Added Customization 8 logging client fee collection enhancements.
+11. [ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md): Marked Phase 5 completed.
+12. [PHASE_05_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_05_REPORT.md): This report document.
 
 ---
 
@@ -92,7 +92,7 @@ Phase 5 has successfully transformed the Fee Collection module of **EduLedger ER
 
 ## 7. Executable Build & Release Packaging Status
 
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via PyInstaller.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via PyInstaller.
 - **Launcher Validation**: Verified application launch, login, dashboard, student master, fee collection screen, receipt generation, PDF creation, and print preview without crashes.
 - **Release Directory Preservation**: Preserved all existing release version folders (`release/v1.0.0`, `release/v1.0.1`, `release/v1.1.0`, `release/v1.2.0`, `release/v1.3.0`, `release/v1.4.0`) per system rules.
 - **Phase 5 Release Package**: Created `release/v1.5.0/` containing client executable bundle, release archives, version file, phase report, and full documentation.

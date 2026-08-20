@@ -7,7 +7,7 @@
 
 ## Overview
 
-EduLedger ERP v2.0.0 is the complete, production-ready desktop solution for school fee collection, student master management, financial reporting, data import/export, and central administration.
+EduLedger ERP v2.0.0 is the complete, production-ready desktop solution for college fee collection, student master management, financial reporting, data import/export, and central administration.
 
 ---
 

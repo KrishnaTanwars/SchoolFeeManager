@@ -1,6 +1,6 @@
 # EduLedger ERP — Phase 02 Report (Administrator Security & Permission System)
 
-**Project Name**: EduLedger ERP (School Fee Management System)  
+**Project Name**: EduLedger ERP (College Fee Management System)  
 **Target Release**: `v1.2.0` (Enterprise Edition)  
 **Target OS**: Windows 10 / Windows 11 (64-bit x86_64)  
 **Phase Completed**: Phase 02 — Administrator Security & Permission System  
@@ -40,18 +40,18 @@ Phase 02 establishes commercial-grade Administrator Security & Authorization con
 
 | File Path | Status | Change Summary |
 |---|---|---|
-| [services/admin_auth.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/admin_auth.py) | **NEW** | Central facade service module for administrator authentication. |
-| [services/security_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/security_service.py) | **MODIFIED** | Updated `verify_admin_password` to accept `module` and record `Failed Attempt` audit entries. |
-| [dialogs/admin_auth_dialog.py](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/admin_auth_dialog.py) | **MODIFIED** | Updated `AdminAuthDialog` to accept `module`, added button debouncing protection. |
-| [views/student_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/student_view.py) | **MODIFIED** | Reordered delete flow: `AdminAuthDialog` first, followed by explicit delete confirmation dialog. |
-| [views/receipt_history_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py) | **MODIFIED** | Reordered delete flow for single receipt cancel and bulk purge operations. |
-| [views/fee_category_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/fee_category_view.py) | **MODIFIED** | Reordered delete flow for fee category and fee head deletion. |
-| [views/main_window.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/main_window.py) | **MODIFIED** | Enforced `module="Settings"` parameter in Settings protection guard. |
-| [tests/test_phase2_security.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_phase2_security.py) | **NEW** | Comprehensive unit testing suite covering Phase 02 security & audit features (36 total tests). |
-| [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py) | **MODIFIED** | Set `APP_VERSION = "1.2.0"`. |
-| [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt) | **MODIFIED** | Set release version to `v1.2.0`. |
-| [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md) | **MODIFIED** | Added `[1.2.0]` release notes section. |
-| [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py) | **MODIFIED** | Set target release directory to `release/v1.2.0/`. |
+| [services/admin_auth.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/admin_auth.py) | **NEW** | Central facade service module for administrator authentication. |
+| [services/security_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/security_service.py) | **MODIFIED** | Updated `verify_admin_password` to accept `module` and record `Failed Attempt` audit entries. |
+| [dialogs/admin_auth_dialog.py](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/admin_auth_dialog.py) | **MODIFIED** | Updated `AdminAuthDialog` to accept `module`, added button debouncing protection. |
+| [views/student_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/student_view.py) | **MODIFIED** | Reordered delete flow: `AdminAuthDialog` first, followed by explicit delete confirmation dialog. |
+| [views/receipt_history_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py) | **MODIFIED** | Reordered delete flow for single receipt cancel and bulk purge operations. |
+| [views/fee_category_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/fee_category_view.py) | **MODIFIED** | Reordered delete flow for fee category and fee head deletion. |
+| [views/main_window.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/main_window.py) | **MODIFIED** | Enforced `module="Settings"` parameter in Settings protection guard. |
+| [tests/test_phase2_security.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_phase2_security.py) | **NEW** | Comprehensive unit testing suite covering Phase 02 security & audit features (36 total tests). |
+| [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py) | **MODIFIED** | Set `APP_VERSION = "1.2.0"`. |
+| [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt) | **MODIFIED** | Set release version to `v1.2.0`. |
+| [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md) | **MODIFIED** | Added `[1.2.0]` release notes section. |
+| [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py) | **MODIFIED** | Set target release directory to `release/v1.2.0/`. |
 
 ---
 
@@ -76,7 +76,7 @@ Phase 02 establishes commercial-grade Administrator Security & Authorization con
 ## 6. Build & Packaging Verification
 
 - Executed clean PyInstaller compilation and packaging (`python build.py` & `python package_release.py`).
-- **Binary Count**: 603 Files in `dist/SchoolFeeManager/` vs 615 Files in `release/v1.2.0/SchoolFeeManager/` (100% Binary Match + Documentation).
+- **Binary Count**: 603 Files in `dist/CollegeFeeManager/` vs 615 Files in `release/v1.2.0/CollegeFeeManager/` (100% Binary Match + Documentation).
 - **Executable Size**: 13,997,671 bytes (`dist`) vs 13,997,671 bytes (`release`).
 - **Dual Execution**: Both `dist` executable and `release/v1.2.0/` executable launched, initialized Qt 6.11 C++ plugins, and ran stably without error.
 

@@ -18,6 +18,6 @@
 
 | Issue ID | Component | Trigger Condition | Impact | Recommended Resolution Phase |
 |---|---|---|---|---|
-| **EDGE-001** | `services/backup_service.py` | Restoring a DB backup while another process has an open connection to `school_fee.db`. | SQLite file lock exception during `shutil.copy2()`. | `BackupService` disposes SQLAlchemy connection pool before replacing file, but external SQLite tools (like DB Browser) must be closed. |
+| **EDGE-001** | `services/backup_service.py` | Restoring a DB backup while another process has an open connection to `college_fee.db`. | SQLite file lock exception during `shutil.copy2()`. | `BackupService` disposes SQLAlchemy connection pool before replacing file, but external SQLite tools (like DB Browser) must be closed. |
 | **EDGE-002** | `views/receipt_view.py` | Rapid double-clicking on the "Generate Receipt" button. | Risk of generating duplicate receipts with sequential receipt numbers if UI thread freezes. | Button should be temporarily disabled upon first click until transaction completes. |
 | **EDGE-003** | `services/export_service.py` | Importing CSV files with non-UTF8 encoding (e.g. ANSI / Windows-1252 with special characters). | Potential `UnicodeDecodeError` during CSV line parsing. | Add multi-encoding fallback (`utf-8-sig`, `latin-1`) in CSV reader. |

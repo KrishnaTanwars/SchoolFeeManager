@@ -1,6 +1,24 @@
-# Changelog - School Fee Management System
+# Changelog - College Fee Management System
 
-All notable changes, bug fixes, database optimizations, and build updates for the **School Fee Management System**.
+All notable changes, bug fixes, database optimizations, and build updates for the **College Fee Management System**.
+
+## [3.6.0] - 2026-08-20
+
+### 🎓 Course Deletion & Academic Masters Fix
+- **Permanent Course & Branch Deletion Fix**: Fixed `AcademicController.seed_academic_masters_if_empty()` so default courses and branches are only seeded on fresh database initialization and not resurrected on deleted records.
+- **Student Assignment Protection Safeguards**: Added active student dependency checks to prevent deleting courses or branches with active student enrollments.
+- **UI Delete Actions**: Added row-level `🗑 Delete` buttons across Course and Branch Master tables and direct `🗑 Delete Program` action in Course Details dialog.
+- **Version & Installer Synchronization**: Synchronized system-wide version strings across `Version.txt`, PyInstaller spec data bundle, `config/app_config.py`, `installer.iss`, and `file_version_info.txt` to `v3.6.0`.
+
+---
+
+## [3.5.0] - 2026-08-19
+
+### 📚 Course & Program Master Manager
+- **Dedicated Master Panel**: Added dedicated **Course & Branch Master** tab in System Settings.
+- **Program Metadata**: Added Department, Degree Awarded, Affiliation, Eligibility, Baseline Fee, and Program Description.
+
+---
 
 ## [3.4.0] - Official College Management System Rebrand & Company Standard Logo
 
@@ -19,7 +37,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **Complete End-to-End Regression Hardening**: Validated 100% of core ERP workflows (Student Management, Photo Upload/Removal, Promotion Engine, Academic Sessions, Multi-dimensional Fee Engine, 1-Page A4 PDF Receipts, Receipt History, Reports, Backup & Restore, Hardware License Guard).
 - **Database Performance Indexing**: Verified SQLite query indexes on `students.admission_no`, `students.aadhaar_number`, `receipts.receipt_no`, `receipts.student_id`, and `audit_logs.created_at`.
 - **Zero-Clipping UI Polish**: Hardened Windows 11 high-DPI scaling rendering across all resolution bounds.
-- **Master Release Distribution**: Generated PyInstaller EXE (`SchoolFeeManager.exe`), Inno Setup Windows Installer (`SchoolFeeERP_Setup_v3.0.0.exe`), Standalone Portable ZIP, Developer Source ZIP, SHA256 & MD5 Checksums, PDF Manuals, and populating [`release/v3.0.0/`](file:///E:/Downloads/ERP/SchoolFeeManager/release/v3.0.0).
+- **Master Release Distribution**: Generated PyInstaller EXE (`CollegeFeeManager.exe`), Inno Setup Windows Installer (`CollegeFeeERP_Setup_v3.0.0.exe`), Standalone Portable ZIP, Developer Source ZIP, SHA256 & MD5 Checksums, PDF Manuals, and populating [`release/v3.0.0/`](file:///E:/Downloads/ERP/CollegeFeeManager/release/v3.0.0).
 
 ---
 
@@ -66,7 +84,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **Individual Fee Heads on Receipts**: Itemized fee head breakdown with individual paid amounts displayed on generated fee receipts, preview dialogs, and printable A4 PDF documents.
 - **Payment Modes & Partial Payment**: Supported Cash, UPI/QR (with UTR No), Cheque/DD (with Cheque/DD No, Date, Bank Name), and Net Banking modes with exact full payment (`Due = ₹0`) and partial payment tracking across database, receipts, PDF, and Receipt History.
 - **20-Record Fictional Demo Dataset**: Built dataset (`demo/demo_20_fictional_students.csv`) containing 20 fictional student records suitable for testing search, duplicate names, UG/PG, B. Pharmacy/M. Pharmacy, DOB, Aadhaar, and Fee Collection.
-- **Automated Regression Suite**: Created [`tests/test_student_search_regression.py`](file:///E:/Downloads/ERP/SchoolFeeManager/tests/test_student_search_regression.py) and [`tests/test_receipt_view_regression.py`](file:///E:/Downloads/ERP/SchoolFeeManager/tests/test_receipt_view_regression.py) achieving 100% test pass rate across 88 total automated tests.
+- **Automated Regression Suite**: Created [`tests/test_student_search_regression.py`](file:///E:/Downloads/ERP/CollegeFeeManager/tests/test_student_search_regression.py) and [`tests/test_receipt_view_regression.py`](file:///E:/Downloads/ERP/CollegeFeeManager/tests/test_receipt_view_regression.py) achieving 100% test pass rate across 88 total automated tests.
 
 ---
 
@@ -83,7 +101,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 ### 📐 Adaptive Display Scaling & Responsive UI Overhaul
 - **Universal Resolution Support**: Complete responsive layout overhaul covering display resolutions from `800×600` up to `3840×2160` (4K UHD) without information truncation, overlapping, clipped buttons, or hidden columns.
 - **Dynamic Table Cell Word-Wrapping**: Built `apply_responsive_table_formatting` in `utils/table_delegate.py` with native `setWordWrap(True)`, `Qt.ElideNone`, multi-line header alignment, and dynamic vertical row height expansion (`QHeaderView.ResizeToContents`).
-- **Window Geometry Persistence**: Added `QSettings("EduLedger", "SchoolFeeManager")` in `views/main_window.py` to persist window size, position, and maximized state across restarts.
+- **Window Geometry Persistence**: Added `QSettings("EduLedger", "CollegeFeeManager")` in `views/main_window.py` to persist window size, position, and maximized state across restarts.
 - **Scroll Container Architecture**: Wrapped all 8 primary application views and 10 dialog windows in dynamic `QScrollArea` viewports with minimum dimension protection.
 
 ---
@@ -115,7 +133,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 ### 🧪 Automated & Release Verification
 - **Unit & Integration Test Suite**: Created `tests/test_phase_x_overlay_sidebar.py` verifying startup collapsed state, hover expansion, 200ms exit delay, pin locking, ESC collapse, navigation click collapse, and 100% layout position invariance.
 - **Visual Screenshots**: Automated capture of 7 high-resolution verification screenshots (`docs/screenshots/`).
-- **Release Packaging**: Packaged `SchoolFeeManager_v2.2.0.zip` and developer source packages under `release/v2.2.0/`.
+- **Release Packaging**: Packaged `CollegeFeeManager_v2.2.0.zip` and developer source packages under `release/v2.2.0/`.
 
 ---
 
@@ -129,7 +147,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 
 ### 🧪 Automated & Packaged Verification
 - **Automated Stress Testing**: Passed 50+ sidebar collapse/expand toggle operations, 20+ Global Search activations (button & `Ctrl+K`), and 105+ page navigation switches with 100% success and 0 console tracebacks.
-- **Executable Distribution**: Updated PyInstaller single-folder build (`SchoolFeeManager.exe`) and updated release packaging ZIPs (`release/v2.1.0/SchoolFeeManager_v2.1.0.zip` and source package).
+- **Executable Distribution**: Updated PyInstaller single-folder build (`CollegeFeeManager.exe`) and updated release packaging ZIPs (`release/v2.1.0/CollegeFeeManager_v2.1.0.zip` and source package).
 
 ---
 
@@ -177,7 +195,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **UX & Loading Indicators**: Added visual wait cursors (`Qt.WaitCursor`) during background PDF generation, data exports, and report compilation.
 - **Global Error Handling & Logging**: Global exception hook (`sys.excepthook`) catching uncaught exceptions, writing critical traceback logs, and displaying user-friendly crash prevention dialogs.
 - **Production Documentation Deliverables**: Generated `PROJECT_COMPLETION_REPORT.md`, `CLIENT_HANDOVER.md`, `KNOWN_LIMITATIONS.md`, and `RELEASE_NOTES_v2.0.0.md`.
-- **Client Packaging**: Created production release bundle `release/v2.0.0/SchoolFeeManager_v2.0.0.zip` and source package `release/v2.0.0/SchoolFeeManager_Source_v2.0.0.zip`, while preserving all prior release folders (`v1.0.0` through `v1.9.0`).
+- **Client Packaging**: Created production release bundle `release/v2.0.0/CollegeFeeManager_v2.0.0.zip` and source package `release/v2.0.0/CollegeFeeManager_Source_v2.0.0.zip`, while preserving all prior release folders (`v1.0.0` through `v1.9.0`).
 
 ---
 
@@ -196,7 +214,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **Receipt Ledger Exports**: Extended export selections (`Current Page`, `Current Filter`, `Selected Receipts`, `Entire Database`) to CSV, Excel (`.xlsx`), and PDF.
 
 ### 📦 Enhanced Backup, Pre-Restore Inspection & Auto-Backup
-- **Comprehensive ZIP Backup**: Backup archives bundle database `school_fee.db`, school settings, application preferences, and system logs.
+- **Comprehensive ZIP Backup**: Backup archives bundle database `college_fee.db`, school settings, application preferences, and system logs.
 - **Pre-Restore Backup Preview**: Restoration modal inspecting backup zip contents (timestamp, file size, database presence, settings presence) before prompting for user confirmation.
 - **Auto-Backup Scheduling & Retention**: Configurable auto-backup background service (Daily, Weekly, Monthly) with automated retention policy (keeping 5, 10, 20, or Unlimited backups).
 - **Automatic Pre-Restore Safety Snapshot**: Automatically creates a safety backup of the active database before completing any restore operation.
@@ -287,7 +305,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **Centered Icons & Hover Tooltips**: Displays clean, centered icons (`🏠`, `💰`, `📜`, `👨‍🎓`, `🏷️`, `📊`, `⚙️`, `🔒`) with descriptive hover tooltips when collapsed.
 - **Icons + Text When Expanded**: Expands to 220px displaying app title header and full item labels.
 - **Smooth `QPropertyAnimation`**: 200 ms smooth transition with `QEasingCurve.InOutQuad` on Hamburger button (`☰`) click or `Ctrl+B` keyboard shortcut.
-- **User Preference Storage (`QSettings`)**: Automatically persists user sidebar preference across application launches (`QSettings("SmartSchool", "SchoolFeeManager")`).
+- **User Preference Storage (`QSettings`)**: Automatically persists user sidebar preference across application launches (`QSettings("SmartSchool", "CollegeFeeManager")`).
 - **Workspace Auto-Expansion**: Main content view dynamically expands to occupy all gained screen width without layout clipping or horizontal scrollbars.
 
 ---
@@ -392,10 +410,10 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 ## [1.0.1] - Executable Repair & Critical Hotfix Release
 
 ### 🛠️ Executable & Runtime Hotfixes
-- **PySide6 & Shiboken6 Dependency Bundling**: Updated `SchoolFeeManager.spec` to dynamically collect all submodules and data files for `PySide6`, `shiboken6`, `reportlab`, and `sqlalchemy` resolving PySide6 `_util` DLL loading failures.
-- **Writable Directory Fallback**: Enhanced `config/app_config.py` with `_get_writable_base()` fallback logic so database, logs, exports, and backup directories fall back to `%LOCALAPPDATA%\SchoolFeeManager` if the executable installation directory is read-only.
+- **PySide6 & Shiboken6 Dependency Bundling**: Updated `CollegeFeeManager.spec` to dynamically collect all submodules and data files for `PySide6`, `shiboken6`, `reportlab`, and `sqlalchemy` resolving PySide6 `_util` DLL loading failures.
+- **Writable Directory Fallback**: Enhanced `config/app_config.py` with `_get_writable_base()` fallback logic so database, logs, exports, and backup directories fall back to `%LOCALAPPDATA%\CollegeFeeManager` if the executable installation directory is read-only.
 - **Startup Crash Logging**: Added early crash logging and exception handling to prevent silent application exits during executable startup.
-- **Fresh PyInstaller Compilation**: Rebuilt clean executable `dist/SchoolFeeManager/SchoolFeeManager.exe` with zero build warnings affecting runtime.
+- **Fresh PyInstaller Compilation**: Rebuilt clean executable `dist/CollegeFeeManager/CollegeFeeManager.exe` with zero build warnings affecting runtime.
 
 ---
 

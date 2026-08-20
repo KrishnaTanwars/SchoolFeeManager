@@ -1,5 +1,5 @@
 """
-Application Configuration and Constants for School Fee Management System v1.0.
+Application Configuration and Constants for College Fee Management System v1.0.
 """
 
 import os
@@ -18,7 +18,7 @@ else:
 IS_PORTABLE = (APP_DIR / ".portable").exists() or "--portable" in sys.argv
 
 def _get_writable_base(app_dir: Path) -> Path:
-    """Returns app_dir if portable mode or writable non-Program Files, otherwise %APPDATA%/EduLedger/SchoolFeeERP."""
+    """Returns app_dir if portable mode or writable non-Program Files, otherwise %APPDATA%/EduLedger/CollegeFeeERP."""
     if IS_PORTABLE:
         return app_dir
     
@@ -38,7 +38,7 @@ def _get_writable_base(app_dir: Path) -> Path:
             pass
             
     app_data = os.environ.get("APPDATA") or os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
-    fallback = Path(app_data) / "EduLedger" / "SchoolFeeERP"
+    fallback = Path(app_data) / "EduLedger" / "CollegeFeeERP"
     fallback.mkdir(parents=True, exist_ok=True)
     return fallback
 
@@ -78,14 +78,14 @@ for d in [DATA_DIR, LOG_DIR, BACKUP_DIR, EXPORTS_DIR, SETTINGS_DIR, REPORTS_DIR,
         pass
 
 # Database Config
-DB_PATH = DATA_DIR / "school_fee.db"
+DB_PATH = DATA_DIR / "college_fee.db"
 
 # Copy initial seed database if DB doesn't exist yet
 if not DB_PATH.exists():
     import shutil
     candidate_seeds = [
-        BASE_DIR / "database" / "school_fee.db",
-        APP_DIR / "database" / "school_fee.db",
+        BASE_DIR / "database" / "college_fee.db",
+        APP_DIR / "database" / "college_fee.db",
     ]
     for seed_db in candidate_seeds:
         if seed_db.exists() and seed_db != DB_PATH:
@@ -104,13 +104,17 @@ def _load_version() -> str:
         vfile = APP_DIR / "Version.txt"
     if vfile.exists():
         try:
-            return vfile.read_text(encoding="utf-8").strip()
+            val = vfile.read_text(encoding="utf-8").strip()
+            if val.lower().startswith("v"):
+                val = val[1:]
+            if val:
+                return val
         except Exception:
             pass
-    return "3.4.0"
+    return "3.6.0"
 
 # Application Metadata
-APP_NAME = "School Fee ERP"
+APP_NAME = "College Fee ERP"
 APP_VERSION = _load_version()
 COMPANY_NAME = "EduLedger"
 PUBLISHER_NAME = "EduLedger Software Solutions"

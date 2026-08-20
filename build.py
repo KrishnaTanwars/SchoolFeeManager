@@ -10,10 +10,10 @@ from pathlib import Path
 
 def run_build():
     print("=" * 60)
-    print("Building School Fee Management System Executable...")
+    print("Building College Fee Management System Executable...")
     print("=" * 60)
 
-    spec_file = Path(__file__).parent / "SchoolFeeManager.spec"
+    spec_file = Path(__file__).parent / "CollegeFeeManager.spec"
     
     dist_path = Path(__file__).parent / "dist"
     work_path = Path(__file__).parent / "build"
@@ -28,7 +28,7 @@ def run_build():
     if res.returncode == 0:
         print("\n" + "=" * 60)
         print("BUILD SUCCESSFUL!")
-        print("Executable output directory: dist/SchoolFeeManager/SchoolFeeManager.exe")
+        print("Executable output directory: dist/CollegeFeeManager/CollegeFeeManager.exe")
         print("=" * 60)
     else:
         print("\nBUILD FAILED!")

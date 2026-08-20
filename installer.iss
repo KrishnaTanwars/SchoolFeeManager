@@ -1,14 +1,14 @@
-; Inno Setup Script for School Fee ERP (EduLedger)
+; Inno Setup Script for College Fee ERP (EduLedger)
 ; Professional Enterprise Windows Installer with License Activation Guard
 
 #ifndef MyAppVersion
-#define MyAppVersion "3.5.0"
+#define MyAppVersion "3.6.0"
 #endif
 
-#define MyAppName "School Fee ERP"
+#define MyAppName "College Fee ERP"
 #define MyAppPublisher "EduLedger"
 #define MyAppURL "https://www.eduledger.com"
-#define MyAppExeName "SchoolFeeManager.exe"
+#define MyAppExeName "CollegeFeeManager.exe"
 
 [Setup]
 AppId={{D37E88F9-6E2A-4B2E-8910-18D3A8F59C12}
@@ -18,7 +18,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={autopf}\EduLedger\SchoolFeeERP
+DefaultDirName={autopf}\EduLedger\CollegeFeeERP
 DisableWelcomePage=no
 DisableDirPage=no
 DisableProgramGroupPage=no
@@ -31,7 +31,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=License.txt
 OutputDir=dist_installer
-OutputBaseFilename=SchoolFeeERP_Setup_v3.0.0
+OutputBaseFilename=CollegeFeeERP_Setup_v3.6.0
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
@@ -48,7 +48,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "dist\SchoolFeeManager\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\CollegeFeeManager\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\assets\icons\app_icon.ico"
@@ -277,7 +277,7 @@ begin
   begin
     if MsgBox('Do you want to delete all user data (Database, Backups, Reports, Logs) stored in AppData?' + #13#10 + #13#10 + 'Select YES to delete user data, or NO to preserve it for future reinstalls.', mbConfirmation, MB_YESNO) = IDYES then
     begin
-      AppDataDir := ExpandConstant('{userappdata}\EduLedger\SchoolFeeERP');
+      AppDataDir := ExpandConstant('{userappdata}\EduLedger\CollegeFeeERP');
       if DirExists(AppDataDir) then
       begin
         DelTree(AppDataDir, True, True, True);

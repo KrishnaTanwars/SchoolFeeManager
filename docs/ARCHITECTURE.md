@@ -19,7 +19,7 @@ EduLedger ERP is designed as a clean 4-tier desktop application architecture:
       │             │
       └──────┬──────┘
              ▼
-[ SQLite Database Engine (school_fee.db) ]
+[ SQLite Database Engine (college_fee.db) ]
 ```
 
 ---
@@ -28,7 +28,7 @@ EduLedger ERP is designed as a clean 4-tier desktop application architecture:
 
 ### A. Presentation Layer (Views & Dialogs)
 - **Technology**: PySide6 (`QtWidgets`, `QtGui`, `QtCore`, `QtPrintSupport`).
-- **Core Container**: `MainWindow` ([views/main_window.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/main_window.py)) provides a desktop frame with a sidebar navigation layout (`QListWidget`), header bar showing logged-in user and current academic session, and a `QStackedWidget` central viewing area.
+- **Core Container**: `MainWindow` ([views/main_window.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/main_window.py)) provides a desktop frame with a sidebar navigation layout (`QListWidget`), header bar showing logged-in user and current academic session, and a `QStackedWidget` central viewing area.
 - **Views**: Each functional module is implemented as a standalone `QWidget` subclass (`DashboardView`, `StudentView`, `ReceiptView`, `ReceiptHistoryView`, `FeeCategoryView`, `ReportView`, `SettingsView`).
 - **Dialogs**: Modal inputs and statement previews use `QDialog` subclasses (`StudentDialog`, `FeeCategoryDialog`, `ReceiptPreviewDialog`, `StudentLedgerDialog`, `UserDialog`).
 
@@ -43,14 +43,14 @@ EduLedger ERP is designed as a clean 4-tier desktop application architecture:
   6. Trigger audit log insertion via `AuditLog`.
 
 ### C. Service Layer (Specialized Utilities)
-- `PDFService` ([services/pdf_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/pdf_service.py)): Uses ReportLab (`SimpleDocTemplate`, `Table`, `Paragraph`, `Drawing`) to render A4 fee receipt PDFs with watermarking and payment breakdown.
-- `PrintService` ([services/print_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/print_service.py)): Integrates with native Windows Shell (`os.startfile(pdf_path, 'print')`) for direct thermal or desktop printer routing.
-- `BackupService` ([services/backup_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/backup_service.py)): Handles timestamped ZIP archive creation of `school_fee.db`, plus safe backup restore with DB connection release.
-- `ExportService` ([services/export_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/export_service.py)): Formats financial summaries and student records into CSV/Excel compatible outputs.
-- `DBSeedService` ([services/db_seed.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/db_seed.py)): Populates standard default fee heads, admin user credentials, and initial school configuration on first launch.
+- `PDFService` ([services/pdf_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/pdf_service.py)): Uses ReportLab (`SimpleDocTemplate`, `Table`, `Paragraph`, `Drawing`) to render A4 fee receipt PDFs with watermarking and payment breakdown.
+- `PrintService` ([services/print_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/print_service.py)): Integrates with native Windows Shell (`os.startfile(pdf_path, 'print')`) for direct thermal or desktop printer routing.
+- `BackupService` ([services/backup_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/backup_service.py)): Handles timestamped ZIP archive creation of `college_fee.db`, plus safe backup restore with DB connection release.
+- `ExportService` ([services/export_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/export_service.py)): Formats financial summaries and student records into CSV/Excel compatible outputs.
+- `DBSeedService` ([services/db_seed.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/db_seed.py)): Populates standard default fee heads, admin user credentials, and initial school configuration on first launch.
 
 ### D. Data Access Layer (ORM & DB Engine)
-- **Engine**: SQLite 3 with `school_fee.db`.
+- **Engine**: SQLite 3 with `college_fee.db`.
 - **ORM**: SQLAlchemy declarative models extending `models.base.Base`.
 - **Pragmas**: Enables SQLite foreign key constraints (`PRAGMA foreign_keys=ON;`) and memory journal mode for optimal desktop performance.
 

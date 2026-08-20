@@ -23,7 +23,7 @@ class BackupService:
     @staticmethod
     def create_backup(dest_dir: Optional[Path] = None, backup_type: str = "Manual") -> Tuple[bool, str, str]:
         """
-        Creates a timestamped backup ZIP bundling school_fee.db, school_settings, preferences, and logs.
+        Creates a timestamped backup ZIP bundling college_fee.db, school_settings, preferences, and logs.
         Returns: (success: bool, message: str, backup_path: str)
         """
         if not DB_PATH.exists():
@@ -34,7 +34,7 @@ class BackupService:
         dest_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_filename = f"school_fee_backup_{timestamp}.zip"
+        backup_filename = f"college_fee_backup_{timestamp}.zip"
         backup_path = dest_dir / backup_filename
 
         db = get_db()
@@ -104,7 +104,7 @@ class BackupService:
 
             with zipfile.ZipFile(zip_path, 'r') as zipf:
                 file_list = zipf.namelist()
-                has_db = "school_fee.db" in file_list
+                has_db = "college_fee.db" in file_list
                 has_settings = "school_settings.json" in file_list or "app_preferences.json" in file_list
 
             return {
@@ -116,7 +116,7 @@ class BackupService:
                 "has_db": has_db,
                 "has_settings": has_settings,
                 "contents": ", ".join(file_list),
-                "message": "Valid backup package ready for restore." if has_db else "Corrupted backup (school_fee.db missing)."
+                "message": "Valid backup package ready for restore." if has_db else "Corrupted backup (college_fee.db missing)."
             }
         except Exception as e:
             return {"valid": False, "message": f"Corrupted zip archive: {str(e)}"}
@@ -145,7 +145,7 @@ class BackupService:
             with zipfile.ZipFile(zip_path, 'r') as zipf:
                 zipf.extractall(temp_extract)
 
-            extracted_db = temp_extract / "school_fee.db"
+            extracted_db = temp_extract / "college_fee.db"
 
             # SQLite integrity check
             with sqlite3.connect(str(extracted_db)) as conn:
@@ -193,7 +193,7 @@ class BackupService:
         retention = prefs.get("backup_retention", "10")
 
         # Determine if backup is due
-        backups = sorted(BACKUP_DIR.glob("school_fee_backup_*.zip"), key=lambda p: p.stat().st_mtime, reverse=True)
+        backups = sorted(BACKUP_DIR.glob("college_fee_backup_*.zip"), key=lambda p: p.stat().st_mtime, reverse=True)
         is_due = False
 
         if not backups:
@@ -226,7 +226,7 @@ class BackupService:
 
         try:
             limit = int(retention)
-            backups = sorted(BACKUP_DIR.glob("school_fee_backup_*.zip"), key=lambda p: p.stat().st_mtime, reverse=True)
+            backups = sorted(BACKUP_DIR.glob("college_fee_backup_*.zip"), key=lambda p: p.stat().st_mtime, reverse=True)
             if len(backups) > limit:
                 for b_file in backups[limit:]:
                     try:

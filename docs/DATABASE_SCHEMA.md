@@ -1,6 +1,6 @@
 # EduLedger ERP - Database Schema Documentation
 **Baseline Version**: 2.0.0 (Enterprise Edition)  
-**Database Backend**: SQLite 3 (`school_fee.db`)  
+**Database Backend**: SQLite 3 (`college_fee.db`)  
 **ORM Framework**: SQLAlchemy 2.0.51  
 **Total Tables**: 8 Tables  
 

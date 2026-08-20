@@ -1,6 +1,6 @@
 COMMERCIAL SOFTWARE LICENSE AGREEMENT
 
-School Fee Management System v1.0 (Enterprise Edition)
+College Fee Management System v1.0 (Enterprise Edition)
 Copyright (c) 2026. All Rights Reserved.
 
 This software product, including executable files, source files, documentation, and database schemas, is licensed for commercial installation and operation by authorized educational institutions (Schools, Colleges, Private Institutes, Coaching Centers).

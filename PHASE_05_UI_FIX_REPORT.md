@@ -34,13 +34,13 @@
 
 ## 3. Files Modified
 
-1. [views/receipt_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_view.py): Reconfigured popup window flags, non-focus-stealing live search, 8-field autocomplete matching, exact popup width alignment, fixed 150px table amount column, spinbox padding, redesigned payment details section, and responsive 1366x768 layout.
-2. [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py): Updated `APP_VERSION` to `1.5.1`.
-3. [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt): Updated release version to `v1.5.1`.
-4. [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py): Updated output paths for `release/v1.5.1/`.
-5. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Logged Phase 5.1 release details.
-6. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md): Documented v1.5.1 bug fixes.
-7. [PHASE_05_UI_FIX_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_05_UI_FIX_REPORT.md): This summary report.
+1. [views/receipt_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_view.py): Reconfigured popup window flags, non-focus-stealing live search, 8-field autocomplete matching, exact popup width alignment, fixed 150px table amount column, spinbox padding, redesigned payment details section, and responsive 1366x768 layout.
+2. [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py): Updated `APP_VERSION` to `1.5.1`.
+3. [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt): Updated release version to `v1.5.1`.
+4. [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py): Updated output paths for `release/v1.5.1/`.
+5. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Logged Phase 5.1 release details.
+6. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md): Documented v1.5.1 bug fixes.
+7. [PHASE_05_UI_FIX_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_05_UI_FIX_REPORT.md): This summary report.
 
 ---
 
@@ -63,9 +63,9 @@
 ## 5. Executable Build & Release Packaging Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0`, `release/v1.0.1`, `release/v1.1.0`, `release/v1.2.0`, `release/v1.3.0`, `release/v1.4.0`, `release/v1.5.0`) remain permanently preserved.
-- **Phase 5.1 Release Package**: Created `release/v1.5.1/` containing `SchoolFeeManager_v1.5.1.zip` and `SchoolFeeManager_Source_v1.5.1.zip`.
+- **Phase 5.1 Release Package**: Created `release/v1.5.1/` containing `CollegeFeeManager_v1.5.1.zip` and `CollegeFeeManager_Source_v1.5.1.zip`.
 
 ---
 

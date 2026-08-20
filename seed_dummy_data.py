@@ -1,5 +1,5 @@
 """
-Dummy Data Seeder for School Fee Management System v2.0.
+Dummy Data Seeder for College Fee Management System v2.0.
 Populates 100 realistic Students (UG & PG), Fee Heads, and 350+ Receipts across payment modes for testing.
 """
 
@@ -80,7 +80,7 @@ REMARKS_LIST = [
 
 def seed_dummy_data():
     print("=" * 60)
-    print("Seeding Realistic Demo Data into School Fee ERP...")
+    print("Seeding Realistic Demo Data into College Fee ERP...")
     print("=" * 60)
 
     init_db()
@@ -265,7 +265,7 @@ def seed_dummy_data():
         print("DUMMY DATA SEEDING COMPLETE!")
         print(f"Total Students in Database: {final_st_count}")
         print(f"Total Receipts in Database: {final_rc_count}")
-        print("Database file updated: database/school_fee.db")
+        print("Database file updated: database/college_fee.db")
         print("=" * 60)
 
     except Exception as e:

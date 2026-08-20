@@ -1,5 +1,5 @@
 # Phase 0 Finalization & Standardization Report
-**Project Name**: EduLedger ERP (School Fee Management System)  
+**Project Name**: EduLedger ERP (College Fee Management System)  
 **Phase**: Phase 0 Finalization & Development Environment Standardization  
 **Status**: COMPLETED & FROZEN  
 **Date**: August 2026  
@@ -36,16 +36,16 @@ Each phase folder contains:
 - `NOTES.md`
 
 ### Governance & Standard Documents Created (`docs/`)
-- [DECISIONS.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/DECISIONS.md) *(Includes permanent project development rules from Task 8)*
-- [CODING_STANDARDS.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/CODING_STANDARDS.md)
-- [CODE_REVIEW_GUIDELINES.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/CODE_REVIEW_GUIDELINES.md)
-- [QA_CHECKLIST.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/QA_CHECKLIST.md)
-- [RELEASE_CHECKLIST.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/RELEASE_CHECKLIST.md)
-- [FOLDER_STRUCTURE_RULES.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/FOLDER_STRUCTURE_RULES.md)
+- [DECISIONS.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/DECISIONS.md) *(Includes permanent project development rules from Task 8)*
+- [CODING_STANDARDS.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/CODING_STANDARDS.md)
+- [CODE_REVIEW_GUIDELINES.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/CODE_REVIEW_GUIDELINES.md)
+- [QA_CHECKLIST.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/QA_CHECKLIST.md)
+- [RELEASE_CHECKLIST.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/RELEASE_CHECKLIST.md)
+- [FOLDER_STRUCTURE_RULES.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/FOLDER_STRUCTURE_RULES.md)
 
 ### Updated Documentation
-- [ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md) *(Mapped to Semantic Versioning v1.1.0 through v2.0.0)*
-- [VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md) *(Updated to Semantic Versioning standard)*
+- [ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md) *(Mapped to Semantic Versioning v1.1.0 through v2.0.0)*
+- [VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md) *(Updated to Semantic Versioning standard)*
 
 ### Automation Script Placeholders Created (`scripts/`)
 - `scripts/build.ps1`
@@ -76,7 +76,7 @@ Each phase folder contains:
 
 - **Source Code Integrity**: 0 Python source code lines modified.
 - **Automated Tests**: 18 / 18 Unit & Integration tests PASSED cleanly (`python -m unittest discover tests`).
-- **Executable Output**: `release_v2.0/SchoolFeeManager/SchoolFeeManager.exe` verified launch-ready (9.77 MB).
+- **Executable Output**: `release_v2.0/CollegeFeeManager/CollegeFeeManager.exe` verified launch-ready (9.77 MB).
 
 ---
 

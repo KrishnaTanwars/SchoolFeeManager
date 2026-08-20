@@ -1,4 +1,4 @@
-# Installation & Setup Guide - School Fee Management System v1.0
+# Installation & Setup Guide - College Fee Management System v1.0
 
 ## System Requirements
 
@@ -13,11 +13,11 @@
 
 ## 1. Quick Installation Steps
 
-1. Extract the client release ZIP file `SchoolFeeManager_v1.0.zip` to your target directory (e.g., `C:\SchoolFeeManager` or `D:\Software\SchoolFeeManager`).
-2. Navigate to the extracted `SchoolFeeManager` folder.
-3. Double-click **`SchoolFeeManager.exe`** to launch the software.
+1. Extract the client release ZIP file `CollegeFeeManager_v1.0.zip` to your target directory (e.g., `C:\CollegeFeeManager` or `D:\Software\CollegeFeeManager`).
+2. Navigate to the extracted `CollegeFeeManager` folder.
+3. Double-click **`CollegeFeeManager.exe`** to launch the software.
 
-*(Optional)* Right-click **`SchoolFeeManager.exe`** -> Select **Send to -> Desktop (create shortcut)** for instant access.
+*(Optional)* Right-click **`CollegeFeeManager.exe`** -> Select **Send to -> Desktop (create shortcut)** for instant access.
 
 ---
 
@@ -39,7 +39,7 @@ On first startup, the application automatically initializes the SQLite database 
 
 The application creates and manages the following local directories automatically within its root folder:
 
-- **`database/school_fee.db`**: Main SQLite relational database storing all student profiles, fee heads, and receipt ledgers.
+- **`database/college_fee.db`**: Main SQLite relational database storing all student profiles, fee heads, and receipt ledgers.
 - **`backup/`**: Automated timestamped ZIP backup directory created when running manual or automatic backups.
 - **`exports/`**: Generated fee receipt PDFs and CSV reports exported from the application.
 - **`logs/app.log`**: Application activity and error diagnostic log file.
@@ -55,4 +55,4 @@ The application creates and manages the following local directories automaticall
 **A**:
 1. Run a database backup in **Settings & Backup -> Create Database Backup**.
 2. Copy the generated `.zip` file from the `backup/` directory to the new computer.
-3. Install `SchoolFeeManager.exe` on the new computer and use **Settings & Backup -> Restore Database** to load your data.
+3. Install `CollegeFeeManager.exe` on the new computer and use **Settings & Backup -> Restore Database** to load your data.

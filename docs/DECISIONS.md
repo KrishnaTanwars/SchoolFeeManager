@@ -14,7 +14,7 @@
 ### ADR-002: Offline-First SQLite Storage with Dynamic Schema Migration
 - **Status**: APPROVED
 - **Context**: Indian school environments often face unreliable internet connectivity; desktop ERP must function 100% offline.
-- **Decision**: Store all operational data in local SQLite database (`database/school_fee.db`). Schema changes across releases must be executed via automated pragma table inspection (`run_migrations()`).
+- **Decision**: Store all operational data in local SQLite database (`database/college_fee.db`). Schema changes across releases must be executed via automated pragma table inspection (`run_migrations()`).
 
 ### ADR-003: Thread-Safe Scoped DB Sessions with `expire_on_commit=False`
 - **Status**: APPROVED

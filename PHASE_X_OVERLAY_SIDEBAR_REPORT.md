@@ -54,25 +54,25 @@ The legacy sidebar expanded by resizing the central application layout, causing 
 ## Visual Verification Screenshots
 
 ### 1. Default Startup State (Collapsed 60px)
-![Startup Collapsed](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/01_startup_collapsed.png)
+![Startup Collapsed](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/01_startup_collapsed.png)
 
 ### 2. Hover Expanded Overlay (250px Width)
-![Hover Expanded](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/02_hover_expanded.png)
+![Hover Expanded](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/02_hover_expanded.png)
 
 ### 3. Pinned Mode Active (Permanently Expanded)
-![Pinned State](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/03_pinned_state.png)
+![Pinned State](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/03_pinned_state.png)
 
 ### 4. Dashboard View with Hover Overlay
-![Dashboard Overlay](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/04_dashboard_overlay.png)
+![Dashboard Overlay](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/04_dashboard_overlay.png)
 
 ### 5. Fee Collection View with Hover Overlay
-![Fee Collection Overlay](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/05_fee_collection_overlay.png)
+![Fee Collection Overlay](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/05_fee_collection_overlay.png)
 
 ### 6. Receipt History View with Hover Overlay
-![Receipt History Overlay](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/06_receipt_history_overlay.png)
+![Receipt History Overlay](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/06_receipt_history_overlay.png)
 
 ### 7. Student Master View with Hover Overlay
-![Student Master Overlay](file:///e:/Downloads/ERP/SchoolFeeManager/docs/screenshots/07_student_master_overlay.png)
+![Student Master Overlay](file:///e:/Downloads/ERP/CollegeFeeManager/docs/screenshots/07_student_master_overlay.png)
 
 ---
 
@@ -104,5 +104,5 @@ Full repository regression test suite (`python -m unittest discover -s tests -p 
 1. **Version Update**: System promoted to semantic release `v2.2.0` in `Version.txt` and `config/app_config.py`.
 2. **Release History**: Created `VERSION_HISTORY.md` and `RELEASE_STATUS.md`.
 3. **Changelog**: Updated `CHANGELOG.md` with complete Phase X redesign notes.
-4. **Binary & Release Archives**: Built `SchoolFeeManager.exe` and generated client/developer packages under `release/v2.2.0/`.
+4. **Binary & Release Archives**: Built `CollegeFeeManager.exe` and generated client/developer packages under `release/v2.2.0/`.
 5. **Release Folder Preservation**: All legacy release folders (`release/v1.0.0` through `release/v2.1.0`) remain fully preserved.

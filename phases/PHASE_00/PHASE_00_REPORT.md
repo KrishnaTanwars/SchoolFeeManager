@@ -1,5 +1,5 @@
 # Phase 0 Audit Report - EduLedger ERP Baseline
-**Project Name**: EduLedger ERP (School Fee Management System)  
+**Project Name**: EduLedger ERP (College Fee Management System)  
 **Phase**: Phase 0 — Baseline Freeze & Technical Audit  
 **Status**: COMPLETED & FROZEN  
 **Audit Date**: August 2026  
@@ -18,7 +18,7 @@ The result of Phase 0 is a comprehensive technical baseline comprising 23 docume
 
 | Metric Category | Audit Measurement |
 |---|---|
-| **Software Name** | EduLedger ERP (School Fee Management System) |
+| **Software Name** | EduLedger ERP (College Fee Management System) |
 | **Current Baseline Version** | Version 2.0.0 (Enterprise Edition) |
 | **Architecture** | Layered Model-View-Controller (MVC) + Service Architecture |
 | **Programming Language** | Python 3.12.10 (64-Bit) |
@@ -32,7 +32,7 @@ The result of Phase 0 is a comprehensive technical baseline comprising 23 docume
 | **Main UI Screens** | 9 Views |
 | **Modal Input Dialogs** | 5 Dialogs |
 | **Automated Tests** | 18 Automated Unit & Integration Tests (100% Pass Rate) |
-| **Executable Status** | Verified `release_v2.0/SchoolFeeManager/SchoolFeeManager.exe` (9.77 MB) |
+| **Executable Status** | Verified `release_v2.0/CollegeFeeManager/CollegeFeeManager.exe` (9.77 MB) |
 
 ---
 
@@ -68,4 +68,4 @@ The result of Phase 0 is a comprehensive technical baseline comprising 23 docume
 
 Phase 0 is **COMPLETED**. The codebase state is officially frozen.
 
-**Next Immediate Step**: Proceed to **Phase 1: Code Modernization & Validation Centralization** as defined in [ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md).
+**Next Immediate Step**: Proceed to **Phase 1: Code Modernization & Validation Centralization** as defined in [ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md).

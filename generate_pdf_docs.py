@@ -53,7 +53,7 @@ def build_installation_guide_pdf(output_path: str):
 
     # Title & Divider
     story.append(Paragraph("Installation & Setup Guide", title_style))
-    story.append(Paragraph("<font size=10 color='#64748b'><b>School Fee Management System v1.0</b></font>", body_style))
+    story.append(Paragraph("<font size=10 color='#64748b'><b>College Fee Management System v1.0</b></font>", body_style))
     story.append(Spacer(1, 4 * mm))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1e3a8a"), spaceAfter=5*mm))
 
@@ -77,10 +77,10 @@ def build_installation_guide_pdf(output_path: str):
     # 1. Quick Installation Steps
     story.append(Paragraph("1. Quick Installation Steps", h2_style))
     steps = [
-        "1. Extract the client release ZIP file <b>SchoolFeeManager_v1.0.zip</b> to your target directory (e.g., <font color='#1e3a8a'><b>C:\\SchoolFeeManager</b></font>).",
-        "2. Navigate to the extracted <b>SchoolFeeManager</b> folder.",
-        "3. Double-click <b>SchoolFeeManager.exe</b> to launch the software.",
-        "<i>(Optional) Right-click <b>SchoolFeeManager.exe</b> -> Select <b>Send to -> Desktop (create shortcut)</b> for instant access.</i>"
+        "1. Extract the client release ZIP file <b>CollegeFeeManager_v1.0.zip</b> to your target directory (e.g., <font color='#1e3a8a'><b>C:\\CollegeFeeManager</b></font>).",
+        "2. Navigate to the extracted <b>CollegeFeeManager</b> folder.",
+        "3. Double-click <b>CollegeFeeManager.exe</b> to launch the software.",
+        "<i>(Optional) Right-click <b>CollegeFeeManager.exe</b> -> Select <b>Send to -> Desktop (create shortcut)</b> for instant access.</i>"
     ]
     for st in steps:
         story.append(Paragraph(st, body_style))
@@ -118,7 +118,7 @@ def build_installation_guide_pdf(output_path: str):
     # 3. Database & Backup Directory Locations
     story.append(Paragraph("3. Database & Backup Directory Locations", h2_style))
     dirs = [
-        "<b>database/school_fee.db</b>: Main SQLite relational database storing student profiles, fee heads, and receipt ledgers.",
+        "<b>database/college_fee.db</b>: Main SQLite relational database storing student profiles, fee heads, and receipt ledgers.",
         "<b>backup/</b>: Automated timestamped ZIP backup directory created during manual or scheduled backups.",
         "<b>exports/</b>: Generated fee receipt PDFs and CSV reports exported from the application.",
         "<b>logs/app.log</b>: Application activity and error diagnostic log file."
@@ -137,7 +137,7 @@ def build_installation_guide_pdf(output_path: str):
     story.append(Spacer(1, 2 * mm))
 
     story.append(Paragraph("<b>Q: How do I move the software to a new computer?</b>", h3_style))
-    story.append(Paragraph("<b>A:</b><br/>1. Run a database backup in <b>Settings & Backup -> Create Database Backup</b>.<br/>2. Copy the generated .zip file to the new computer.<br/>3. Install SchoolFeeManager.exe on the new computer and use <b>Settings & Backup -> Restore Database</b>.", body_style))
+    story.append(Paragraph("<b>A:</b><br/>1. Run a database backup in <b>Settings & Backup -> Create Database Backup</b>.<br/>2. Copy the generated .zip file to the new computer.<br/>3. Install CollegeFeeManager.exe on the new computer and use <b>Settings & Backup -> Restore Database</b>.", body_style))
 
     doc.build(story)
     print(f"SUCCESS: Created {output_path}")
@@ -171,7 +171,7 @@ def build_user_manual_pdf(output_path: str):
     story = []
 
     # Title & Header
-    story.append(Paragraph("School Fee Management System v1.0", title_style))
+    story.append(Paragraph("College Fee Management System v1.0", title_style))
     story.append(Paragraph("<font size=10 color='#64748b'><b>Commercial User Operations Manual</b></font>", body_style))
     story.append(Spacer(1, 4 * mm))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1e3a8a"), spaceAfter=4*mm))
@@ -179,7 +179,7 @@ def build_user_manual_pdf(output_path: str):
     # Sections 1 to 7
     sections = [
         ("1. Logging In", [
-            "1. Launch <b>SchoolFeeManager.exe</b>.",
+            "1. Launch <b>CollegeFeeManager.exe</b>.",
             "2. Enter credentials on login screen (Administrator: <b>admin / admin123</b> | Operator: <b>operator / operator123</b>).",
             "3. Click <b>LOG IN TO ERP</b>."
         ]),

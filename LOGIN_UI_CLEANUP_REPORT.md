@@ -47,5 +47,5 @@ This task removed the pre-authentication **Global Search** box (`Search everywhe
 
 - **Build Tool**: PyInstaller via `python build.py`
 - **Cleaned Directories**: `build/` and `dist/` removed prior to build.
-- **Compiled Executable**: `dist/SchoolFeeManager/SchoolFeeManager.exe`
+- **Compiled Executable**: `dist/CollegeFeeManager/CollegeFeeManager.exe`
 - **Build Outcome**: **SUCCESSFUL** — Clean standalone executable generated and verified.

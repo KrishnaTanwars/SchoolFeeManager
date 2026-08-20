@@ -69,13 +69,13 @@ Phase 5.3 has executed a complete structural layout redesign of the **Fee Collec
 
 ## 4. Files Modified
 
-1. [views/receipt_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_view.py): Re-architected `setup_ui()` into 2 main columns: Left Column (Full Height Fee Table), Right Column (Top Search/Summary Panel + Bottom Side-by-Side Calculation & Payment Panel).
-2. [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py): Set `APP_VERSION` to `1.5.3`.
-3. [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt): Updated release version to `v1.5.3`.
-4. [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py): Configured output release paths for `v1.5.3`.
-5. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Documented Phase 5.3 release notes.
-6. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md): Documented v1.5.3 redesign features.
-7. [PHASE_05_3_LAYOUT_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_05_3_LAYOUT_REPORT.md): This report.
+1. [views/receipt_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_view.py): Re-architected `setup_ui()` into 2 main columns: Left Column (Full Height Fee Table), Right Column (Top Search/Summary Panel + Bottom Side-by-Side Calculation & Payment Panel).
+2. [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py): Set `APP_VERSION` to `1.5.3`.
+3. [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt): Updated release version to `v1.5.3`.
+4. [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py): Configured output release paths for `v1.5.3`.
+5. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Documented Phase 5.3 release notes.
+6. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md): Documented v1.5.3 redesign features.
+7. [PHASE_05_3_LAYOUT_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_05_3_LAYOUT_REPORT.md): This report.
 
 ---
 
@@ -98,9 +98,9 @@ Phase 5.3 has executed a complete structural layout redesign of the **Fee Collec
 ## 6. Executable Build & Release Packaging Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0` through `release/v1.5.2`) remain permanently preserved.
-- **Phase 5.3 Release Package**: Generated `release/v1.5.3/` containing `SchoolFeeManager_v1.5.3.zip` and `SchoolFeeManager_Source_v1.5.3.zip`.
+- **Phase 5.3 Release Package**: Generated `release/v1.5.3/` containing `CollegeFeeManager_v1.5.3.zip` and `CollegeFeeManager_Source_v1.5.3.zip`.
 
 ---
 

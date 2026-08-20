@@ -58,17 +58,17 @@ Phase 04 successfully transforms the Fee Heads Master module into a streamlined,
 
 | File Path | Action | Description |
 |---|---|---|
-| [models/fee_category.py](file:///e:/Downloads/ERP/SchoolFeeManager/models/fee_category.py) | **MODIFIED** | Removed `code` column, added `course` and `created_at` columns. |
-| [config/database.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/database.py) | **MODIFIED** | Automated database schema migration for `course` and `created_at` columns + seed trigger. |
-| [controllers/fee_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/fee_controller.py) | **MODIFIED** | Added course filtering, duplicate validation within course, and `seed_default_fee_heads` helper. |
-| [dialogs/fee_category_dialog.py](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/fee_category_dialog.py) | **MODIFIED** | Removed Short Code input field, added Course level dropdown (`UG`, `PG`). |
-| [views/fee_category_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/fee_category_view.py) | **MODIFIED** | Redesigned table into 6 clean columns with instant search and course/status filters. |
-| [views/receipt_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_view.py) | **MODIFIED** | Replaced Code column with Course column, added student course-based fee head filtering. |
-| [services/db_seed.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/db_seed.py) | **MODIFIED** | Delegated fee category seeding to `FeeController.seed_default_fee_heads()`. |
-| [tests/test_phase4_fee_heads.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_phase4_fee_heads.py) | **NEW** | Unit tests for UG/PG CRUD, short code removal, duplicate validation, and course filtering. |
-| [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py) | **MODIFIED** | Updated `APP_VERSION = "1.4.0"`. |
-| [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt) | **MODIFIED** | Updated version metadata string to `v1.4.0`. |
-| [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py) | **MODIFIED** | Set target release output path to `release/v1.4.0/`. |
+| [models/fee_category.py](file:///e:/Downloads/ERP/CollegeFeeManager/models/fee_category.py) | **MODIFIED** | Removed `code` column, added `course` and `created_at` columns. |
+| [config/database.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/database.py) | **MODIFIED** | Automated database schema migration for `course` and `created_at` columns + seed trigger. |
+| [controllers/fee_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/fee_controller.py) | **MODIFIED** | Added course filtering, duplicate validation within course, and `seed_default_fee_heads` helper. |
+| [dialogs/fee_category_dialog.py](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/fee_category_dialog.py) | **MODIFIED** | Removed Short Code input field, added Course level dropdown (`UG`, `PG`). |
+| [views/fee_category_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/fee_category_view.py) | **MODIFIED** | Redesigned table into 6 clean columns with instant search and course/status filters. |
+| [views/receipt_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_view.py) | **MODIFIED** | Replaced Code column with Course column, added student course-based fee head filtering. |
+| [services/db_seed.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/db_seed.py) | **MODIFIED** | Delegated fee category seeding to `FeeController.seed_default_fee_heads()`. |
+| [tests/test_phase4_fee_heads.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_phase4_fee_heads.py) | **NEW** | Unit tests for UG/PG CRUD, short code removal, duplicate validation, and course filtering. |
+| [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py) | **MODIFIED** | Updated `APP_VERSION = "1.4.0"`. |
+| [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt) | **MODIFIED** | Updated version metadata string to `v1.4.0`. |
+| [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py) | **MODIFIED** | Set target release output path to `release/v1.4.0/`. |
 
 ---
 
@@ -78,8 +78,8 @@ Phase 04 successfully transforms the Fee Heads Master module into a streamlined,
    - Command: `python -m unittest discover tests`
    - Result: **42 / 42 PASSED (100% Pass Rate)**
 2. **Clean Build & Release Audit**:
-   - Rebuilt standalone executable at `dist/SchoolFeeManager/SchoolFeeManager.exe` (14.0 MB).
-   - Generated release package at `release/v1.4.0/SchoolFeeManager_v1.4.0.zip` (37.4 MB).
+   - Rebuilt standalone executable at `dist/CollegeFeeManager/CollegeFeeManager.exe` (14.0 MB).
+   - Generated release package at `release/v1.4.0/CollegeFeeManager_v1.4.0.zip` (37.4 MB).
 3. **Folder Preservation**:
    - Preserved `release/v1.0.0`, `release/v1.0.1`, `release/v1.1.0`, `release/v1.2.0`, `release/v1.3.0` intact.
 
@@ -88,4 +88,4 @@ Phase 04 successfully transforms the Fee Heads Master module into a streamlined,
 ## 5. Git Repository Status
 
 - **Commit Message**: `Phase 4 – Fee Heads Master Professionalization (v1.4.0)`
-- **Remote Push**: Synced to GitHub remote `https://github.com/KrishnaTanwars/SchoolFeeManager.git`.
+- **Remote Push**: Synced to GitHub remote `https://github.com/KrishnaTanwars/CollegeFeeManager.git`.

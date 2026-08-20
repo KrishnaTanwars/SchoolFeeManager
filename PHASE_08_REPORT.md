@@ -32,16 +32,16 @@ School administrators and finance personnel can generate 10 specialized financia
 ## 3. Files Created & Modified
 
 ### Modified Core Files
-- [`config/app_config.py`](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py) — Bumped `APP_VERSION` to `1.8.0`.
-- [`Version.txt`](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt) — Updated baseline version string to `v1.8.0`.
-- [`controllers/report_controller.py`](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/report_controller.py) — Implemented specialized read-only query methods for all 10 MIS financial reports.
-- [`views/report_view.py`](file:///e:/Downloads/ERP/SchoolFeeManager/views/report_view.py) — Redesigned into an interactive 10-Report Dashboard Grid with specialized sub-views, common filter toolbar, summary KPI cards, live search, pagination controls, and export buttons.
-- [`package_release.py`](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py) — Updated release packaging configuration to build `v1.8.0` client and source ZIP archives while preserving all prior release version folders.
-- [`CHANGELOG.md`](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md) & [`docs/VERSION_HISTORY.md`](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md) & [`docs/ROADMAP.md`](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md) — Documented Phase 8 changes and updated version release progression.
+- [`config/app_config.py`](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py) — Bumped `APP_VERSION` to `1.8.0`.
+- [`Version.txt`](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt) — Updated baseline version string to `v1.8.0`.
+- [`controllers/report_controller.py`](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/report_controller.py) — Implemented specialized read-only query methods for all 10 MIS financial reports.
+- [`views/report_view.py`](file:///e:/Downloads/ERP/CollegeFeeManager/views/report_view.py) — Redesigned into an interactive 10-Report Dashboard Grid with specialized sub-views, common filter toolbar, summary KPI cards, live search, pagination controls, and export buttons.
+- [`package_release.py`](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py) — Updated release packaging configuration to build `v1.8.0` client and source ZIP archives while preserving all prior release version folders.
+- [`CHANGELOG.md`](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md) & [`docs/VERSION_HISTORY.md`](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md) & [`docs/ROADMAP.md`](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md) — Documented Phase 8 changes and updated version release progression.
 
 ### New Created Files
-- [`tests/test_phase8_reports.py`](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_phase8_reports.py) — Complete unit test suite for Phase 8 reports.
-- [`PHASE_08_REPORT.md`](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_08_REPORT.md) — Phase 8 finalization report.
+- [`tests/test_phase8_reports.py`](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_phase8_reports.py) — Complete unit test suite for Phase 8 reports.
+- [`PHASE_08_REPORT.md`](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_08_REPORT.md) — Phase 8 finalization report.
 
 ---
 
@@ -79,9 +79,9 @@ Executed automated pytest suite covering 64 unit and integration tests:
 
 ## 6. Build, Packaging & Release Deliverables
 
-- **Clean Executable**: Built `dist/SchoolFeeManager/SchoolFeeManager.exe` via PyInstaller.
-- **Client Release Archive**: Created `release/v1.8.0/SchoolFeeManager_v1.8.0.zip`.
-- **Source Code Archive**: Created `release/v1.8.0/SchoolFeeManager_Source_v1.8.0.zip`.
+- **Clean Executable**: Built `dist/CollegeFeeManager/CollegeFeeManager.exe` via PyInstaller.
+- **Client Release Archive**: Created `release/v1.8.0/CollegeFeeManager_v1.8.0.zip`.
+- **Source Code Archive**: Created `release/v1.8.0/CollegeFeeManager_Source_v1.8.0.zip`.
 - **Preservation Rule Enforced**: All existing release version folders (`release/v1.0.0` through `release/v1.7.0`) remain permanently preserved.
 
 ---

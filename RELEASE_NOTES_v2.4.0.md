@@ -1,4 +1,4 @@
-# Release Notes — EduLedger School Fee ERP (v2.4.0)
+# Release Notes — EduLedger College Fee ERP (v2.4.0)
 
 **Release Date:** August 14, 2026  
 **Version:** `v2.4.0`  
@@ -7,7 +7,7 @@
 ---
 
 ## Executive Summary
-Version **v2.4.0** represents the **Final Production Release** of EduLedger School Fee ERP. This landmark release introduces a **Mandatory License Key Activation Guard** integrated directly into the Windows Inno Setup installer, alongside a comprehensive **Responsive Layout & Adaptive Screen Scaling Overhaul** guaranteeing visual excellence across all desktop resolutions from `800×600` to `3840×2160` (4K UHD).
+Version **v2.4.0** represents the **Final Production Release** of EduLedger College Fee ERP. This landmark release introduces a **Mandatory License Key Activation Guard** integrated directly into the Windows Inno Setup installer, alongside a comprehensive **Responsive Layout & Adaptive Screen Scaling Overhaul** guaranteeing visual excellence across all desktop resolutions from `800×600` to `3840×2160` (4K UHD).
 
 ---
 
@@ -39,11 +39,11 @@ The final release package structure is assembled under `release/v2.4.0/`:
 ```
 release/v2.4.0/
 ├── Installer/
-│   └── SchoolFeeERP_Setup_v2.4.0.exe
+│   └── CollegeFeeERP_Setup_v2.4.0.exe
 ├── Portable/
-│   └── SchoolFeeERP_Portable_v2.4.0.zip
+│   └── CollegeFeeERP_Portable_v2.4.0.zip
 ├── Developer/
-│   └── SchoolFeeERP_Source_v2.4.0.zip
+│   └── CollegeFeeERP_Source_v2.4.0.zip
 ├── Checksums/
 │   ├── SHA256.txt
 │   └── MD5.txt

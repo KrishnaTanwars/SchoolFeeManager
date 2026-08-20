@@ -1,5 +1,5 @@
 """
-Release Packaging Script for School Fee Management System v1.0.
+Release Packaging Script for College Fee Management System v1.0.
 Bundles clean client release ZIP and developer source ZIP packages with PDF Documentation.
 """
 
@@ -17,10 +17,10 @@ if version_file.exists():
 else:
     VERSION_STR = "v2.1.0"
 
-DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
+DIST_DIR = BASE_DIR / "dist" / "CollegeFeeManager"
 RELEASE_DIR = BASE_DIR / "release" / VERSION_STR
-CLIENT_ZIP_PATH = RELEASE_DIR / f"SchoolFeeManager_{VERSION_STR}.zip"
-SOURCE_ZIP_PATH = RELEASE_DIR / f"SchoolFeeManager_Source_{VERSION_STR}.zip"
+CLIENT_ZIP_PATH = RELEASE_DIR / f"CollegeFeeManager_{VERSION_STR}.zip"
+SOURCE_ZIP_PATH = RELEASE_DIR / f"CollegeFeeManager_Source_{VERSION_STR}.zip"
 
 def create_client_package():
     print("============================================================")
@@ -33,7 +33,7 @@ def create_client_package():
     # Ensure RELEASE_DIR exists without deleting existing release contents
     RELEASE_DIR.mkdir(parents=True, exist_ok=True)
 
-    client_dist = RELEASE_DIR / "SchoolFeeManager"
+    client_dist = RELEASE_DIR / "CollegeFeeManager"
     client_dist.mkdir(parents=True, exist_ok=True)
 
     # Copy PyInstaller bundled executable & dependencies (exact copy of dist/)
@@ -44,9 +44,9 @@ def create_client_package():
 
     # Copy initial database file if present
     (client_dist / "database").mkdir(exist_ok=True)
-    active_db = BASE_DIR / "database" / "school_fee.db"
+    active_db = BASE_DIR / "database" / "college_fee.db"
     if active_db.exists():
-        shutil.copy2(active_db, client_dist / "database" / "school_fee.db")
+        shutil.copy2(active_db, client_dist / "database" / "college_fee.db")
 
     (client_dist / "backup").mkdir(exist_ok=True)
     (client_dist / "exports").mkdir(exist_ok=True)

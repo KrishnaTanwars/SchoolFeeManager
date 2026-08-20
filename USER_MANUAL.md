@@ -1,12 +1,12 @@
-# School Fee Management System v1.0 - User Manual
+# College Fee Management System v1.0 - User Manual
 
-Welcome to the **School Fee Management System**. This user guide explains how to use all features of the application.
+Welcome to the **College Fee Management System**. This user guide explains how to use all features of the application.
 
 ---
 
 ## 1. Logging In
 
-1. Launch `SchoolFeeManager.exe` or `python main.py`.
+1. Launch `CollegeFeeManager.exe` or `python main.py`.
 2. Enter your credentials on the login screen:
    - **Administrator**: `admin` / `admin123`
    - **Fee Operator**: `operator` / `operator123`

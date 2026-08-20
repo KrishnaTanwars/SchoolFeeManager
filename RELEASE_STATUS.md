@@ -17,7 +17,7 @@
 - **Receipt Snapshots & Printable PDFs**: Receipts capture student Course, Branch, Academic Year, and Semester; printable PDF receipts display complete academic metadata.
 - **Receipt History & Bulk Import/Export**: Integrated `AcademicFilterWidget` into Receipt History, updated CSV sample generation, and student import parser.
 - **Seeded Demo Data & Testing**: Seeded 100 students and 350 fee receipts; passed 7/7 automated unit tests in `tests/test_phase_x_academic_structure.py` and 100% full project regression suite.
-- **Standalone Build & Packaging**: Compiled executable (`dist/SchoolFeeManager/SchoolFeeManager.exe`) and created release package (`release/v2.3.0/`).
+- **Standalone Build & Packaging**: Compiled executable (`dist/CollegeFeeManager/CollegeFeeManager.exe`) and created release package (`release/v2.3.0/`).
 
 ---
 

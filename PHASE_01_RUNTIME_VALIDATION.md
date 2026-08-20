@@ -1,5 +1,5 @@
 # Phase 01 Runtime Validation Report — Security & Administration Hardening
-**Project Name**: EduLedger ERP (School Fee Management System)  
+**Project Name**: EduLedger ERP (College Fee Management System)  
 **Version**: `v1.1.0` (Enterprise Edition)  
 **Target OS**: Windows 10 / Windows 11 (64-bit)  
 **Validation Date**: August 2026  
@@ -8,7 +8,7 @@
 ---
 
 ## Executive Summary
-This document provides the final runtime validation report for Phase 01 (`v1.1.0`). In accordance with strict runtime verification protocol, the compiled executable (`SchoolFeeManager.exe`) was physically launched, executed, monitored, and stress-tested across multiple launches and operational flows. All 31 unit, security, and runtime validation tests passed with 100% success.
+This document provides the final runtime validation report for Phase 01 (`v1.1.0`). In accordance with strict runtime verification protocol, the compiled executable (`CollegeFeeManager.exe`) was physically launched, executed, monitored, and stress-tested across multiple launches and operational flows. All 31 unit, security, and runtime validation tests passed with 100% success.
 
 ---
 
@@ -16,7 +16,7 @@ This document provides the final runtime validation report for Phase 01 (`v1.1.0
 
 | Field | Details | Status |
 |---|---|---|
-| **Executable Path** | `e:\Downloads\ERP\SchoolFeeManager\release\v1.1.0\SchoolFeeManager\SchoolFeeManager.exe` | **VERIFIED** |
+| **Executable Path** | `e:\Downloads\ERP\CollegeFeeManager\release\v1.1.0\CollegeFeeManager\CollegeFeeManager.exe` | **VERIFIED** |
 | **Build Architecture** | Windows x86_64 Standalone Package (PyInstaller 6.21.0) | **VERIFIED** |
 | **Launch Status** | Successfully launched multiple subprocess instances (PIDs: 44340, 19372, 33136, 26508) | **VERIFIED** |
 | **Process Termination** | Terminated and closed cleanly without orphaned locks or lingering background threads | **VERIFIED** |
@@ -27,7 +27,7 @@ This document provides the final runtime validation report for Phase 01 (`v1.1.0
 ## 2. Step-by-Step Runtime Verification Log
 
 ### STEP 1: Executable Launch Verification
-- Executable path verified at `release/v1.1.0/SchoolFeeManager/SchoolFeeManager.exe`.
+- Executable path verified at `release/v1.1.0/CollegeFeeManager/CollegeFeeManager.exe`.
 - Subprocess execution succeeded with 0 crash reports and 0 exit errors.
 - Both offscreen GUI engine runtime and native process launcher passed cleanly.
 

@@ -10,7 +10,7 @@
 | `assets/` | Static images, icons, logo files, and QSS style sheets. | No Python source code or runtime generated files. |
 | `config/` | Core configuration settings, DB URLs, storage paths, engine setup. | No UI widget code or controller logic. |
 | `controllers/` | Application business logic, validation, DB transaction handlers. | No PySide6 UI rendering or direct widget manipulation. |
-| `database/` | Local SQLite database files (`school_fee.db`). | Excluded from version control tracking via `.gitignore`. |
+| `database/` | Local SQLite database files (`college_fee.db`). | Excluded from version control tracking via `.gitignore`. |
 | `dialogs/` | PySide6 modal dialog windows (`QDialog` subclasses). | Must delegate business logic to controllers. |
 | `docs/` | System baseline markdown documentation and governance standards. | No temporary scratch files or binary dumps. |
 | `models/` | Declarative SQLAlchemy ORM models (`models.base.Base` subclasses). | No UI logic or external service calls. |

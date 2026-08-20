@@ -43,44 +43,43 @@ class AcademicController:
         {"code": "SEM8", "name": "8 Sem", "order_no": 8},
     ]
 
+    _academic_seeded = False
+
     @classmethod
     def seed_academic_masters_if_empty(cls):
-        """Ensures default Courses, Branches, Academic Years, and Semesters are present."""
+        """Ensures default Courses, Branches, Academic Years, and Semesters are present if tables are empty."""
+        if cls._academic_seeded:
+            return
+
         from config.database import init_db
         init_db()
         db = get_db()
         try:
-            # Seed Courses
-            for c in cls.DEFAULT_COURSES:
-                existing = db.query(Course).filter(Course.code == c["code"]).first()
-                if not existing:
+            # Seed Courses only if table is completely empty
+            if db.query(Course).count() == 0:
+                for c in cls.DEFAULT_COURSES:
                     db.add(Course(**c))
-            db.commit()
+                db.commit()
 
-            # Seed Branches
-            for b in cls.DEFAULT_BRANCHES:
-                existing = db.query(Branch).filter(Branch.code == b["code"]).first()
-                if not existing:
+            # Seed Branches only if table is completely empty
+            if db.query(Branch).count() == 0:
+                for b in cls.DEFAULT_BRANCHES:
                     db.add(Branch(**b))
-            db.commit()
+                db.commit()
 
-            # Seed Years
-            for y in cls.DEFAULT_YEARS:
-                existing = db.query(AcademicYear).filter(AcademicYear.code == y["code"]).first()
-                if not existing:
+            # Seed Years only if table is completely empty
+            if db.query(AcademicYear).count() == 0:
+                for y in cls.DEFAULT_YEARS:
                     db.add(AcademicYear(**y))
-                else:
-                    existing.name = y["name"]
-            db.commit()
+                db.commit()
 
-            # Seed Semesters
-            for s in cls.DEFAULT_SEMESTERS:
-                existing = db.query(Semester).filter(Semester.code == s["code"]).first()
-                if not existing:
+            # Seed Semesters only if table is completely empty
+            if db.query(Semester).count() == 0:
+                for s in cls.DEFAULT_SEMESTERS:
                     db.add(Semester(**s))
-                else:
-                    existing.name = s["name"]
-            db.commit()
+                db.commit()
+
+            cls._academic_seeded = True
             logger.info("Academic master tables initialized successfully.")
         except Exception as e:
             db.rollback()
@@ -319,13 +318,23 @@ class AcademicController:
 
     @classmethod
     def delete_course(cls, course_id: int) -> tuple[bool, str]:
-        """Deletes a course if not in use."""
+        """Deletes a course if not in use by enrolled students."""
         db = get_db()
         try:
             course = db.query(Course).filter(Course.id == course_id).first()
             if not course:
                 return False, "Course not found."
             c_name = course.name
+            c_code = course.code
+
+            # Check if any student is currently assigned to this course
+            from models.student import Student
+            student_count = db.query(Student).filter(
+                (Student.course == c_name) | (Student.course == c_code)
+            ).count()
+            if student_count > 0:
+                return False, f"Cannot delete course '{c_name}': {student_count} student(s) are currently enrolled in this course. Please reassign or delete those students first."
+
             db.delete(course)
             db.commit()
             return True, f"Course '{c_name}' deleted successfully."
@@ -437,13 +446,23 @@ class AcademicController:
 
     @classmethod
     def delete_branch(cls, branch_id: int) -> tuple[bool, str]:
-        """Deletes a branch if not in use."""
+        """Deletes a branch if not in use by assigned students."""
         db = get_db()
         try:
             branch = db.query(Branch).filter(Branch.id == branch_id).first()
             if not branch:
                 return False, "Branch not found."
             b_name = branch.name
+            b_code = branch.code
+
+            # Check if any student is assigned to this branch
+            from models.student import Student
+            student_count = db.query(Student).filter(
+                (Student.branch == b_name) | (Student.branch == b_code)
+            ).count()
+            if student_count > 0:
+                return False, f"Cannot delete branch '{b_name}': {student_count} student(s) are currently assigned to this branch. Please reassign or delete those students first."
+
             db.delete(branch)
             db.commit()
             return True, f"Branch '{b_name}' deleted successfully."

@@ -36,12 +36,12 @@ The pagination controls have been upgraded to a modern **Icon-Only Navigation To
 
 ## 3. Files Modified
 
-1. [views/receipt_history_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py):
+1. [views/receipt_history_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py):
    - Replaced text labels on pagination buttons with icon-only strings (`⏮`, `◀`, `▶`, `⏭`).
    - Attached descriptive tooltips for accessibility.
    - Set fixed size `38x32px` and applied flat blue QSS stylesheet.
-2. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Documented Icon-Only Pagination Controls UI refinement.
-3. [PAGINATION_UI_POLISH_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PAGINATION_UI_POLISH_REPORT.md): This report.
+2. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Documented Icon-Only Pagination Controls UI refinement.
+3. [PAGINATION_UI_POLISH_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PAGINATION_UI_POLISH_REPORT.md): This report.
 
 ---
 
@@ -63,7 +63,7 @@ The pagination controls have been upgraded to a modern **Icon-Only Navigation To
 ## 5. Executable Build & Release Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0` through `release/v1.6.2`) remain permanently preserved.
 
 ---

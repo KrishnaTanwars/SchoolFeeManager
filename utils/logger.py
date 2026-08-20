@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from config.app_config import LOG_DIR
 
-def setup_logger(name: str = "SchoolFeeManager") -> logging.Logger:
+def setup_logger(name: str = "CollegeFeeManager") -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 

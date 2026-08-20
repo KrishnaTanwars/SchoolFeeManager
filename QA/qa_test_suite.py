@@ -1,6 +1,6 @@
 """
 Phase 11: Complete Automated QA, UI Audit & Production Acceptance Test Suite
-Target: release/v2.0.0/SchoolFeeManager/SchoolFeeManager.exe
+Target: release/v2.0.0/CollegeFeeManager/CollegeFeeManager.exe
 """
 
 import os
@@ -17,8 +17,8 @@ import win32process
 import ctypes
 
 # Paths
-BASE_DIR = Path(r"e:\Downloads\ERP\SchoolFeeManager")
-EXE_PATH = BASE_DIR / "release" / "v2.0.0" / "SchoolFeeManager" / "SchoolFeeManager.exe"
+BASE_DIR = Path(r"e:\Downloads\ERP\CollegeFeeManager")
+EXE_PATH = BASE_DIR / "release" / "v2.0.0" / "CollegeFeeManager" / "CollegeFeeManager.exe"
 EXE_DIR = EXE_PATH.parent
 QA_DIR = BASE_DIR / "QA"
 SCREENSHOT_DIR = QA_DIR / "Screenshots"
@@ -124,7 +124,7 @@ def get_window_handle():
     def enum_windows_callback(hwnd, extra):
         if win32gui.IsWindowVisible(hwnd):
             title = win32gui.GetWindowText(hwnd)
-            if "College Management System" in title or "School Fee Manager" in title or "EduLedger" in title or "PySide6" in title:
+            if "College Management System" in title or "College Fee Manager" in title or "EduLedger" in title or "PySide6" in title:
                 hwnds.append(hwnd)
         return True
     win32gui.EnumWindows(enum_windows_callback, None)
@@ -162,7 +162,7 @@ def main():
         sys.exit(1)
         
     # Launch Application Process
-    logger.info("Launching SchoolFeeManager.exe process...")
+    logger.info("Launching CollegeFeeManager.exe process...")
     proc = subprocess.Popen([str(EXE_PATH)], cwd=str(EXE_DIR))
     time.sleep(3.5) # Wait for Qt GUI startup
     

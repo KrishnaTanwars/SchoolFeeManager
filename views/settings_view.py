@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QGroupBox, QFormLayout, QMessageBox, QFileDialog, QComboBox,
     QStackedWidget, QScrollArea, QFrame, QGridLayout, QDateEdit, QCheckBox
 )
-from PySide6.QtCore import Qt, QDate
+from PySide6.QtCore import Qt, QDate, Signal
 from PySide6.QtGui import QFont, QCursor
 
 import PySide6
@@ -109,6 +109,8 @@ class CategoryCard(QFrame):
 
 
 class SettingsView(QWidget):
+    preferences_updated = Signal(dict)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.logo_path_selected = None
@@ -830,8 +832,14 @@ class SettingsView(QWidget):
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, crs=c: self.edit_course(crs))
 
+            btn_delete = QPushButton("🗑 Delete")
+            btn_delete.setStyleSheet("background-color: #dc2626; color: white; font-weight: bold; font-size: 11px; padding: 4px 10px; border-radius: 4px;")
+            btn_delete.setCursor(Qt.PointingHandCursor)
+            btn_delete.clicked.connect(lambda _, crs=c: self.delete_single_course(crs))
+
             btn_layout.addWidget(btn_details)
             btn_layout.addWidget(btn_edit)
+            btn_layout.addWidget(btn_delete)
             self.table_courses.setCellWidget(idx, 10, btn_box)
 
         self.table_courses.blockSignals(False)
@@ -922,6 +930,20 @@ class SettingsView(QWidget):
         if dlg.exec():
             self.load_courses()
 
+    def delete_single_course(self, course_data):
+        reply = QMessageBox.question(
+            self, "Confirm Delete Course",
+            f"Are you sure you want to permanently delete course program '{course_data.name}' ({course_data.code})?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            success, msg = AcademicController.delete_course(course_data.id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.load_courses()
+            else:
+                QMessageBox.critical(self, "Error", msg)
+
     def load_branches(self):
         self.table_branches.blockSignals(True)
         branches = AcademicController.get_all_branches_full()
@@ -955,7 +977,13 @@ class SettingsView(QWidget):
             btn_edit.setCursor(Qt.PointingHandCursor)
             btn_edit.clicked.connect(lambda _, br=b: self.edit_branch(br))
 
+            btn_delete = QPushButton("🗑 Delete")
+            btn_delete.setStyleSheet("background-color: #dc2626; color: white; font-weight: bold; font-size: 11px; padding: 4px 10px; border-radius: 4px;")
+            btn_delete.setCursor(Qt.PointingHandCursor)
+            btn_delete.clicked.connect(lambda _, br=b: self.delete_branch(br.id, br.name))
+
             btn_layout.addWidget(btn_edit)
+            btn_layout.addWidget(btn_delete)
             self.table_branches.setCellWidget(idx, 6, btn_box)
 
         self.table_branches.blockSignals(False)
@@ -1457,7 +1485,7 @@ class SettingsView(QWidget):
         form.setSpacing(10)
 
         self.cmb_win_size = QComboBox()
-        self.cmb_win_size.addItems(["1280x800", "1600x900", "1920x1080", "Maximize"])
+        self.cmb_win_size.addItems(["1280x750", "1280x800", "1600x900", "1920x1080", "Maximize"])
         form.addRow("Default Window Size:", self.cmb_win_size)
 
         self.cmb_sidebar_state = QComboBox()
@@ -1513,13 +1541,26 @@ class SettingsView(QWidget):
 
     def load_preferences(self):
         prefs = SettingsController.get_preferences()
-        idx = self.cmb_win_size.findText(prefs.get("window_size", "1280x800"))
-        if idx >= 0: self.cmb_win_size.setCurrentIndex(idx)
+        idx_size = self.cmb_win_size.findText(prefs.get("window_size", "1280x750"))
+        if idx_size >= 0: self.cmb_win_size.setCurrentIndex(idx_size)
 
         self.cmb_sidebar_state.setCurrentIndex(1 if prefs.get("sidebar_expanded", False) else 0)
+
+        idx_theme = self.cmb_theme.findText(prefs.get("theme", "Professional Navy"))
+        if idx_theme >= 0: self.cmb_theme.setCurrentIndex(idx_theme)
+
         self.chk_auto_backup.setChecked(prefs.get("auto_backup", True))
         self.txt_export_folder.setText(prefs.get("export_folder", ""))
         self.txt_backup_folder.setText(prefs.get("backup_folder", ""))
+
+        idx_curr = self.cmb_currency.findText(prefs.get("currency_symbol", "₹"))
+        if idx_curr >= 0: self.cmb_currency.setCurrentIndex(idx_curr)
+
+        idx_df = self.cmb_date_format.findText(prefs.get("date_format", "DD/MM/YYYY"))
+        if idx_df >= 0: self.cmb_date_format.setCurrentIndex(idx_df)
+
+        idx_tf = self.cmb_time_format.findText(prefs.get("time_format", "12-Hour (AM/PM)"))
+        if idx_tf >= 0: self.cmb_time_format.setCurrentIndex(idx_tf)
 
     def save_preferences(self):
         prefs = {
@@ -1535,6 +1576,7 @@ class SettingsView(QWidget):
         }
         success, msg = SettingsController.save_preferences(prefs)
         if success:
+            self.preferences_updated.emit(prefs)
             QMessageBox.information(self, "Success", msg)
         else:
             QMessageBox.critical(self, "Error", msg)
@@ -1557,10 +1599,10 @@ class SettingsView(QWidget):
         self.lbl_ab_name = QLabel(f"<b>{APP_NAME}</b>")
         form_brand.addRow("Software Product:", self.lbl_ab_name)
 
-        self.lbl_ab_version = QLabel(f"v{APP_VERSION} (Phase 7 Enterprise Edition)")
+        self.lbl_ab_version = QLabel(f"v{APP_VERSION} (Enterprise Edition)")
         form_brand.addRow("Version:", self.lbl_ab_version)
 
-        self.lbl_ab_build = QLabel("2026.08.07.1700")
+        self.lbl_ab_build = QLabel("2026.08.20.1800")
         form_brand.addRow("Build Number:", self.lbl_ab_build)
 
         self.lbl_ab_python = QLabel(f"{sys.version.split()[0]}")
@@ -1582,7 +1624,7 @@ class SettingsView(QWidget):
         form_brand.addRow("Release Date:", self.lbl_ab_date)
 
         # Dynamic Git Commit Hash
-        git_hash = "v1.7.0-release"
+        git_hash = "v3.6.0-release"
         try:
             res = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
             if res.returncode == 0 and res.stdout.strip():

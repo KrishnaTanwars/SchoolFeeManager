@@ -6,8 +6,8 @@
 
 ## 1. Quick Start Installation
 
-1. Extract the client release ZIP `SchoolFeeManager_v2.0.0.zip` to your preferred folder (e.g., `C:\EduLedgerERP\`).
-2. Double-click **`SchoolFeeManager.exe`** to launch the ERP.
+1. Extract the client release ZIP `CollegeFeeManager_v2.0.0.zip` to your preferred folder (e.g., `C:\EduLedgerERP\`).
+2. Double-click **`CollegeFeeManager.exe`** to launch the ERP.
 3. On fresh installation, log in with default credentials:
    - **Username**: `admin`
    - **Password**: `admin123`

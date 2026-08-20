@@ -10,6 +10,7 @@ assets_path = Path('assets').resolve()
 
 datas = [
     (str(assets_path), 'assets'),
+    (str(Path('Version.txt').resolve()), '.'),
 ] + collect_data_files('reportlab')
 
 hiddenimports = [
@@ -56,7 +57,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='SchoolFeeManager',
+    name='CollegeFeeManager',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -78,5 +79,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='SchoolFeeManager',
+    name='CollegeFeeManager',
 )

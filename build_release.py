@@ -1,5 +1,5 @@
 """
-Master Release Automation Script for School Fee ERP (EduLedger ERP).
+Master Release Automation Script for College Fee ERP (EduLedger ERP).
 Generates PyInstaller Executable, Inno Setup Installer, Portable ZIP, Developer ZIP,
 Documentation, Checksums, and Formatted Release Package.
 """
@@ -21,12 +21,12 @@ def get_version() -> str:
         if v.startswith("v"):
             return v
         return f"v{v}"
-    return "v2.3.0"
+    return "v3.6.0"
 
 VERSION_TAG = get_version() # e.g. "v2.3.0"
 VERSION_NUM = VERSION_TAG.lstrip("v") # e.g. "2.3.0"
 
-DIST_DIR = BASE_DIR / "dist" / "SchoolFeeManager"
+DIST_DIR = BASE_DIR / "dist" / "CollegeFeeManager"
 BUILD_DIR = BASE_DIR / "build"
 SETUP_OUTPUT_DIR = BASE_DIR / "dist_installer"
 RELEASE_BASE = BASE_DIR / "release"
@@ -75,9 +75,9 @@ def step_1_sync_version():
 
 def step_2_build_executable():
     log_step("2. Building PyInstaller Binary Executable Distribution")
-    spec_file = BASE_DIR / "SchoolFeeManager.spec"
+    spec_file = BASE_DIR / "CollegeFeeManager.spec"
     if not spec_file.exists():
-        raise FileNotFoundError("SchoolFeeManager.spec not found!")
+        raise FileNotFoundError("CollegeFeeManager.spec not found!")
         
     cmd = [
         sys.executable, "-m", "PyInstaller", "--noconfirm",
@@ -89,14 +89,14 @@ def step_2_build_executable():
     if res.returncode != 0:
         raise RuntimeError(f"PyInstaller build failed with return code {res.returncode}")
         
-    exe_file = DIST_DIR / "SchoolFeeManager.exe"
+    exe_file = DIST_DIR / "CollegeFeeManager.exe"
     if not exe_file.exists():
         raise FileNotFoundError(f"Expected executable not found at: {exe_file}")
     print(f"SUCCESS: PyInstaller Executable built at: {exe_file} ({exe_file.stat().st_size / (1024*1024):.2f} MB)")
 
 def step_3_verify_executable():
     log_step("3. Verifying Executable Integrity & Assets")
-    exe_file = DIST_DIR / "SchoolFeeManager.exe"
+    exe_file = DIST_DIR / "CollegeFeeManager.exe"
     if not exe_file.exists():
         raise FileNotFoundError(f"Missing executable: {exe_file}")
         
@@ -123,14 +123,14 @@ def step_4_build_installer():
         str(iscc_exe),
         f"/DMyAppVersion={VERSION_NUM}",
         f"/O{SETUP_OUTPUT_DIR}",
-        f"/FSchoolFeeERP_Setup_{VERSION_TAG}",
+        f"/FCollegeFeeERP_Setup_{VERSION_TAG}",
         str(iss_script)
     ]
     res = subprocess.run(cmd)
     if res.returncode != 0:
         raise RuntimeError(f"Inno Setup compilation failed with code {res.returncode}")
         
-    installer_file = SETUP_OUTPUT_DIR / f"SchoolFeeERP_Setup_{VERSION_TAG}.exe"
+    installer_file = SETUP_OUTPUT_DIR / f"CollegeFeeERP_Setup_{VERSION_TAG}.exe"
     if not installer_file.exists():
         # Fallback search in setup output dir
         setup_exes = list(SETUP_OUTPUT_DIR.glob("*.exe"))
@@ -144,7 +144,7 @@ def step_4_build_installer():
 
 def step_5_create_portable_package(target_dir: Path) -> Path:
     log_step("5. Creating Standalone Portable Package")
-    portable_root = target_dir / "SchoolFeeERP_Portable"
+    portable_root = target_dir / "CollegeFeeERP_Portable"
     if portable_root.exists():
         shutil.rmtree(portable_root)
     
@@ -155,9 +155,9 @@ def step_5_create_portable_package(target_dir: Path) -> Path:
     
     # Seed database directory
     (portable_root / "database").mkdir(exist_ok=True)
-    seed_db = BASE_DIR / "database" / "school_fee.db"
+    seed_db = BASE_DIR / "database" / "college_fee.db"
     if seed_db.exists():
-        shutil.copy2(seed_db, portable_root / "database" / "school_fee.db")
+        shutil.copy2(seed_db, portable_root / "database" / "college_fee.db")
         
     for d in ["logs", "backup", "exports", "settings", "reports", "cache", "temp"]:
         (portable_root / d).mkdir(exist_ok=True)
@@ -168,7 +168,7 @@ def step_5_create_portable_package(target_dir: Path) -> Path:
         if src_doc.exists():
             shutil.copy2(src_doc, portable_root)
             
-    zip_path = target_dir / f"SchoolFeeERP_Portable_{VERSION_TAG}.zip"
+    zip_path = target_dir / f"CollegeFeeERP_Portable_{VERSION_TAG}.zip"
     if zip_path.exists():
         os.remove(zip_path)
         
@@ -185,7 +185,7 @@ def step_5_create_portable_package(target_dir: Path) -> Path:
 
 def step_6_create_developer_package(target_dir: Path) -> Path:
     log_step("6. Creating Developer Source Code Package")
-    source_zip_path = target_dir / f"SchoolFeeERP_Source_{VERSION_TAG}.zip"
+    source_zip_path = target_dir / f"CollegeFeeERP_Source_{VERSION_TAG}.zip"
     if source_zip_path.exists():
         os.remove(source_zip_path)
         
@@ -267,7 +267,7 @@ def step_9_assemble_release():
     if not setup_exes:
         raise FileNotFoundError("Installer executable missing from dist_installer.")
     setup_exe = setup_exes[0]
-    final_setup = installer_dir / f"SchoolFeeERP_Setup_{VERSION_TAG}.exe"
+    final_setup = installer_dir / f"CollegeFeeERP_Setup_{VERSION_TAG}.exe"
     shutil.copy2(setup_exe, final_setup)
     print(f"Installer copied to: {final_setup}")
     

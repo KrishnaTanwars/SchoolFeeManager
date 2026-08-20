@@ -106,10 +106,16 @@ class CourseDetailsDialog(QDialog):
         self.btn_edit.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 6px 14px; border-radius: 4px;")
         self.btn_edit.clicked.connect(self.edit_program)
 
+        self.btn_delete = QPushButton("🗑 Delete Program")
+        self.btn_delete.setStyleSheet("background-color: #dc2626; color: white; font-weight: bold; padding: 6px 14px; border-radius: 4px;")
+        self.btn_delete.setCursor(Qt.PointingHandCursor)
+        self.btn_delete.clicked.connect(self.delete_program)
+
         self.btn_close = QPushButton("Close")
         self.btn_close.clicked.connect(self.accept)
 
         btn_layout.addWidget(self.btn_edit)
+        btn_layout.addWidget(self.btn_delete)
         btn_layout.addWidget(self.btn_close)
         main_layout.addLayout(btn_layout)
 
@@ -126,3 +132,19 @@ class CourseDetailsDialog(QDialog):
         dlg = CourseDialog(self, course_data=self.course_data)
         if dlg.exec():
             self.accept()
+
+    def delete_program(self):
+        from PySide6.QtWidgets import QMessageBox
+        from controllers.academic_controller import AcademicController
+        reply = QMessageBox.question(
+            self, "Confirm Delete Course",
+            f"Are you sure you want to permanently delete course program '{self.course_data.name}' ({self.course_data.code})?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            success, msg = AcademicController.delete_course(self.course_data.id)
+            if success:
+                QMessageBox.information(self, "Success", msg)
+                self.accept()
+            else:
+                QMessageBox.critical(self, "Error", msg)

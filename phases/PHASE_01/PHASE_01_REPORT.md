@@ -1,5 +1,5 @@
 # Phase 01 Final Report — Security & Administration Hardening
-**Project Name**: EduLedger ERP (School Fee Management System)  
+**Project Name**: EduLedger ERP (College Fee Management System)  
 **Version**: `v1.1.0` (Enterprise Edition)  
 **Phase**: Phase 01 — Security & Administration Hardening  
 **Status**: COMPLETED & VERIFIED  
@@ -25,22 +25,22 @@ All sensitive operations are centrally logged in the database capturing date, ti
 
 ## 3. Implemented Security Components
 
-1. **Universal Administrator Authorization Dialog** ([dialogs/admin_auth_dialog.py](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/admin_auth_dialog.py)):
+1. **Universal Administrator Authorization Dialog** ([dialogs/admin_auth_dialog.py](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/admin_auth_dialog.py)):
    - Reusable modal `QDialog` class.
    - Title: *"Administrator Authorization Required"*.
    - Features: Password field with Show/Hide toggle, Enter key submission, Escape key cancellation, inline error message validation banners.
-2. **Central Security Service** ([services/security_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/security_service.py)):
+2. **Central Security Service** ([services/security_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/security_service.py)):
    - `verify_admin_password(password: str) -> bool`: Verifies plain text password against active Admin accounts using PBKDF2 HMAC SHA-256.
    - `log_audit(...)`: Writes structured audit trail entries (`user_id`, `action`, `module`, `details`, `status`, `machine_name`).
 3. **Delete Protection Framework**:
-   - [Student Delete Protection](file:///e:/Downloads/ERP/SchoolFeeManager/views/student_view.py)
-   - [Fee Head Delete Protection](file:///e:/Downloads/ERP/SchoolFeeManager/views/fee_category_view.py)
-   - [Receipt Delete Protection](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py)
-   - [Bulk Receipt Delete Protection](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py)
+   - [Student Delete Protection](file:///e:/Downloads/ERP/CollegeFeeManager/views/student_view.py)
+   - [Fee Head Delete Protection](file:///e:/Downloads/ERP/CollegeFeeManager/views/fee_category_view.py)
+   - [Receipt Delete Protection](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py)
+   - [Bulk Receipt Delete Protection](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py)
 4. **Settings Access Protection**:
-   - Intercepts navigation to Settings in [main_window.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/main_window.py). Prompts `AdminAuthDialog` before allowing view access. Logs `Settings Access Denied` on failure/cancellation and `Settings Opened` on success.
+   - Intercepts navigation to Settings in [main_window.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/main_window.py). Prompts `AdminAuthDialog` before allowing view access. Logs `Settings Access Denied` on failure/cancellation and `Settings Opened` on success.
 5. **Database Audit Logging Schema Migration**:
-   - Dynamically adds `module` (VARCHAR(50)), `status` (VARCHAR(20)), and `machine_name` (VARCHAR(100)) columns to `audit_logs` table via non-destructive migration in [config/database.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/database.py).
+   - Dynamically adds `module` (VARCHAR(50)), `status` (VARCHAR(20)), and `machine_name` (VARCHAR(100)) columns to `audit_logs` table via non-destructive migration in [config/database.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/database.py).
 
 ---
 
@@ -48,19 +48,19 @@ All sensitive operations are centrally logged in the database capturing date, ti
 
 | File Path | Status | Description |
 |---|---|---|
-| [models/audit.py](file:///e:/Downloads/ERP/SchoolFeeManager/models/audit.py) | MODIFIED | Added `module`, `status`, `machine_name` to `AuditLog`. |
-| [config/database.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/database.py) | MODIFIED | Updated `run_migrations()` to add missing audit columns. |
-| [services/security_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/security_service.py) | **NEW** | Central Security & Audit logging service. |
-| [dialogs/admin_auth_dialog.py](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/admin_auth_dialog.py) | **NEW** | Universal Admin Authorization Modal Dialog. |
-| [controllers/student_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/student_controller.py) | MODIFIED | Integrated `SecurityService.log_audit` on student delete. |
-| [controllers/fee_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/fee_controller.py) | MODIFIED | Added `delete_category()` with audit logging. |
-| [controllers/receipt_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/receipt_controller.py) | MODIFIED | Added `cancel_receipt()` and `bulk_delete_receipts()` with audit logging. |
-| [controllers/settings_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/settings_controller.py) | MODIFIED | Integrated `SecurityService.log_audit` on settings update. |
-| [views/student_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/student_view.py) | MODIFIED | Integrated `AdminAuthDialog` for student deletion. |
-| [views/fee_category_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/fee_category_view.py) | MODIFIED | Added "Delete Head" button & `AdminAuthDialog`. |
-| [views/receipt_history_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py) | MODIFIED | Added "Cancel Receipt" & "Bulk Clear Cancelled" with `AdminAuthDialog`. |
-| [views/main_window.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/main_window.py) | MODIFIED | Protected Settings navigation with `AdminAuthDialog`. |
-| [tests/test_security_phase1.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_security_phase1.py) | **NEW** | Automated security unit & integration test suite. |
+| [models/audit.py](file:///e:/Downloads/ERP/CollegeFeeManager/models/audit.py) | MODIFIED | Added `module`, `status`, `machine_name` to `AuditLog`. |
+| [config/database.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/database.py) | MODIFIED | Updated `run_migrations()` to add missing audit columns. |
+| [services/security_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/security_service.py) | **NEW** | Central Security & Audit logging service. |
+| [dialogs/admin_auth_dialog.py](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/admin_auth_dialog.py) | **NEW** | Universal Admin Authorization Modal Dialog. |
+| [controllers/student_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/student_controller.py) | MODIFIED | Integrated `SecurityService.log_audit` on student delete. |
+| [controllers/fee_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/fee_controller.py) | MODIFIED | Added `delete_category()` with audit logging. |
+| [controllers/receipt_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/receipt_controller.py) | MODIFIED | Added `cancel_receipt()` and `bulk_delete_receipts()` with audit logging. |
+| [controllers/settings_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/settings_controller.py) | MODIFIED | Integrated `SecurityService.log_audit` on settings update. |
+| [views/student_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/student_view.py) | MODIFIED | Integrated `AdminAuthDialog` for student deletion. |
+| [views/fee_category_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/fee_category_view.py) | MODIFIED | Added "Delete Head" button & `AdminAuthDialog`. |
+| [views/receipt_history_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py) | MODIFIED | Added "Cancel Receipt" & "Bulk Clear Cancelled" with `AdminAuthDialog`. |
+| [views/main_window.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/main_window.py) | MODIFIED | Protected Settings navigation with `AdminAuthDialog`. |
+| [tests/test_security_phase1.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_security_phase1.py) | **NEW** | Automated security unit & integration test suite. |
 
 ---
 
@@ -76,7 +76,7 @@ All sensitive operations are centrally logged in the database capturing date, ti
 
 - **Release Version**: `v1.1.0`
 - **Version File**: `Version.txt` updated to `v1.1.0`.
-- **Executable Output**: `release/v1.1.0/SchoolFeeManager/SchoolFeeManager.exe`
+- **Executable Output**: `release/v1.1.0/CollegeFeeManager/CollegeFeeManager.exe`
 - **Packaging Files**:
   - `release/v1.1.0/README.md`
   - `release/v1.1.0/Version.txt`
@@ -87,4 +87,4 @@ All sensitive operations are centrally logged in the database capturing date, ti
 ## 7. Next Phase Readiness
 
 - **Status**: Phase 01 is **COMPLETE & VERIFIED**.
-- **Recommended Next Step**: Proceed to **Phase 02: Advanced Student Management & Academic Progression (`v1.2.0`)** as outlined in [ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md).
+- **Recommended Next Step**: Proceed to **Phase 02: Advanced Student Management & Academic Progression (`v1.2.0`)** as outlined in [ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md).

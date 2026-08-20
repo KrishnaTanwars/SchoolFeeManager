@@ -37,16 +37,16 @@ Phase 6 has successfully transformed the Receipt History module into a commercia
 
 ## 3. Files Modified
 
-1. [controllers/receipt_controller.py](file:///e:/Downloads/ERP/SchoolFeeManager/controllers/receipt_controller.py): Added `get_receipts_paginated` supporting SQL pagination, 9-field multi-criteria search, advanced filters, and reason-aware deletion audit logging.
-2. [services/export_service.py](file:///e:/Downloads/ERP/SchoolFeeManager/services/export_service.py): Added `export_to_excel` and `export_to_pdf_ledger`.
-3. [views/receipt_history_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py): Redesigned Receipt History into a commercial ERP searchable ledger UI.
-4. [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py): Set `APP_VERSION` to `1.6.0`.
-5. [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt): Set release version to `v1.6.0`.
-6. [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py): Configured output paths for `release/v1.6.0/`.
-7. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Documented Phase 6 release notes.
-8. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md): Logged v1.6.0 release features.
-9. [docs/ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md): Marked Phase 6 as Completed.
-10. [PHASE_06_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_06_REPORT.md): This report.
+1. [controllers/receipt_controller.py](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/receipt_controller.py): Added `get_receipts_paginated` supporting SQL pagination, 9-field multi-criteria search, advanced filters, and reason-aware deletion audit logging.
+2. [services/export_service.py](file:///e:/Downloads/ERP/CollegeFeeManager/services/export_service.py): Added `export_to_excel` and `export_to_pdf_ledger`.
+3. [views/receipt_history_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py): Redesigned Receipt History into a commercial ERP searchable ledger UI.
+4. [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py): Set `APP_VERSION` to `1.6.0`.
+5. [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt): Set release version to `v1.6.0`.
+6. [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py): Configured output paths for `release/v1.6.0/`.
+7. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Documented Phase 6 release notes.
+8. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md): Logged v1.6.0 release features.
+9. [docs/ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md): Marked Phase 6 as Completed.
+10. [PHASE_06_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_06_REPORT.md): This report.
 
 ---
 
@@ -71,9 +71,9 @@ Phase 6 has successfully transformed the Receipt History module into a commercia
 ## 5. Executable Build & Release Packaging Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0` through `release/v1.5.4`) remain permanently preserved.
-- **Phase 6 Release Package**: Generated `release/v1.6.0/` containing `SchoolFeeManager_v1.6.0.zip` and `SchoolFeeManager_Source_v1.6.0.zip`.
+- **Phase 6 Release Package**: Generated `release/v1.6.0/` containing `CollegeFeeManager_v1.6.0.zip` and `CollegeFeeManager_Source_v1.6.0.zip`.
 
 ---
 

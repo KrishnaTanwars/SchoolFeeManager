@@ -6,7 +6,7 @@
 
 ## 1. Concurrency & Multi-User Limitations
 
-- **Single-Machine Offline Storage**: The current system relies on SQLite (`school_fee.db`). While SQLite supports high read throughput, concurrent network writes across multiple client PCs on a LAN share are constrained by file locking.
+- **Single-Machine Offline Storage**: The current system relies on SQLite (`college_fee.db`). While SQLite supports high read throughput, concurrent network writes across multiple client PCs on a LAN share are constrained by file locking.
 - **No Remote Cloud Sync**: The system operates 100% offline. There is currently no automated background synchronization with a central server or cloud database (e.g. PostgreSQL or MySQL).
 
 ---

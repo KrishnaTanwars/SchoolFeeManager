@@ -1,5 +1,5 @@
 # EduLedger ERP - Baseline Changelog
-All notable changes, features, optimizations, and bug fixes for **EduLedger ERP** (School Fee Management System).
+All notable changes, features, optimizations, and bug fixes for **EduLedger ERP** (College Fee Management System).
 
 ---
 

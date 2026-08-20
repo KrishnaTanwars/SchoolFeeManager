@@ -12,12 +12,12 @@
   ```powershell
   python build.py
   ```
-  Verify executable output exists at `dist/SchoolFeeManager/SchoolFeeManager.exe`.
+  Verify executable output exists at `dist/CollegeFeeManager/CollegeFeeManager.exe`.
 - [ ] **Release Packaging Execution**: Execute release packaging script:
   ```powershell
   python package_release.py
   ```
-  Verify output archives created (`SchoolFeeManager_vX.X.zip` and `SchoolFeeManager_Source_vX.X.zip`).
+  Verify output archives created (`CollegeFeeManager_vX.X.zip` and `CollegeFeeManager_Source_vX.X.zip`).
 - [ ] **Release Folder Storage**: Copy release ZIP and PDF manuals into corresponding release folder:
   `release/vX.X.X/`
 - [ ] **Documentation Update**: Update `CHANGELOG.md`, `VERSION_HISTORY.md`, and `RELEASE_STATUS.md`.

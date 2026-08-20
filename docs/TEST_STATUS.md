@@ -10,11 +10,11 @@
 
 | Test Module File | Test Count | Focus Area | Status | Execution Time |
 |---|---|---|---|---|
-| [tests/test_database.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_database.py) | 2 | Database connection initialization and SQLite schema generation. | PASSED | ~0.15s |
-| [tests/test_number_to_words.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_number_to_words.py) | 2 | Indian currency conversion rules (Hundreds, Thousands, Lakhs, Crores). | PASSED | ~0.05s |
-| [tests/test_student.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_student.py) | 4 | Student record CRUD operations and validation rules. | PASSED | ~0.25s |
-| [tests/test_ui_views.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_ui_views.py) | 4 | Offscreen Qt rendering of views (`DashboardView`, `StudentView`, `ReceiptView`, `SettingsView`). | PASSED | ~0.40s |
-| [tests/test_v11_features.py](file:///e:/Downloads/ERP/SchoolFeeManager/tests/test_v11_features.py) | 6 | Partial fee collection, cheque payment details, CSV import/export, student analytics, dynamic migration, ReportLab PDF rendering. | PASSED | ~0.39s |
+| [tests/test_database.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_database.py) | 2 | Database connection initialization and SQLite schema generation. | PASSED | ~0.15s |
+| [tests/test_number_to_words.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_number_to_words.py) | 2 | Indian currency conversion rules (Hundreds, Thousands, Lakhs, Crores). | PASSED | ~0.05s |
+| [tests/test_student.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_student.py) | 4 | Student record CRUD operations and validation rules. | PASSED | ~0.25s |
+| [tests/test_ui_views.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_ui_views.py) | 4 | Offscreen Qt rendering of views (`DashboardView`, `StudentView`, `ReceiptView`, `SettingsView`). | PASSED | ~0.40s |
+| [tests/test_v11_features.py](file:///e:/Downloads/ERP/CollegeFeeManager/tests/test_v11_features.py) | 6 | Partial fee collection, cheque payment details, CSV import/export, student analytics, dynamic migration, ReportLab PDF rendering. | PASSED | ~0.39s |
 | **TOTAL** | **18** | **Full System Coverage** | **PASSED** | **1.24s** |
 
 ---

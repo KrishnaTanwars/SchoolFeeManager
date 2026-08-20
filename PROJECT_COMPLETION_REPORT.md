@@ -1,5 +1,5 @@
 # EduLedger ERP — Project Completion Report
-**Software Title**: EduLedger ERP (School Fee Management System)  
+**Software Title**: EduLedger ERP (College Fee Management System)  
 **Final Production Version**: v2.0.0  
 **Completion Date**: August 2026  
 **Status**: 🏆 FULLY COMPLETED & PRODUCTION READY  
@@ -45,5 +45,5 @@ The system delivers zero-crash runtime stability, robust SQLite transaction safe
 ## Quality Assurance & Verification
 
 - **Automated Regression Suite**: 72+ passing unit and integration tests (`tests/`).
-- **Executable Verification**: Built fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe`. Verified runtime launch and all major features.
+- **Executable Verification**: Built fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe`. Verified runtime launch and all major features.
 - **Release Preservation**: All release version folders (`release/v1.0.0` through `release/v2.0.0`) remain permanently preserved.

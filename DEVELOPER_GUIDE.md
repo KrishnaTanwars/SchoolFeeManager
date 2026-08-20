@@ -1,6 +1,6 @@
-# School Fee Management System v1.0 - Developer Guide
+# College Fee Management System v1.0 - Developer Guide
 
-This document outlines the developer architecture, code conventions, and maintenance procedures for the **School Fee Management System**.
+This document outlines the developer architecture, code conventions, and maintenance procedures for the **College Fee Management System**.
 
 ---
 
@@ -29,7 +29,7 @@ The codebase is organized into modular layers:
 
 ## 2. Database Design & Conventions
 
-- Database file: `database/school_fee.db` (SQLite).
+- Database file: `database/college_fee.db` (SQLite).
 - Pragmas configured on connect:
   - `PRAGMA foreign_keys=ON;`
   - `PRAGMA journal_mode=WAL;`
@@ -59,4 +59,4 @@ To compile executable updates:
 ```powershell
 python build.py
 ```
-Output directory: `dist/SchoolFeeManager/`.
+Output directory: `dist/CollegeFeeManager/`.

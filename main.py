@@ -1,5 +1,5 @@
 """
-Application Entry Point for School Fee Management System v1.0.
+Application Entry Point for College Fee Management System v1.0.
 """
 
 import sys

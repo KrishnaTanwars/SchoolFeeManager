@@ -23,6 +23,7 @@ from controllers.auth_controller import AuthController
 from controllers.settings_controller import SettingsController
 from config.app_config import APP_NAME, APP_VERSION
 from utils.helpers import format_date
+from utils.logger import logger
 
 class OverlaySidebarFrame(QFrame):
     """
@@ -47,19 +48,25 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(f"EduLedger ERP v{APP_VERSION} - Enterprise Production Edition")
-        self.setMinimumSize(800, 600)
-        self.resize(1280, 800)
+        self.setMinimumSize(1280, 750)
+        self.resize(1280, 750)
 
         # Restore window geometry and state from QSettings if available
-        settings = QSettings("EduLedger", "SchoolFeeManager")
+        settings = QSettings("EduLedger", "CollegeFeeManager")
         geom = settings.value("geometry")
         state = settings.value("windowState")
         if geom:
             self.restoreGeometry(geom)
-        else:
-            self.showMaximized()
         if state:
             self.restoreState(state)
+
+        # Apply configured default window size from preferences
+        prefs = SettingsController.get_preferences()
+        win_size = prefs.get("window_size", "1280x750")
+        if not geom or win_size == "Maximize":
+            self.apply_window_size(win_size)
+        else:
+            self.apply_window_size(win_size)
 
         # Always start sidebar COLLAPSED (False) and UNPINNED (False) on startup
         self.sidebar_expanded = False
@@ -76,7 +83,7 @@ class MainWindow(QMainWindow):
         self.trigger_auto_backup()
 
     def closeEvent(self, event):
-        settings = QSettings("EduLedger", "SchoolFeeManager")
+        settings = QSettings("EduLedger", "CollegeFeeManager")
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
         super().closeEvent(event)
@@ -313,6 +320,7 @@ class MainWindow(QMainWindow):
         # Signals connection
         self.views["login"].login_success.connect(self.on_login_success)
         self.views["dashboard"].navigate_requested.connect(self.navigate_to)
+        self.views["settings"].preferences_updated.connect(self.on_preferences_updated)
 
         for key, view_widget in self.views.items():
             self.stacked_widget.addWidget(view_widget)
@@ -653,6 +661,35 @@ class MainWindow(QMainWindow):
             curr.refresh_dashboard()
         elif hasattr(curr, "load_students"):
             curr.load_students()
+
+    def apply_window_size(self, size_str: str = None):
+        """Applies configured window size (Maximize, 1280x750, 1280x800, 1600x900, 1920x1080) and centers window."""
+        if not size_str:
+            prefs = SettingsController.get_preferences()
+            size_str = prefs.get("window_size", "1280x750")
+
+        if size_str == "Maximize":
+            self.showMaximized()
+        elif "x" in size_str:
+            try:
+                parts = size_str.lower().split("x")
+                w, h = int(parts[0]), int(parts[1])
+                if self.isMaximized():
+                    self.showNormal()
+                self.resize(w, h)
+                screen = QApplication.primaryScreen()
+                if screen:
+                    screen_geom = screen.availableGeometry()
+                    x = screen_geom.x() + (screen_geom.width() - w) // 2
+                    y = screen_geom.y() + (screen_geom.height() - h) // 2
+                    self.move(max(0, x), max(0, y))
+            except Exception as e:
+                logger.error(f"Error applying window size {size_str}: {e}")
+
+    def on_preferences_updated(self, prefs: dict):
+        """Callback when preferences are saved in SettingsView."""
+        if "window_size" in prefs:
+            self.apply_window_size(prefs["window_size"])
 
     def logout(self):
         reply = QMessageBox.question(

@@ -38,10 +38,10 @@ Investigation identified 3 primary reasons why pagination buttons rendered as bl
 
 ## 3. Files Modified
 
-- [`assets/styles/theme.qss`](file:///e:/Downloads/ERP/SchoolFeeManager/assets/styles/theme.qss) — Added `QPushButton.PaginationBtn` design system rules.
-- [`views/receipt_history_view.py`](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py) — Updated `btn_first_page`, `btn_prev_page`, `btn_next_page`, and `btn_last_page` with text labels (`<< First`, `< Prev`, `Next >`, `Last >>`), minimum 80x34px sizing, and stylesheet rules.
-- [`views/report_view.py`](file:///e:/Downloads/ERP/SchoolFeeManager/views/report_view.py) — Updated `btn_first`, `btn_prev`, `btn_next`, and `btn_last` with text labels (`<< First`, `< Prev`, `Next >`, `Last >>`), minimum 80x34px sizing, and stylesheet rules.
-- [`PAGINATION_UI_FIX_REPORT.md`](file:///e:/Downloads/ERP/SchoolFeeManager/PAGINATION_UI_FIX_REPORT.md) — Comprehensive bug fix report.
+- [`assets/styles/theme.qss`](file:///e:/Downloads/ERP/CollegeFeeManager/assets/styles/theme.qss) — Added `QPushButton.PaginationBtn` design system rules.
+- [`views/receipt_history_view.py`](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py) — Updated `btn_first_page`, `btn_prev_page`, `btn_next_page`, and `btn_last_page` with text labels (`<< First`, `< Prev`, `Next >`, `Last >>`), minimum 80x34px sizing, and stylesheet rules.
+- [`views/report_view.py`](file:///e:/Downloads/ERP/CollegeFeeManager/views/report_view.py) — Updated `btn_first`, `btn_prev`, `btn_next`, and `btn_last` with text labels (`<< First`, `< Prev`, `Next >`, `Last >>`), minimum 80x34px sizing, and stylesheet rules.
+- [`PAGINATION_UI_FIX_REPORT.md`](file:///e:/Downloads/ERP/CollegeFeeManager/PAGINATION_UI_FIX_REPORT.md) — Comprehensive bug fix report.
 
 ---
 
@@ -54,13 +54,13 @@ Investigation identified 3 primary reasons why pagination buttons rendered as bl
    - Verified disabled buttons remain clearly readable in slate gray.
    - Verified page navigation logic and table filtering remain 100% intact.
 3. **Standalone Executable Verification**:
-   - Rebuilt PyInstaller standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe`. Verified runtime execution and pagination button visibility in compiled environment.
+   - Rebuilt PyInstaller standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe`. Verified runtime execution and pagination button visibility in compiled environment.
 
 ---
 
 ## 5. Build & Git Status
 
-- **Executable**: `dist/SchoolFeeManager/SchoolFeeManager.exe`
+- **Executable**: `dist/CollegeFeeManager/CollegeFeeManager.exe`
 - **Release Directory**: `release/v1.8.0/` (Preserved all prior releases `v1.0.0` through `v1.7.0`)
 - **Commit Message**: `Fix pagination button rendering and visibility`
 - **Remote Push**: GitHub `origin/main`

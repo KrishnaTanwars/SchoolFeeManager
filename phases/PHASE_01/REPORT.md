@@ -22,4 +22,4 @@ All 24 unit and integration tests (including 6 new Phase 1 security tests) passe
 
 ## 3. Test & Build Verification
 - **Automated Tests**: 24 / 24 PASSED (`python -m unittest discover tests`).
-- **Clean Executable**: Built fresh standalone executable (`release/v1.1.0/SchoolFeeManager/SchoolFeeManager.exe`).
+- **Clean Executable**: Built fresh standalone executable (`release/v1.1.0/CollegeFeeManager/CollegeFeeManager.exe`).

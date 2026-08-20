@@ -48,11 +48,11 @@ python -m unittest discover tests
 ## 3. Core Project Directory Structure
 
 ```
-SchoolFeeManager/
+CollegeFeeManager/
 ├── main.py                  # Primary Application Entry Point & PySide6 App Lifecyle
 ├── build.py                 # PyInstaller Build Orchestration Script
 ├── package_release.py       # Release ZIP & Document Packaging Engine
-├── SchoolFeeManager.spec    # PyInstaller Bundling Specification
+├── CollegeFeeManager.spec    # PyInstaller Bundling Specification
 ├── installer.iss            # Inno Setup Windows Installer Script
 │
 ├── config/                  # App Settings & DB Initialization
@@ -126,4 +126,4 @@ SchoolFeeManager/
 1. **Do NOT break DB Threading Safety**: Always retrieve DB sessions via `get_db()` inside controller functions and close them in `finally:` blocks.
 2. **Do NOT use `expire_on_commit=True`**: SQLAlchemy models are intentionally loaded with `expire_on_commit=False` and explicit eager loading (`joinedload`) to prevent UI thread detaching issues when Qt table views access properties after session closure.
 3. **Preserve Indian Currency Conversion**: When updating receipts, ensure `amount_in_words` is computed using `utils.number_to_words.amount_in_words_indian()`.
-4. **Follow Phase Roadmap**: Future updates MUST follow the roadmap in [ROADMAP.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/ROADMAP.md).
+4. **Follow Phase Roadmap**: Future updates MUST follow the roadmap in [ROADMAP.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/ROADMAP.md).

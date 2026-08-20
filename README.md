@@ -1,4 +1,4 @@
-# EduLedger ERP v2.0.0 (School Fee Management System)
+# EduLedger ERP v2.0.0 (College Fee Management System)
 
 A production-ready, offline-first Desktop ERP application designed specifically for Indian Schools, Colleges, Private Institutes, and Coaching Centers.
 
@@ -66,14 +66,14 @@ To compile the standalone Windows Desktop application:
 ```powershell
 python build.py
 ```
-The compiled output will be generated at: `dist/SchoolFeeManager/SchoolFeeManager.exe`.
+The compiled output will be generated at: `dist/CollegeFeeManager/CollegeFeeManager.exe`.
 
 ---
 
 ## Technology Stack
 
 - **GUI Framework**: PySide6 (Qt6 for Python)
-- **Database Backend**: SQLite (`school_fee.db`)
+- **Database Backend**: SQLite (`college_fee.db`)
 - **ORM & Data Layer**: SQLAlchemy ORM with foreign key enforcement
 - **PDF Generation**: ReportLab
 - **Packaging**: PyInstaller

@@ -52,7 +52,7 @@ EduLedger ERP has been refactored to support **Semester-wise and Year-wise acade
   - All test modules executed with **100% PASS RATE**.
 
 - **Standalone PyInstaller Build**:
-  - Compiled executable generated at `dist/SchoolFeeManager/SchoolFeeManager.exe`.
+  - Compiled executable generated at `dist/CollegeFeeManager/CollegeFeeManager.exe`.
 
 - **Release Packaging**:
   - Packaged under `release/v2.3.0/` with all historical releases (`v1.0.0` .. `v2.2.0`) preserved.

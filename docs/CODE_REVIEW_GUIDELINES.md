@@ -20,7 +20,7 @@ Before approving any code changes for a development phase, reviewers MUST verify
 - [ ] Operational actions write audit log entries to `audit_logs`.
 
 ### Code Quality & Standards
-- [ ] Python code follows PEP 8 and project style guide in [CODING_STANDARDS.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/CODING_STANDARDS.md).
+- [ ] Python code follows PEP 8 and project style guide in [CODING_STANDARDS.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/CODING_STANDARDS.md).
 - [ ] Functions include explicit type annotations.
 - [ ] No hardcoded passwords, secret keys, or local file system paths.
 - [ ] Deprecation warnings are avoided or properly documented.

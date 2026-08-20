@@ -32,12 +32,12 @@ The table now uses an **Intelligent Auto Column Width Calculation Algorithm**:
 
 ## 3. Files Modified
 
-1. [views/receipt_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_view.py):
+1. [views/receipt_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_view.py):
    - Changed `table_fees` section resize mode to `QHeaderView.Interactive`.
    - Implemented `auto_fit_columns()` method using `fontMetrics().horizontalAdvance()`.
    - Added automatic recalculation triggers inside `load_fee_heads()` and `refresh_view()`.
-2. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Documented Intelligent Auto Column Width Calculation updates.
-3. [COLUMN_AUTO_WIDTH_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/COLUMN_AUTO_WIDTH_REPORT.md): This report.
+2. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Documented Intelligent Auto Column Width Calculation updates.
+3. [COLUMN_AUTO_WIDTH_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/COLUMN_AUTO_WIDTH_REPORT.md): This report.
 
 ---
 
@@ -60,7 +60,7 @@ The table now uses an **Intelligent Auto Column Width Calculation Algorithm**:
 ## 5. Executable Build & Release Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0` through `release/v1.6.2`) remain permanently preserved.
 
 ---

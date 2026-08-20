@@ -11,7 +11,7 @@
   - **Production Release Baseline**: Full promotion to semantic version `v2.0.0` across application UI, window titles, About metadata, configuration objects, build specifications, and documentation suite.
   - **Responsive & Ergonomic Verification**: Zero layout clipping, consistent 1366×768 desktop optimization, loading wait cursors (`Qt.WaitCursor`), and unified button/input heights.
   - **Uncaught Crash Prevention**: Global exception hook (`sys.excepthook`) catching uncaught exceptions, writing critical traceback logs, and displaying user-friendly error dialogs.
-  - **Production Release Package**: Generated clean client binary package `release/v2.0.0/SchoolFeeManager_v2.0.0.zip` and developer source package `release/v2.0.0/SchoolFeeManager_Source_v2.0.0.zip`, while preserving all prior release folders (`v1.0.0` through `v1.9.0`).
+  - **Production Release Package**: Generated clean client binary package `release/v2.0.0/CollegeFeeManager_v2.0.0.zip` and developer source package `release/v2.0.0/CollegeFeeManager_Source_v2.0.0.zip`, while preserving all prior release folders (`v1.0.0` through `v1.9.0`).
   - **Client Documentation Suite**: Generated `PROJECT_COMPLETION_REPORT.md`, `CLIENT_HANDOVER.md`, `KNOWN_LIMITATIONS.md`, and `RELEASE_NOTES_v2.0.0.md`.
 
 ### v1.9.0 — Data Management, Import/Export & Productivity Tools (Phase 9 Release)

@@ -1,0 +1,3 @@
+80f9967a0d728e25d4c7cc2f6fdeaa53  CollegeFeeERP_Setup_v3.6.0.exe
+4ec0ae756d7704a8614039b808865fd3  CollegeFeeERP_Portable_v3.6.0.zip
+7beffe7122040a87e0031af7ffb93276  CollegeFeeERP_Source_v3.6.0.zip

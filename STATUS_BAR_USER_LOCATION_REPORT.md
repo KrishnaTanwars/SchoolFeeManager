@@ -48,5 +48,5 @@ This task relocated the logged-in user information (`Logged in as: System Admini
 
 - **Build Tool**: PyInstaller via `python build.py`
 - **Cleaned Directories**: `build/` and `dist/` removed prior to build.
-- **Compiled Executable**: `dist/SchoolFeeManager/SchoolFeeManager.exe`
+- **Compiled Executable**: `dist/CollegeFeeManager/CollegeFeeManager.exe`
 - **Build Outcome**: **SUCCESSFUL** — Clean executable compiled and verified.

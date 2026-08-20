@@ -34,14 +34,14 @@ Phase 6.2 has successfully delivered final UI polish, table optimization, and ac
 
 ## 3. Files Modified
 
-1. [dialogs/receipt_preview_dialog.py](file:///e:/Downloads/ERP/SchoolFeeManager/dialogs/receipt_preview_dialog.py): Integrated `🖨 Print Receipt`, `📄 Export PDF`, and `🚫 Delete Receipt (Admin)` action buttons inside preview dialog.
-2. [views/receipt_history_view.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/receipt_history_view.py): Simplified table Actions column to `👁 View`, implemented content-aware column auto-sizing, added `☑ Select All` / `☐ Deselect All` buttons, fixed Export menu styling, and expanded combobox popups.
-3. [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py): Set `APP_VERSION` to `1.6.2`.
-4. [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt): Set release version to `v1.6.2`.
-5. [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py): Configured output paths for `release/v1.6.2/`.
-6. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Documented Phase 6.2 release notes.
-7. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md): Logged v1.6.2 release features.
-8. [PHASE_06_2_UI_POLISH_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_06_2_UI_POLISH_REPORT.md): This report.
+1. [dialogs/receipt_preview_dialog.py](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/receipt_preview_dialog.py): Integrated `🖨 Print Receipt`, `📄 Export PDF`, and `🚫 Delete Receipt (Admin)` action buttons inside preview dialog.
+2. [views/receipt_history_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/receipt_history_view.py): Simplified table Actions column to `👁 View`, implemented content-aware column auto-sizing, added `☑ Select All` / `☐ Deselect All` buttons, fixed Export menu styling, and expanded combobox popups.
+3. [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py): Set `APP_VERSION` to `1.6.2`.
+4. [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt): Set release version to `v1.6.2`.
+5. [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py): Configured output paths for `release/v1.6.2/`.
+6. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Documented Phase 6.2 release notes.
+7. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md): Logged v1.6.2 release features.
+8. [PHASE_06_2_UI_POLISH_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_06_2_UI_POLISH_REPORT.md): This report.
 
 ---
 
@@ -66,9 +66,9 @@ Phase 6.2 has successfully delivered final UI polish, table optimization, and ac
 ## 5. Executable Build & Release Packaging Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0` through `release/v1.6.1`) remain permanently preserved.
-- **Phase 6.2 Release Package**: Generated `release/v1.6.2/` containing `SchoolFeeManager_v1.6.2.zip` and `SchoolFeeManager_Source_v1.6.2.zip`.
+- **Phase 6.2 Release Package**: Generated `release/v1.6.2/` containing `CollegeFeeManager_v1.6.2.zip` and `CollegeFeeManager_Source_v1.6.2.zip`.
 
 ---
 

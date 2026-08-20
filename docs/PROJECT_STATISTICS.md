@@ -10,7 +10,7 @@
 ===============================================================================
 PROJECT METRICS SUMMARY
 ===============================================================================
-Project Name                      : EduLedger ERP (School Fee Management System)
+Project Name                      : EduLedger ERP (College Fee Management System)
 Current Release Version           : v2.0.0 (Enterprise Edition)
 Target Operating System           : Windows 10 / Windows 11 (64-bit Desktop)
 Primary Programming Language      : Python 3.12.10
@@ -30,7 +30,7 @@ Services                          : 5 specialized services
 Utility Modules                   : 5 utilities
 Database Tables                   : 8 active ORM tables
 Automated Unit Tests              : 18 passed tests (0 failures)
-Compiled Executable Size          : 9.77 MB (dist/SchoolFeeManager/SchoolFeeManager.exe)
+Compiled Executable Size          : 9.77 MB (dist/CollegeFeeManager/CollegeFeeManager.exe)
 ===============================================================================
 ```
 

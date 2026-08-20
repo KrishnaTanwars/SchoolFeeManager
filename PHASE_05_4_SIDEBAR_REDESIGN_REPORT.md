@@ -13,7 +13,7 @@ Phase 5.4 has successfully implemented a commercial, auto-collapsible navigation
 - **Default Launch State**: Collapsed by default (width 60px) showing centered icons with hover tooltips (`🏠`, `💰`, `📜`, `👨‍🎓`, `🏷️`, `📊`, `⚙️`, `🔒`).
 - **Expanded State**: Width 220px showing brand title header (`EDULEDGER ERP v1.5.4`) and full menu item labels (`🏠   Dashboard`, `💰   Fee Collection`, etc.).
 - **Smooth Animation**: Powered by `QPropertyAnimation` (duration 200 ms with `QEasingCurve.InOutQuad`) on Hamburger button (`☰`) click or `Ctrl+B` keyboard shortcut.
-- **Preference Persistence**: User sidebar preference is automatically saved to local settings (`QSettings("SmartSchool", "SchoolFeeManager")`) and restored seamlessly across application restarts.
+- **Preference Persistence**: User sidebar preference is automatically saved to local settings (`QSettings("SmartSchool", "CollegeFeeManager")`) and restored seamlessly across application restarts.
 - **Dynamic Content Auto-Expansion**: Main content view automatically expands to fill the gained workspace width when collapsed, eliminating empty white space.
 
 ---
@@ -33,13 +33,13 @@ Phase 5.4 has successfully implemented a commercial, auto-collapsible navigation
 
 ## 3. Files Modified
 
-1. [views/main_window.py](file:///e:/Downloads/ERP/SchoolFeeManager/views/main_window.py): Added `QSettings` state persistence, initial collapsed state (60px), smooth `QPropertyAnimation` over 200ms, `Ctrl+B` shortcut, centered collapsed icons, hover tooltips, and active checked state highlighting.
-2. [config/app_config.py](file:///e:/Downloads/ERP/SchoolFeeManager/config/app_config.py): Set `APP_VERSION` to `1.5.4`.
-3. [Version.txt](file:///e:/Downloads/ERP/SchoolFeeManager/Version.txt): Set release version to `v1.5.4`.
-4. [package_release.py](file:///e:/Downloads/ERP/SchoolFeeManager/package_release.py): Configured output paths for `release/v1.5.4/`.
-5. [CHANGELOG.md](file:///e:/Downloads/ERP/SchoolFeeManager/CHANGELOG.md): Documented Phase 5.4 release notes.
-6. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/SchoolFeeManager/docs/VERSION_HISTORY.md): Logged v1.5.4 sidebar features.
-7. [PHASE_05_4_SIDEBAR_REDESIGN_REPORT.md](file:///e:/Downloads/ERP/SchoolFeeManager/PHASE_05_4_SIDEBAR_REDESIGN_REPORT.md): This report.
+1. [views/main_window.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/main_window.py): Added `QSettings` state persistence, initial collapsed state (60px), smooth `QPropertyAnimation` over 200ms, `Ctrl+B` shortcut, centered collapsed icons, hover tooltips, and active checked state highlighting.
+2. [config/app_config.py](file:///e:/Downloads/ERP/CollegeFeeManager/config/app_config.py): Set `APP_VERSION` to `1.5.4`.
+3. [Version.txt](file:///e:/Downloads/ERP/CollegeFeeManager/Version.txt): Set release version to `v1.5.4`.
+4. [package_release.py](file:///e:/Downloads/ERP/CollegeFeeManager/package_release.py): Configured output paths for `release/v1.5.4/`.
+5. [CHANGELOG.md](file:///e:/Downloads/ERP/CollegeFeeManager/CHANGELOG.md): Documented Phase 5.4 release notes.
+6. [docs/VERSION_HISTORY.md](file:///e:/Downloads/ERP/CollegeFeeManager/docs/VERSION_HISTORY.md): Logged v1.5.4 sidebar features.
+7. [PHASE_05_4_SIDEBAR_REDESIGN_REPORT.md](file:///e:/Downloads/ERP/CollegeFeeManager/PHASE_05_4_SIDEBAR_REDESIGN_REPORT.md): This report.
 
 ---
 
@@ -63,9 +63,9 @@ Phase 5.4 has successfully implemented a commercial, auto-collapsible navigation
 ## 5. Executable Build & Release Packaging Status
 
 - **Build Cleanup**: Cleaned legacy `build/` and `dist/` directories prior to compilation.
-- **Executable Compilation**: Rebuilt fresh standalone executable `dist/SchoolFeeManager/SchoolFeeManager.exe` via `python build.py`.
+- **Executable Compilation**: Rebuilt fresh standalone executable `dist/CollegeFeeManager/CollegeFeeManager.exe` via `python build.py`.
 - **Release Preservation Rule**: All existing release folders (`release/v1.0.0` through `release/v1.5.3`) remain permanently preserved.
-- **Phase 5.4 Release Package**: Generated `release/v1.5.4/` containing `SchoolFeeManager_v1.5.4.zip` and `SchoolFeeManager_Source_v1.5.4.zip`.
+- **Phase 5.4 Release Package**: Generated `release/v1.5.4/` containing `CollegeFeeManager_v1.5.4.zip` and `CollegeFeeManager_Source_v1.5.4.zip`.
 
 ---
 

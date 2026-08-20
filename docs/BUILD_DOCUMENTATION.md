@@ -7,9 +7,9 @@
 
 ## 1. PyInstaller Build Architecture
 
-The application build process is orchestrated using `build.py` ([build.py](file:///e:/Downloads/ERP/SchoolFeeManager/build.py)) and the PyInstaller specification file `SchoolFeeManager.spec` ([SchoolFeeManager.spec](file:///e:/Downloads/ERP/SchoolFeeManager/SchoolFeeManager.spec)).
+The application build process is orchestrated using `build.py` ([build.py](file:///e:/Downloads/ERP/CollegeFeeManager/build.py)) and the PyInstaller specification file `CollegeFeeManager.spec` ([CollegeFeeManager.spec](file:///e:/Downloads/ERP/CollegeFeeManager/CollegeFeeManager.spec)).
 
-### Key `SchoolFeeManager.spec` Configurations:
+### Key `CollegeFeeManager.spec` Configurations:
 1. **Bundled Asset Directories**:
    - `assets/` folder is explicitly bundled into the runtime directory.
 2. **Explicit Hidden Imports**:
@@ -32,8 +32,8 @@ Run the build script from the project root:
 python build.py
 ```
 
-- **Output Path**: `dist/SchoolFeeManager/`
-- **Main Executable**: `dist/SchoolFeeManager/SchoolFeeManager.exe`
+- **Output Path**: `dist/CollegeFeeManager/`
+- **Main Executable**: `dist/CollegeFeeManager/CollegeFeeManager.exe`
 - **Executable File Size**: ~9.77 MB
 
 ### Step 2: Package Release Archive & Source Packages
@@ -44,10 +44,10 @@ python package_release.py
 ```
 
 - **Actions**:
-  1. Copies `dist/SchoolFeeManager/` to `release_v2.0/SchoolFeeManager/`.
+  1. Copies `dist/CollegeFeeManager/` to `release_v2.0/CollegeFeeManager/`.
   2. Ensures required directories exist: `database/`, `backup/`, `exports/`, `logs/`.
   3. Bundles documentation PDFs (`INSTALLATION_GUIDE.pdf`, `USER_MANUAL.pdf`, `Version.txt`, `License.txt`).
-  4. Generates ZIP packages: `SchoolFeeManager_v2.0.zip` and `SchoolFeeManager_Source_v2.0.zip`.
+  4. Generates ZIP packages: `CollegeFeeManager_v2.0.zip` and `CollegeFeeManager_Source_v2.0.zip`.
 
 ### Step 3: Generate Inno Setup Installation Wizard (.EXE)
 Compile `installer.iss` using Inno Setup Compiler:
@@ -56,5 +56,5 @@ Compile `installer.iss` using Inno Setup Compiler:
 iscc installer.iss
 ```
 
-- **Output File**: `dist_installer/SchoolFeeManager_Setup_v1.0.exe`
+- **Output File**: `dist_installer/CollegeFeeManager_Setup_v1.0.exe`
 - **Installer Features**: Standard installation wizard, program menu shortcuts, desktop shortcut creation option, automated uninstaller.

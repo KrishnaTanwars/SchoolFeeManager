@@ -162,3 +162,29 @@ def test_auto_ensure_course_and_branch():
     if b_rec:
         db.delete(b_rec)
     db.commit()
+
+def test_delete_course_no_reseed_and_safeguards():
+    # 1. Add a unassigned test course
+    ok, msg = AcademicController.add_course(
+        code="UNASSIGNED_TEST",
+        name="Unassigned Test Course",
+        course_type="UG"
+    )
+    assert ok is True
+
+    courses_before = AcademicController.get_courses()
+    assert "Unassigned Test Course" in courses_before
+
+    full_courses = AcademicController.get_all_courses_full()
+    target = next((c for c in full_courses if c.code == "UNASSIGNED_TEST"), None)
+    assert target is not None
+
+    # 2. Delete the course
+    ok_del, msg_del = AcademicController.delete_course(target.id)
+    assert ok_del is True
+    assert "deleted successfully" in msg_del
+
+    # 3. Verify it stays deleted after get_courses call (no re-seeding)
+    courses_after = AcademicController.get_courses()
+    assert "Unassigned Test Course" not in courses_after
+
