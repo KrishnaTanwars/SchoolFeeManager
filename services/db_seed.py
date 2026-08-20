@@ -32,21 +32,21 @@ def seed_initial_data():
             db.add_all([admin_user, operator_user])
             logger.info("Seeded default users (admin / operator).")
 
-        # Seed School Information
+        # Seed College Information
         if db.query(SchoolInformation).count() == 0:
             school_info = SchoolInformation(
-                school_name="DPS International Public School",
+                school_name="EduLedger College of Engineering & Technology",
                 address="Plot 12, Sector 5, RK Puram, New Delhi - 110022",
                 phone="+91 98765 43210, 011-26123456",
                 email="accounts@dps school.edu.in",
-                website="www.dpsschool.edu.in",
-                logo_path="assets/school_logo.png",
+                website="www.eduledgercollege.edu.in",
+                logo_path="assets/college_logo.png",
                 receipt_prefix="REC/2025/",
                 receipt_footer="Fee once paid is non-refundable. Thank you!",
                 current_session="2025-2026"
             )
             db.add(school_info)
-            logger.info("Seeded default school information.")
+            logger.info("Seeded default college information.")
 
         # Seed Academic Sessions
         if db.query(AcademicSession).count() == 0:

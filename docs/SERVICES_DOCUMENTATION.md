@@ -39,5 +39,5 @@
 - **Key Actions**:
   - Creates initial default Admin user (`admin` / `admin123`) and Fee Operator user (`operator` / `operator123`).
   - Creates default Fee Heads (`Admission Fee`, `Tuition Fee`, `Development Fee`, `Sports Fee`, `Computer Fee`, `Library Fee`, `Exam Fee`, `Fine`).
-  - Creates default Academic Session (`2024-2025`) and School Information record.
+  - Creates default Academic Session (`2024-2025`) and College Information record.
 - **Dependencies**: `config.database`, `models.*`, `utils.security`.

@@ -1,5 +1,5 @@
 """
-School Information and Academic Session Settings Controller with Expunge Safety.
+College Information and Academic Session Settings Controller with Expunge Safety.
 """
 
 from typing import Optional, List, Tuple, Dict, Any
@@ -35,7 +35,7 @@ class SettingsController:
     def get_active_logo_path() -> Optional[str]:
         """
         Resolves active logo file path across user installations safely.
-        Checks DB school_info.logo_path -> assets/custom_logo.png -> assets/school_logo.png.
+        Checks DB school_info.logo_path -> assets/custom_logo.png -> assets/college_logo.png.
         """
         info = SettingsController.get_school_info()
         if info and info.logo_path:
@@ -46,7 +46,7 @@ class SettingsController:
             if rel_app.exists():
                 return str(rel_app.resolve())
 
-        default_logo = Path(__file__).resolve().parent.parent / "assets" / "school_logo.png"
+        default_logo = Path(__file__).resolve().parent.parent / "assets" / "college_logo.png"
         if default_logo.exists():
             return str(default_logo.resolve())
         return None
@@ -78,12 +78,12 @@ class SettingsController:
             SecurityService.log_audit(
                 action="Settings Updated",
                 module="Settings",
-                details=f"Updated school profile settings for {info.school_name}",
+                details=f"Updated college profile settings for {info.school_name}",
                 status="Success"
             )
 
             db.commit()
-            logger.info("Updated school information settings.")
+            logger.info("Updated college information settings.")
             return True, "Settings updated successfully."
         except Exception as e:
             db.rollback()

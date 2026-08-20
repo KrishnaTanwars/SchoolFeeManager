@@ -9,7 +9,7 @@ EduLedger ERP has been refactored to support **Semester-wise and Year-wise acade
 ## Technical Highlights
 
 ### 1. Dual Mode Academic Architecture
-- **School Mode**: `Class`, `Section`, `Academic Session`
+- **College Mode**: `Class`, `Section`, `Academic Session`
 - **College Mode**: `Course`, `Branch`, `Academic Year`, `Semester`, `Academic Session`
 - Database schema supports both modes simultaneously via non-breaking optional columns in `students`, `fee_categories`, and `receipts`.
 

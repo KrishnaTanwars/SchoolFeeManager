@@ -35,7 +35,7 @@ This document provides the final runtime validation report for Phase 01 (`v1.1.0
 - **Crash Check**: `0` crashes.
 - **Traceback Check**: `0` unhandled exceptions in startup logs.
 - **DLL Check**: All PySide6 C++ binaries (`Qt6Core`, `Qt6Gui`, `Qt6Widgets`, `qwindows.dll`) and SQLite C dynamic libraries loaded cleanly.
-- **Asset / Icon Check**: `assets/styles/theme.qss` and `assets/school_logo.png` resolved correctly.
+- **Asset / Icon Check**: `assets/styles/theme.qss` and `assets/college_logo.png` resolved correctly.
 - **Import Check**: 100% of internal modules, SQLAlchemy models, controllers, and ReportLab engines loaded.
 - **Login Window**: Login window initialization verified.
 

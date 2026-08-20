@@ -24,7 +24,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 
 ### 🏛️ Rebrand & Logo Integration
 - **College Management System Rebrand**: Rebranded application title to **College Management System** on Login Screen, Application Title, and Status Bar.
-- **Company Standard EduLedger Logo**: Integrated the official company standard EduLedger logo (Graduation Cap & Open Book visual branding) into application assets (`school_logo.png`, `edu_ledger_logo.png`, `app_icon.png`, `app_icon.ico`).
+- **Company Standard EduLedger Logo**: Integrated the official company standard EduLedger logo (Graduation Cap & Open Book visual branding) into application assets (`college_logo.png`, `edu_ledger_logo.png`, `app_icon.png`, `app_icon.ico`).
 - **High-DPI Login Screen Card**: Rendered high-resolution EduLedger logo on the Login Card header.
 - **Permanent Windows Application & Taskbar Icon**: Set application window icon globally via `QApplication.setWindowIcon`.
 - **A4 PDF Receipt Layout Preservation**: Fine-tuned 14-head receipt vertical layout scaling to ensure 1-page A4 PDF output with company logo image.
@@ -109,7 +109,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 ## [2.3.0] - Phase X Academic Structure Refactor (Semester & Year Based ERP)
 
 ### 🎓 Academic ERP Refactor (Semester & Year Support)
-- **Dual Mode Academic Support**: Full support for both **School Mode** (Class, Section, Session) and **College Mode** (Course, Branch, Academic Year, Semester, Session) across all ERP views and workflows without code duplication or breaking existing school installations.
+- **Dual Mode Academic Support**: Full support for both **College Mode** (Class, Section, Session) and **College Mode** (Course, Branch, Academic Year, Semester, Session) across all ERP views and workflows without code duplication or breaking existing school installations.
 - **Academic Master Models & Controller**: Added `Course`, `Branch`, `AcademicYear`, and `Semester` models (`models/academic.py`) and master data controller (`controllers/academic_controller.py`) with auto-seeding for B.Tech, MBA, BCA, BBA, MCA, and Class 10.
 - **Reusable `AcademicFilterWidget`**: Created single-line filter component with synchronized Course, Branch, Academic Year, Semester, and Session dropdowns (`components/academic_filter_widget.py`).
 - **Student Master & Profile**: Updated Student Master table, add/edit dialogs, profile details dialog, and search queries with Course, Branch, Academic Year, and Semester.
@@ -171,7 +171,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 
 ### 📌 ERP Layout & Status Bar Ergonomics
 - **Relocated Logged-In User Label**: Moved active user information (`Logged in as: System Administrator (Admin)`) from the top header bar to the bottom-right corner of the `QStatusBar` (`addPermanentWidget`).
-- **Clean Header Space**: Reserved top header bar exclusively for School Name, Academic Session, and the Global Search widget (`Search everywhere... (Ctrl+K)`), eliminating header clutter.
+- **Clean Header Space**: Reserved top header bar exclusively for College Name, Academic Session, and the Global Search widget (`Search everywhere... (Ctrl+K)`), eliminating header clutter.
 - **Dynamic Status Updates**: User label clears on logout and updates automatically on login with current full name and capitalized role in brackets.
 - **Responsive Status Bar Typography**: Styled status bar label with subtle typography (11px, slate text, normal weight, right padding).
 
@@ -247,8 +247,8 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 
 ### ⚙️ Central Administration Panel & Category Dashboard
 - **Admin Password Protection**: Enforced password authorization on Settings access (`AdminAuthDialog`), automatically logging successful and denied access attempts to system audit entries.
-- **Interactive 8-Category Dashboard Grid**: Transformed Settings into a modern category dashboard with interactive visual cards (`School Information`, `User Management`, `Academic Settings`, `Database Management`, `Backup & Restore`, `Audit Log Viewer`, `Application Preferences`, `About Software`).
-- **School Information & Branding**: Full profile manager for School Name, Address, City, State, PIN Code, Contact Phone(s), Email, Website, Principal Name, Logo Image selector, Academic Session, and Receipt Footer note.
+- **Interactive 8-Category Dashboard Grid**: Transformed Settings into a modern category dashboard with interactive visual cards (`College Information`, `User Management`, `Academic Settings`, `Database Management`, `Backup & Restore`, `Audit Log Viewer`, `Application Preferences`, `About Software`).
+- **College Information & Branding**: Full profile manager for College Name, Address, City, State, PIN Code, Contact Phone(s), Email, Website, Principal Name, Logo Image selector, Academic Session, and Receipt Footer note.
 - **User Management Engine**: Complete user account CRUD supporting Administrator, Operator, and Viewer roles; Active/Disabled account toggling; Admin password resets; user password changes; last login tracking; and failed login attempt counter.
 - **Academic Session Settings**: Dynamic academic year manager with active session switching and new session creation.
 - **Database Management Tools & Statistics**: Real-time database statistics (Path, File Size, Total Students, Receipts, Fee Heads, Users, Audit Entries); SQLite `VACUUM` and `ANALYZE` database optimization; SQLite `PRAGMA integrity_check` validation.
@@ -440,7 +440,7 @@ All notable changes, bug fixes, database optimizations, and build updates for th
 - **Commercial A4 PDF Engine**: Built with ReportLab featuring school branding header, logo, student profile grid, itemized fee table, and signatory footer.
 - **Windows Direct Printing**: Native Windows Shell print routing (`os.startfile(pdf_path, 'print')`) and `QDesktopServices` PDF previewing.
 - **Financial Reports**: Daily collection, monthly collection, custom date range, and class-wise collection summary with PDF and CSV export options.
-- **System Settings & User Management**: Admin and Operator roles, PBKDF2 SHA-256 password hashing, school profile customization, and academic session manager.
+- **System Settings & User Management**: Admin and Operator roles, PBKDF2 SHA-256 password hashing, college profile customization, and academic session manager.
 - **Disaster Recovery**: Timestamped ZIP database backup and safety-checked restore engine.
 
 ### 🐛 Fixed & Optimized

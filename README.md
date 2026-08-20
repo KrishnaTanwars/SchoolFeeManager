@@ -20,7 +20,7 @@ A production-ready, offline-first Desktop ERP application designed specifically 
   - **Indian Currency Number-to-Words Converter** (Lakhs & Crores, e.g. *"One Lakh Fifty Thousand Rupees Only"*).
   - Multiple payment modes (Cash, UPI, Cheque, Demand Draft, Net Banking).
 - **Commercial A4 PDF & Printing Engine**:
-  - ReportLab-generated high-resolution A4 Fee Receipts with School Logo, Header, Student Details Grid, Fee Table, Signatures, and Footer.
+  - ReportLab-generated high-resolution A4 Fee Receipts with College Logo, Header, Student Details Grid, Fee Table, Signatures, and Footer.
   - Native Windows Direct Printing & Print Preview (`QtPrintSupport`).
 - **Financial Reports & Analytics**:
   - Executive Dashboard with KPI cards (Today's Collection, Monthly Collection, Active Students, Receipts Issued).

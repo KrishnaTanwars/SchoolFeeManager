@@ -1,7 +1,7 @@
 # Status Bar Logged-In User Information Relocation Report — EduLedger ERP
 
 ## Executive Summary
-This task relocated the logged-in user information (`Logged in as: System Administrator (Admin)`) from the top header bar to the **bottom-right corner of the application status bar (`QStatusBar`)**. This declutters the top header bar, reserving it strictly for the School Name, Academic Session, and Global Search widget, while adhering to standard ERP software ergonomics.
+This task relocated the logged-in user information (`Logged in as: System Administrator (Admin)`) from the top header bar to the **bottom-right corner of the application status bar (`QStatusBar`)**. This declutters the top header bar, reserving it strictly for the College Name, Academic Session, and Global Search widget, while adhering to standard ERP software ergonomics.
 
 ---
 
@@ -22,7 +22,7 @@ This task relocated the logged-in user information (`Logged in as: System Admini
 | Application Element | Previous Location | New Location & Appearance |
 | :--- | :--- | :--- |
 | **User Label (`Logged in as: ...`)** | Top-Right Header Bar | **Bottom-Right QStatusBar** (`addPermanentWidget`) |
-| **Top Header Bar Space** | Shared by School Name, Global Search, and User Label | **Clean & Uncluttered**: Reserved for School Name, Academic Session & Global Search |
+| **Top Header Bar Space** | Shared by College Name, Global Search, and User Label | **Clean & Uncluttered**: Reserved for College Name, Academic Session & Global Search |
 | **Label Typography** | Bold header label | **Subtle status-bar text** (11px, dark slate `#475569`, normal weight) |
 | **Visibility Across Views** | Top header on main screens | **Bottom-Right Status Bar** across Dashboard, Student Master, Fee Collection, Reports, Settings |
 | **Login / Logout Dynamic Behavior** | Shown after login in header | **Hidden on login screen; dynamically populated post-login** |

@@ -34,7 +34,7 @@ def setup_db_session():
         db.query(AcademicSession).delete()
         info = db.query(SchoolInformation).first()
         if not info:
-            info = SchoolInformation(school_name="DPS International School", current_session="2025-2026")
+            info = SchoolInformation(school_name="EduLedger College of Technology", current_session="2025-2026")
             db.add(info)
         else:
             info.current_session = "2025-2026"

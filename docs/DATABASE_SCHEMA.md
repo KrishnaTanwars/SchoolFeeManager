@@ -122,11 +122,11 @@ Itemized break down of fee heads associated with each receipt.
 ### 6. `school_information`
 Institution profile details printed on PDF receipt headers.
 - `id` (INTEGER, PK, AutoIncrement)
-- `school_name` (VARCHAR(150), Default 'DPS Modern School', Not Null)
+- `school_name` (VARCHAR(150), Default 'EduLedger College', Not Null)
 - `address` (TEXT, Default '123 Knowledge Park, New Delhi, India', Not Null)
 - `phone` (VARCHAR(50), Default '+91 98765 43210', Not Null)
-- `email` (VARCHAR(100), Default 'info@school.edu.in', Not Null)
-- `website` (VARCHAR(100), Default 'www.school.edu.in', Nullable)
+- `email` (VARCHAR(100), Default 'info@eduledgercollege.edu.in', Not Null)
+- `website` (VARCHAR(100), Default 'www.eduledgercollege.edu.in', Nullable)
 - `logo_path` (VARCHAR(255), Nullable)
 - `receipt_prefix` (VARCHAR(20), Default 'REC/', Not Null)
 

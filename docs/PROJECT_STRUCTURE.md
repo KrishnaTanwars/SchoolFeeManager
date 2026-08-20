@@ -25,7 +25,7 @@ CollegeFeeManager/
 ├── CHANGES1.mp4             # Demonstration video artifact
 │
 ├── assets/                  # UI Static Assets & Styling
-│   ├── school_logo.png      # Default institution branding logo
+│   ├── college_logo.png      # Default institution branding logo
 │   └── styles/
 │       └── theme.qss        # Custom PySide6 QSS stylesheet rules
 │
@@ -39,7 +39,7 @@ CollegeFeeManager/
 │   ├── student.py           # Student profile master model
 │   ├── fee_category.py      # Fee category / head model
 │   ├── receipt.py           # Receipt and itemized receipt items models
-│   ├── settings.py          # Academic sessions and school information models
+│   ├── settings.py          # Academic sessions and college information models
 │   └── audit.py             # Audit log and backup history models
 │
 ├── controllers/             # Business Logic & Controller Layer

@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
         header_layout.setContentsMargins(20, 10, 20, 10)
         header_layout.setSpacing(12)
 
-        self.lbl_school_header = QLabel("DPS International School")
+        self.lbl_school_header = QLabel("EduLedger College of Technology")
         self.lbl_school_header.setObjectName("HeaderTitle")
 
         # Global Search Header Button

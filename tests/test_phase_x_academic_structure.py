@@ -1,6 +1,6 @@
 """
 Unit and Integration Test Suite for Phase X — Academic Structure Refactor (Semester & Year Based ERP).
-Tests Course, Branch, Year, Semester Masters, Student CRUD, Fee Head Matching, Receipt Snapshots, and School Mode Compatibility.
+Tests Course, Branch, Year, Semester Masters, Student CRUD, Fee Head Matching, Receipt Snapshots, and College Mode Compatibility.
 """
 
 import os
@@ -152,7 +152,7 @@ class TestPhaseXAcademicStructure(unittest.TestCase):
             self.assertIn("Semester", content)
 
     def test_07_school_mode_backward_compatibility(self):
-        """Verify existing school mode students without semester continue functioning normally."""
+        """Verify existing college mode students without semester continue functioning normally."""
         adm_no = "SCHOOL/2025/101"
         existing = self.db.query(Student).filter(Student.admission_no == adm_no).first()
         if existing:
@@ -162,7 +162,7 @@ class TestPhaseXAcademicStructure(unittest.TestCase):
         data = {
             "admission_no": adm_no,
             "roll_no": "101",
-            "name": "School Student Class 10",
+            "name": "College Student Class 10",
             "father_name": "School Father",
             "class_name": "Class 10",
             "section": "B",

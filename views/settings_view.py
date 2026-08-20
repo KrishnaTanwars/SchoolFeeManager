@@ -169,7 +169,7 @@ class SettingsView(QWidget):
         self.setup_dashboard_page()
         self.stack.addWidget(self.page_dashboard)
 
-        # Page 1: School Information
+        # Page 1: College Information
         self.page_school = QWidget()
         self.setup_school_page()
         self.stack.addWidget(self.page_school)
@@ -223,7 +223,7 @@ class SettingsView(QWidget):
 
     def open_category(self, key: str):
         page_map = {
-            "school": (1, "School Information & Branding", "Manage school profile, contact, address, logo, and receipt text", self.load_school_info),
+            "school": (1, "College Information & Branding", "Manage college profile, contact, address, logo, and receipt text", self.load_school_info),
             "users": (2, "User Management & Accounts", "Manage system users, roles, password resets, and login tracking", self.load_users),
             "academic": (3, "Academic Session Settings", "Manage academic sessions and current active session", self.load_sessions),
             "db": (4, "Database Management & Integrity", "Database optimization, integrity checks, and statistics", self.load_db_stats),
@@ -262,7 +262,7 @@ class SettingsView(QWidget):
         grid.setSpacing(14)
 
         categories = [
-            ("🏢", "School Information", "Configure school name, address, city, state, pin, contact numbers, logo, and receipt footer.", "school"),
+            ("🏢", "College Information", "Configure college name, address, city, state, pin, contact numbers, logo, and receipt footer.", "school"),
             ("👥", "User Management", "Manage user accounts, assign Administrator/Operator/Viewer roles, reset passwords, and track logins.", "users"),
             ("🎓", "Academic Settings", "Configure academic sessions (e.g. 2024-2025), switch active sessions, and add new years.", "academic"),
             ("💾", "Database Management", "View database size, record counts, execute VACUUM optimization, and check SQLite integrity.", "db"),
@@ -299,7 +299,7 @@ class SettingsView(QWidget):
         layout = QVBoxLayout(container)
         layout.setContentsMargins(4, 4, 4, 4)
 
-        group = QGroupBox("School Information & Receipt Branding Parameters")
+        group = QGroupBox("College Information & Receipt Branding Parameters")
         group.setStyleSheet("QGroupBox { font-weight: bold; color: #1e3a8a; }")
         form = QFormLayout(group)
         form.setSpacing(10)
@@ -341,7 +341,7 @@ class SettingsView(QWidget):
         self.btn_select_logo.clicked.connect(self.select_logo)
         logo_layout.addWidget(self.lbl_logo_path, stretch=2)
         logo_layout.addWidget(self.btn_select_logo, stretch=1)
-        form.addRow("School Logo Image:", logo_layout)
+        form.addRow("College Logo Image:", logo_layout)
 
         self.txt_receipt_prefix = QLineEdit()
         form.addRow("Receipt Number Prefix:", self.txt_receipt_prefix)
@@ -353,7 +353,7 @@ class SettingsView(QWidget):
         layout.addWidget(group)
 
         # Save Button
-        btn_save = QPushButton("💾   Save School Information & Profile")
+        btn_save = QPushButton("💾   Save College Information & Profile")
         btn_save.setFixedHeight(40)
         btn_save.setStyleSheet("background-color: #2563eb; color: #ffffff; font-weight: bold; font-size: 14px; border-radius: 6px;")
         btn_save.clicked.connect(self.save_school_info)
@@ -366,7 +366,7 @@ class SettingsView(QWidget):
         p_layout.addWidget(scroll)
 
     def select_logo(self):
-        path, _ = QFileDialog.getOpenFileName(self, "Select School Logo Image", "", "Images (*.png *.jpg *.jpeg *.webp)")
+        path, _ = QFileDialog.getOpenFileName(self, "Select College Logo Image", "", "Images (*.png *.jpg *.jpeg *.webp)")
         if path:
             try:
                 import shutil
@@ -406,7 +406,7 @@ class SettingsView(QWidget):
         phone = self.txt_phone.text().strip()
 
         if not name or not address or not phone:
-            QMessageBox.warning(self, "Validation Error", "School Name, Address, and Phone are required.")
+            QMessageBox.warning(self, "Validation Error", "College Name, Address, and Phone are required.")
             return
 
         data = {

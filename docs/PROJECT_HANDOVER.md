@@ -74,7 +74,7 @@ CollegeFeeManager/
 │   ├── receipt_controller.py# Fee Collection, Partial Payment & Ledger
 │   ├── fee_controller.py    # Fee Category CRUD
 │   ├── report_controller.py # Financial Aggregations & Summary Calculations
-│   └── settings_controller.py# School Profile & Session Management
+│   └── settings_controller.py# College Profile & Session Management
 │
 ├── views/                   # PySide6 GUI Widgets & Main Window Layouts
 │   ├── main_window.py       # Main Application Shell & Sidebar Navigation

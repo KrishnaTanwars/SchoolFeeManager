@@ -21,15 +21,15 @@ class SchoolInformation(Base):
     __tablename__ = "school_information"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    school_name = Column(String(150), default="DPS Modern School", nullable=False)
+    school_name = Column(String(150), default="EduLedger College", nullable=False)
     address = Column(Text, default="123 Knowledge Park, New Delhi, India", nullable=False)
     city = Column(String(100), default="New Delhi", nullable=True)
     state = Column(String(100), default="Delhi", nullable=True)
     pin_code = Column(String(20), default="110001", nullable=True)
     principal_name = Column(String(100), default="Dr. A. K. Sharma", nullable=True)
     phone = Column(String(50), default="+91 98765 43210", nullable=False)
-    email = Column(String(100), default="info@school.edu.in", nullable=False)
-    website = Column(String(100), default="www.school.edu.in", nullable=True)
+    email = Column(String(100), default="info@eduledgercollege.edu.in", nullable=False)
+    website = Column(String(100), default="www.eduledgercollege.edu.in", nullable=True)
     logo_path = Column(String(255), nullable=True)
     receipt_prefix = Column(String(20), default="REC/", nullable=False)
     receipt_footer = Column(Text, default="Thank you for your payment. Keep this receipt for future reference.", nullable=False)

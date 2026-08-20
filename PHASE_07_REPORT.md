@@ -24,7 +24,7 @@ All operational tasks, system parameters, user security roles, database health t
 - [`models/audit.py`](file:///e:/Downloads/ERP/CollegeFeeManager/models/audit.py) — Extended `BackupHistory` model with `created_by` author column.
 - [`config/database.py`](file:///e:/Downloads/ERP/CollegeFeeManager/config/database.py) — Extended `run_migrations()` with non-destructive schema migration checks for missing `school_information`, `users`, and `backup_history` fields.
 - [`controllers/auth_controller.py`](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/auth_controller.py) — Enhanced with user account CRUD (`create_user`, `update_user`, `delete_user`, `reset_password`, `change_password`), role assignment (`Admin`, `Operator`, `Viewer`), status toggles (`Active`, `Disabled`), and failed login tracking.
-- [`controllers/settings_controller.py`](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/settings_controller.py) — Added extended school profile updates, real-time DB statistics, SQLite `VACUUM`/`ANALYZE` optimization, `PRAGMA integrity_check` validation, filtered audit log querying, audit log clearing (Admin only), and application preferences persistence.
+- [`controllers/settings_controller.py`](file:///e:/Downloads/ERP/CollegeFeeManager/controllers/settings_controller.py) — Added extended college profile updates, real-time DB statistics, SQLite `VACUUM`/`ANALYZE` optimization, `PRAGMA integrity_check` validation, filtered audit log querying, audit log clearing (Admin only), and application preferences persistence.
 - [`services/export_service.py`](file:///e:/Downloads/ERP/CollegeFeeManager/services/export_service.py) — Integrated CSV, Excel, and ReportLab PDF/Print audit log export methods.
 - [`views/settings_view.py`](file:///e:/Downloads/ERP/CollegeFeeManager/views/settings_view.py) — Redesigned into a commercial 8-Category Card Dashboard grid with dedicated sub-views and `"⬅ Back to Dashboard"` navigation header.
 - [`dialogs/user_dialog.py`](file:///e:/Downloads/ERP/CollegeFeeManager/dialogs/user_dialog.py) — Enhanced to handle Create and Edit modes with roles (`Administrator`, `Operator`, `Viewer`) and Account Status toggling.
@@ -42,7 +42,7 @@ All operational tasks, system parameters, user security roles, database health t
 
 1. **Category Cards Dashboard Grid**:
    - Organized administrative functions into 8 visually distinct category cards with icons, descriptions, and hover highlighting:
-     - 🏢 **School Information**
+     - 🏢 **College Information**
      - 👥 **User Management**
      - 🎓 **Academic Settings**
      - 💾 **Database Management**
@@ -76,7 +76,7 @@ All operational tasks, system parameters, user security roles, database health t
 
 ## 5. Settings Added
 
-- **School Profile**: School Name, Address, City, State, PIN Code, Phone, Email, Website, Principal Name, Logo Image, Receipt Prefix, Receipt Footer.
+- **College Profile**: College Name, Address, City, State, PIN Code, Phone, Email, Website, Principal Name, Logo Image, Receipt Prefix, Receipt Footer.
 - **User Accounts**: Create, Edit, Disable/Enable, Reset Password, Change Password, Delete User.
 - **Academic Sessions**: Session Name, Current Active Session toggle, Add New Session.
 - **Database Tools**: Database Path, Size, Student/Receipt/Fee Head/User/Audit counts, VACUUM optimization, Integrity check.

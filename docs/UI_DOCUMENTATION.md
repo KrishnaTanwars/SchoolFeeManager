@@ -22,7 +22,7 @@ The user interface follows a modern, professional, high-contrast desktop aesthet
 ### 2. `MainWindow` ([views/main_window.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/main_window.py))
 - **Purpose**: Main application window frame and navigation container.
 - **Layout**: 
-  - **Header Bar**: Displays School Name, Logged-in User name, User Role badge, Active Academic Session switcher dropdown, and Logout button.
+  - **Header Bar**: Displays College Name, Logged-in User name, User Role badge, Active Academic Session switcher dropdown, and Logout button.
   - **Sidebar**: `QListWidget` navigation menu listing standard modules.
   - **Central Stack**: `QStackedWidget` switching between main views.
 
@@ -74,7 +74,7 @@ The user interface follows a modern, professional, high-contrast desktop aesthet
 ### 9. `SettingsView` ([views/settings_view.py](file:///e:/Downloads/ERP/CollegeFeeManager/views/settings_view.py))
 - **Purpose**: Administration, Institution profile setup, session configuration, user manager, and disaster recovery backup center.
 - **Tabs**:
-  - **School Profile Tab**: School Name, Address, Phone, Email, Website, Logo path uploader, Receipt Prefix.
+  - **College Profile Tab**: College Name, Address, Phone, Email, Website, Logo path uploader, Receipt Prefix.
   - **Academic Session Tab**: Manage and activate session years (e.g. 2024-2025).
   - **User Management Tab**: Create/Manage Admin & Operator user accounts.
   - **Backup & Restore Tab**: "1-Click Database Backup", Backup History table, "Restore Database from ZIP".

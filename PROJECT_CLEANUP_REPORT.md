@@ -23,7 +23,7 @@
 ### 1. Core Application Files (100% PROTECTED)
 - **Source Code**: Python `.py` modules across `config/`, `controllers/`, `database/`, `dialogs/`, `models/`, `services/`, `utils/`, `views/`, `tests/`, `main.py`, `build.py`, `package_release.py`, `generate_pdf_docs.py`, `seed_dummy_data.py`.
 - **Database**: `database/college_fee.db` (SQLite 3 WAL Mode with safe migrations).
-- **Assets & Icons**: `assets/styles/theme.qss`, `assets/school_logo.png`, `assets/icons/`.
+- **Assets & Icons**: `assets/styles/theme.qss`, `assets/college_logo.png`, `assets/icons/`.
 - **Documentation**: `README.md`, `Version.txt`, `License.txt`, `CHANGELOG.md`, `INSTALLATION_GUIDE.*`, `USER_MANUAL.*`, `DEVELOPER_GUIDE.md`, `PHASE_00_FINALIZATION_REPORT.md`, `PHASE_01_REPORT.md`, `PHASE_01_RUNTIME_VALIDATION.md`, `docs/`, `phases/`, `scripts/`.
 - **Packaging & Control**: `CollegeFeeManager.spec`, `installer.iss`, `.git/`, `.gitignore`, `.github/`.
 - **Latest Release**: `release/v1.1.0/` (Contains compiled `CollegeFeeManager.exe` and release package `CollegeFeeManager_v1.1.0.zip`).

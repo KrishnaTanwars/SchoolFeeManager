@@ -39,7 +39,7 @@ def test_admin_auth_verification():
 
 
 def test_school_information_crud():
-    """Verify loading and updating extended school information fields."""
+    """Verify loading and updating extended college information fields."""
     update_data = {
         "school_name": "Test International Academy",
         "address": "456 Education Hub",

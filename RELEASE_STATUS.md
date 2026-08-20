@@ -9,7 +9,7 @@
 ---
 
 ## Active Phase Accomplishments
-- **Dual Mode Academic ERP Engine**: Unified architecture for both **School Mode** (Class, Section, Session) and **College Mode** (Course, Branch, Academic Year, Semester, Session) across all modules.
+- **Dual Mode Academic ERP Engine**: Unified architecture for both **College Mode** (Class, Section, Session) and **College Mode** (Course, Branch, Academic Year, Semester, Session) across all modules.
 - **Academic Masters & Controller**: Added Course, Branch, Academic Year, and Semester database models and controllers with automated seeding for B.Tech, MBA, BCA, BBA, MCA, and Class 10.
 - **Reusable `AcademicFilterWidget`**: Created single-line filter component with synchronized dropdowns for Course, Branch, Academic Year, Semester, and Academic Session.
 - **Student Master & Profile Cards**: Updated Student directory table, add/edit form dialogs, profile details dialog, and search filters.

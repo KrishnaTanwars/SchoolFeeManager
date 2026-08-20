@@ -37,10 +37,10 @@ class PDFService:
         EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
         school_info = SettingsController.get_school_info()
-        school_name = school_info.school_name if school_info else "DPS International Public School"
+        school_name = school_info.school_name if school_info else "EduLedger College of Engineering & Technology"
         school_addr = school_info.address if school_info else "Plot 12, Sector 5, RK Puram, New Delhi - 110022"
         school_phone = school_info.phone if school_info else "+91 98765 43210, 011-26123456"
-        school_email = school_info.email if school_info else "accounts@dpsschool.edu.in"
+        school_email = school_info.email if school_info else "accounts@eduledgercollege.edu.in"
 
         # Determine Logo File Path via SettingsController
         logo_path = SettingsController.get_active_logo_path()
@@ -423,10 +423,10 @@ class PDFService:
         EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
         school_info = SettingsController.get_school_info()
-        school_name = school_info.school_name if school_info else "DPS International Public School"
+        school_name = school_info.school_name if school_info else "EduLedger College of Engineering & Technology"
         school_addr = school_info.address if school_info else "Plot 12, Sector 5, RK Puram, New Delhi - 110022"
         school_phone = school_info.phone if school_info else "+91 98765 43210, 011-26123456"
-        school_email = school_info.email if school_info else "info@dpsschool.edu.in"
+        school_email = school_info.email if school_info else "info@eduledgercollege.edu.in"
 
         # Determine Logo Path via SettingsController
         logo_path = SettingsController.get_active_logo_path()
@@ -485,7 +485,7 @@ class PDFService:
 
         story = []
 
-        # School Header Block
+        # College Header Block
         header_data = []
         if logo_path:
             try:
@@ -747,7 +747,7 @@ class PDFService:
             output_path = str(EXPORTS_DIR / filename)
 
         school_info = SettingsController.get_school_info()
-        school_name = school_info.school_name if school_info else "DPS Modern School"
+        school_name = school_info.school_name if school_info else "EduLedger College"
 
         doc = SimpleDocTemplate(
             output_path,

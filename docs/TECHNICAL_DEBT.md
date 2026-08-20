@@ -13,7 +13,7 @@
    - Student mobile number validation (Regex `^[6-9]\d{9}$`) is repeated in both `StudentDialog` and `StudentController`.
    - Recommended Fix: Consolidate input validation into a centralized `utils/validators.py` module.
 3. **Hardcoded Default Logo Path**:
-   - `PDFService` falls back to `assets/school_logo.png`.
+   - `PDFService` falls back to `assets/college_logo.png`.
    - Recommended Fix: Dynamically load logo from `SchoolInformation` table record or render institution initials if logo file is missing.
 
 ---

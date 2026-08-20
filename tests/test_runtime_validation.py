@@ -180,10 +180,10 @@ class TestRuntimeValidationPhase1(unittest.TestCase):
     def test_step5_settings_verification(self):
         """STEP 5: Test Settings protection and audit log recording."""
         succ, msg = SettingsController.update_school_info({
-            "school_name": "DPS Modern School Baseline",
+            "school_name": "EduLedger College Baseline",
             "address": "123 Knowledge Park, New Delhi",
             "phone": "+91 98765 43210",
-            "email": "info@school.edu.in"
+            "email": "info@eduledgercollege.edu.in"
         })
         self.assertTrue(succ)
 

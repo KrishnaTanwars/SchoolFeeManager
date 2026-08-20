@@ -17,7 +17,7 @@ EduLedger ERP v2.0.0 is the complete, production-ready desktop solution for coll
 2. **Course-Based Fee Heads Master**: Dynamic fee category configuration classified into Undergraduate (`UG`) and Postgraduate (`PG`) course levels.
 3. **Fee Collection & Automated Invoicing**: Fast student search overlay, real-time fee total computation, discount/fine calculations, multiple payment modes, and instant dual-copy receipt PDF generation with English number-to-words currency formatting.
 4. **Searchable Receipt History Ledger**: High-performance SQL pagination toolbar, multi-criteria date presets, audit trail protection for deletion, and multi-format exports.
-5. **Central Settings & Administrator Protection**: Password-gated administration panel, school profile customization, user role management (Administrator, Operator, Viewer), audit logging, and preferences.
+5. **Central Settings & Administrator Protection**: Password-gated administration panel, college profile customization, user role management (Administrator, Operator, Viewer), audit logging, and preferences.
 6. **Financial MIS Reports Dashboard**: 10 interactive executive reports (`Daily Collection`, `Monthly Collection`, `Class-wise Breakdown`, `Outstanding Dues`, `Student Ledgers`, `Payment Modes`, etc.) with universal filters and print/export capabilities.
 7. **Bulk Data Management & Productivity**: 3-step CSV and Excel (`.xlsx`) student import wizard, duplicate detection, downloadable error logs, multi-format exports, central global search (`Ctrl+K`), auto-backup scheduling (Daily/Weekly/Monthly with retention policy), and database maintenance tools (`VACUUM`, `REINDEX`, `PRAGMA integrity_check`).
 

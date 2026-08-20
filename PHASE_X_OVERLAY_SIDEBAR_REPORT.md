@@ -27,7 +27,7 @@ The legacy sidebar expanded by resizing the central application layout, causing 
 | | +-----------------+---------------------------------------------+ | |
 | | | sidebar_base    | right_container (QHBoxLayout)               | | |
 | | | (Fixed 60px)    | +-----------------------------------------+ | | |
-| | |                 | | HeaderFrame (School Name, Search)       | | | |
+| | |                 | | HeaderFrame (College Name, Search)       | | | |
 | | |                 | +-----------------------------------------+ | | |
 | | |                 | | QStackedWidget (Dashboard, Fees, etc)   | | | |
 | | |                 | +-----------------------------------------+ | | |
